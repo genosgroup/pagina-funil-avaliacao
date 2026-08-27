@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Genos · Orçamento Parado</title>
+<meta name="description" content="Descubra em 2 minutos quanto a sua clínica tem parado entre orçamento aberto, avaliação que não fecha e paciente que sumiu.">
+<meta property="og:title" content="Quanto a sua clínica tem em orçamento parado?">
+<meta property="og:description" content="8 perguntas. 2 minutos. O número que quase nenhum dono de clínica sabe responder.">
+<meta name="theme-color" content="#FDFCFA">
+<style>
+:root{
+  --papel:#FDFCFA;
+  --papel-2:#F5F2ED;
+  --tinta:#14161C;
+  --tinta-2:#5A606C;
+  --tinta-3:#8E939D;
+  --linha:#E9E4DC;
+  --linha-2:#D8D2C8;
+  --a1:#E8722F;
+  --a2:#D9922F;
+  --a3:#A86A3D;
+  --a-texto:#C4501B;
+  --a-fundo:#FDF3EC;
+  --sombra:0 1px 2px rgba(20,22,28,.04),0 8px 28px rgba(20,22,28,.05);
+  --sombra-2:0 2px 4px rgba(20,22,28,.05),0 14px 44px rgba(232,114,47,.13);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  background:var(--papel);color:var(--tinta);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;min-height:100dvh;
+  display:flex;flex-direction:column;overflow-x:hidden;
+}
+
+/* ===== AMBIENTE (com parallax) ===== */
+.aura{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0;will-change:transform}
+.aura.a{width:540px;height:540px;background:rgba(232,114,47,.16);top:-220px;right:-180px}
+.aura.b{width:480px;height:480px;background:rgba(217,146,47,.11);bottom:-240px;left:-200px}
+
+#bar{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--a1),var(--a2),var(--a3));z-index:60;transition:width .5s ease}
+
+/* ===== PALCO ===== */
+.palco{flex:1;display:flex;align-items:center;justify-content:center;padding:64px 24px 48px;position:relative;z-index:1}
+.folha{width:100%;max-width:660px}
+
+.tela{display:none}
+.tela.ativa{display:block}
+.tela.ativa .stagger>*{animation:sobe .6s cubic-bezier(.2,.7,.2,1) both}
+.tela.ativa .stagger>*:nth-child(1){animation-delay:.04s}
+.tela.ativa .stagger>*:nth-child(2){animation-delay:.11s}
+.tela.ativa .stagger>*:nth-child(3){animation-delay:.18s}
+.tela.ativa .stagger>*:nth-child(4){animation-delay:.25s}
+.tela.ativa .stagger>*:nth-child(5){animation-delay:.32s}
+.tela.ativa .stagger>*:nth-child(6){animation-delay:.39s}
+@keyframes sobe{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+/* revelação ao rolar */
+.rev{opacity:0;transform:translateY(26px);transition:opacity .75s cubic-bezier(.2,.7,.2,1),transform .75s cubic-bezier(.2,.7,.2,1)}
+.rev.on{opacity:1;transform:none}
+
+/* ===== TIPOGRAFIA ===== */
+.kicker{font-size:clamp(10px,1vw,11.5px);letter-spacing:.3em;text-transform:uppercase;color:var(--tinta-3);margin-bottom:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.kicker b{color:var(--a-texto)}
+h1{font-size:clamp(32px,5.8vw,58px);line-height:1.07;font-weight:800;letter-spacing:-.028em}
+h2{font-size:clamp(24px,4.2vw,40px);line-height:1.14;font-weight:800;letter-spacing:-.022em}
+.grad{background:linear-gradient(100deg,var(--a1),var(--a2) 55%,var(--a3));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{font-size:clamp(16px,1.8vw,20px);line-height:1.6;color:var(--tinta-2);max-width:54ch;margin-top:20px}
+.small{color:var(--tinta-3);font-size:clamp(12px,1.1vw,13.5px);line-height:1.6}
+
+/* ===== ABERTURA · trio ===== */
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:32px}
+.trio-item{border:1px solid var(--linha);border-radius:14px;padding:20px 16px;background:#fff;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:flex-start}
+.trio-item .n{font-size:clamp(20px,2.2vw,25px);font-weight:800;letter-spacing:-.02em;color:var(--a-texto);line-height:1;margin-bottom:9px;white-space:nowrap}
+.trio-item .t{font-size:clamp(12px,1.2vw,13px);color:var(--tinta-2);line-height:1.35;font-weight:500;max-width:16ch}
+
+/* ===== PERGUNTA ===== */
+.ajuda{font-size:clamp(14px,1.4vw,15.5px);color:var(--tinta-3);margin-top:13px;margin-bottom:28px;line-height:1.55}
+.opcoes{display:flex;flex-direction:column;gap:9px}
+.opcao{
+  display:flex;align-items:center;gap:14px;width:100%;
+  border:1.5px solid var(--linha);border-radius:14px;
+  padding:17px 19px;cursor:pointer;text-align:left;background:#fff;
+  font-family:inherit;font-size:clamp(15px,1.5vw,16.5px);font-weight:600;color:var(--tinta);
+  transition:border-color .22s,transform .12s,box-shadow .22s;
+}
+.opcao:hover{border-color:var(--a1);transform:translateY(-1px);box-shadow:var(--sombra)}
+.opcao:active{transform:scale(.995)}
+.opcao.marcada{border-color:var(--a1);background:var(--a-fundo);box-shadow:var(--sombra)}
+.opcao .letra{
+  flex-shrink:0;width:27px;height:27px;border-radius:8px;
+  border:1.5px solid var(--linha-2);background:var(--papel-2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11.5px;font-weight:800;color:var(--tinta-3);transition:.22s;
+}
+.opcao.marcada .letra{background:linear-gradient(135deg,var(--a1),var(--a2));border-color:transparent;color:#fff}
+
+/* ===== BOTOES ===== */
+.acoes{display:flex;gap:14px;margin-top:26px;align-items:center}
+.btn{font-family:inherit;font-weight:700;border:none;cursor:pointer;transition:transform .12s,box-shadow .22s,opacity .2s}
+.btn:active{transform:scale(.985)}
+.btn-cheio{
+  background:linear-gradient(100deg,var(--a1),var(--a2));color:#fff;
+  font-size:clamp(15px,1.5vw,16.5px);padding:17px 32px;border-radius:13px;box-shadow:var(--sombra-2);
+}
+.btn-cheio:hover{box-shadow:0 4px 8px rgba(20,22,28,.06),0 18px 52px rgba(232,114,47,.24)}
+.btn-largo{width:100%}
+.btn-fantasma{background:none;color:var(--tinta-3);font-size:14px;font-weight:600;padding:14px 4px}
+.btn-fantasma:hover{color:var(--tinta)}
+
+/* ===== GATE ===== */
+.campo{margin-bottom:15px}
+.campo label{display:block;font-size:10.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--tinta-3);margin-bottom:8px}
+.campo input{
+  width:100%;font-family:inherit;font-size:16px;padding:16px 18px;
+  border:1.5px solid var(--linha);border-radius:13px;background:#fff;color:var(--tinta);transition:.22s;
+}
+.campo input:focus{outline:none;border-color:var(--a1);box-shadow:0 0 0 4px rgba(232,114,47,.1)}
+.campo input::placeholder{color:#B8BCC4}
+.erro{font-size:13px;color:#C0392B;margin-top:6px;display:none;font-weight:500}
+.erro.on{display:block}
+
+/* ===== CARREGANDO ===== */
+.carregando{text-align:center;padding:80px 0}
+.anel{width:42px;height:42px;border:2.5px solid var(--linha);border-top-color:var(--a1);border-radius:50%;animation:girar .7s linear infinite;margin:0 auto 22px}
+@keyframes girar{to{transform:rotate(360deg)}}
+
+/* ===== RESULTADO ===== */
+.res-topo{margin-bottom:34px}
+.numerao{font-size:clamp(44px,12.5vw,86px);font-weight:800;letter-spacing:-.045em;line-height:.96;margin:4px 0 12px;font-variant-numeric:tabular-nums}
+.numerao.pulsa{animation:brilho 2.6s ease-in-out 1s infinite}
+@keyframes brilho{0%,100%{filter:brightness(1)}50%{filter:brightness(1.14)}}
+
+.bloco{
+  border:1px solid var(--linha);border-radius:18px;padding:clamp(20px,2.3vw,26px);margin-bottom:11px;
+  background:#fff;box-shadow:var(--sombra);
+}
+.bloco .tag{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--a3);font-weight:800}
+.bloco .cifra{font-size:clamp(27px,6.6vw,38px);font-weight:800;letter-spacing:-.032em;line-height:1;margin:9px 0 11px;font-variant-numeric:tabular-nums}
+.bloco p{font-size:clamp(13.5px,1.35vw,15px);line-height:1.6;color:var(--tinta-2)}
+.bloco.forte{border-color:rgba(232,114,47,.4);background:var(--a-fundo)}
+.bloco.forte .cifra{color:var(--a-texto)}
+
+.somatorio{
+  border:1px solid rgba(232,114,47,.32);border-radius:18px;
+  background:linear-gradient(150deg,#FDF3EC,#FAF6F0);
+  padding:clamp(24px,3vw,34px);margin:20px 0;text-align:center;box-shadow:var(--sombra);
+}
+.somatorio .tag{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--a3);font-weight:800}
+.somatorio .cifra{font-size:clamp(36px,9.5vw,56px);font-weight:800;letter-spacing:-.045em;line-height:1;margin:11px 0 13px;font-variant-numeric:tabular-nums}
+.somatorio p{font-size:clamp(13px,1.3vw,14.5px);color:var(--tinta-2);line-height:1.6;max-width:44ch;margin:0 auto}
+
+.gargalo{border:1px solid var(--linha);border-left:3px solid var(--a1);border-radius:0 18px 18px 0;padding:clamp(20px,2.3vw,26px);margin-bottom:20px;background:#fff;box-shadow:var(--sombra)}
+.gargalo .tag{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--a-texto);font-weight:800}
+.gargalo h3{font-size:clamp(17px,1.9vw,21px);font-weight:800;margin:9px 0 11px;letter-spacing:-.015em;line-height:1.28}
+.gargalo p{font-size:clamp(14px,1.4vw,15.5px);line-height:1.62;color:var(--tinta-2)}
+
+.comparacao{border:1px solid var(--linha);border-radius:18px;padding:clamp(20px,2.3vw,26px);margin-bottom:20px;background:#fff;box-shadow:var(--sombra)}
+.comparacao .tag{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--a3);font-weight:800;display:block;margin-bottom:5px}
+.titulo-idx{font-size:clamp(15px,1.6vw,17.5px);font-weight:700;margin-bottom:20px;letter-spacing:-.012em}
+.linha{margin-bottom:16px}
+.linha:last-child{margin-bottom:0}
+.linha-topo{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;gap:12px}
+.linha-nome{font-size:clamp(13px,1.3vw,14px);font-weight:600;color:var(--tinta-2)}
+.linha-num{font-size:clamp(15px,1.6vw,17px);font-weight:800;font-variant-numeric:tabular-nums;color:var(--tinta-3)}
+.trilha{height:8px;background:var(--papel-2);border-radius:99px;overflow:hidden}
+.fill{height:100%;border-radius:99px;width:0;transition:width 1.1s cubic-bezier(.2,.7,.2,1)}
+.fill.eu{background:linear-gradient(90deg,var(--a1),var(--a2))}
+.fill.med{background:var(--linha-2)}
+.fill.top{background:#B4BCC6}
+.linha.eu .linha-nome{color:var(--tinta);font-weight:700}
+.linha.eu .linha-num{color:var(--a-texto)}
+
+.prova{border:1px dashed var(--linha-2);border-radius:18px;padding:clamp(22px,2.5vw,28px);margin-bottom:22px;background:var(--papel-2)}
+.prova .tag{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--a3);font-weight:800}
+.prova p{font-size:clamp(15px,1.65vw,18px);line-height:1.52;color:var(--tinta);margin-top:11px;font-weight:500}
+.prova strong{font-weight:800}
+
+.cta{border:1px solid rgba(232,114,47,.3);border-radius:18px;padding:clamp(26px,3vw,36px);text-align:center;margin-bottom:20px;background:linear-gradient(150deg,#FDF3EC,#FFF);box-shadow:var(--sombra);position:relative;overflow:hidden}
+.cta::after{content:"";position:absolute;top:-60%;left:-30%;width:60%;height:220%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);transform:rotate(18deg);animation:varre 5.5s ease-in-out 1.5s infinite}
+@keyframes varre{0%{left:-40%}55%,100%{left:130%}}
+.cta h3,.cta p,.cta .btn{position:relative;z-index:1}
+.cta h3{font-size:clamp(19px,2.3vw,25px);font-weight:800;margin-bottom:11px;letter-spacing:-.018em;line-height:1.24}
+.cta p{font-size:clamp(14px,1.4vw,15.5px);color:var(--tinta-2);margin-bottom:22px;line-height:1.6;max-width:42ch;margin-left:auto;margin-right:auto}
+
+details.formula{border:1px solid var(--linha);border-radius:14px;overflow:hidden;margin-bottom:16px;background:#fff}
+details.formula summary{padding:16px 20px;cursor:pointer;font-size:13.5px;font-weight:700;list-style:none;display:flex;justify-content:space-between;align-items:center;color:var(--tinta-2)}
+details.formula summary::-webkit-details-marker{display:none}
+details.formula summary::after{content:"+";font-size:19px;color:var(--tinta-3);font-weight:300}
+details.formula[open] summary::after{content:"−"}
+details.formula[open] summary{color:var(--a-texto)}
+.formula-corpo{padding:0 20px 20px;font-size:13.5px;color:var(--tinta-2);line-height:1.7}
+.formula-corpo p{margin-bottom:9px}
+.formula-corpo p:last-child{margin-bottom:0;color:var(--tinta-3);font-size:12.5px}
+.formula-corpo b{color:var(--tinta);font-weight:700}
+
+.rodape{text-align:center;padding:26px 24px 32px;font-size:11px;color:var(--tinta-3);letter-spacing:.22em;text-transform:uppercase;position:relative;z-index:1;border-top:1px solid var(--linha);font-weight:800}
+
+@media(max-width:640px){
+  .trio{grid-template-columns:1fr;gap:8px}
+  .trio-item{display:flex;align-items:center;gap:12px;text-align:left;padding:15px 17px}
+  .trio-item .n{margin-bottom:0;font-size:18px;flex-shrink:0;min-width:38px}
+}
+@media(max-width:560px){
+  .palco{padding:52px 20px 40px}
+  .gargalo{border-radius:0 15px 15px 0}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .rev{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<div class="aura a" id="auraA"></div>
+<div class="aura b" id="auraB"></div>
+<div id="bar"></div>
+
+<main class="palco">
+  <div class="folha">
+
+    <!-- ABERTURA -->
+    <section class="tela ativa" id="telaAbertura">
+      <div class="stagger">
+        <div class="kicker">Orçamento Parado <b>·</b> 2 minutos</div>
+        <h1>Quanto a sua clínica<br>tem <span class="grad">parado agora?</span></h1>
+        <p class="lead">Orçamento aprovado que ninguém retomou. Avaliação que ouviu o valor, pediu pra pensar e sumiu. Tratamento que parou no meio. Quase nenhum dono de clínica sabe somar isso.</p>
+        <div class="trio">
+          <div class="trio-item"><div class="n">8</div><div class="t">perguntas rápidas</div></div>
+          <div class="trio-item"><div class="n">2 min</div><div class="t">e o número aparece</div></div>
+          <div class="trio-item"><div class="n">40</div><div class="t">clínicas na comparação</div></div>
+        </div>
+        <div class="acoes"><button class="btn btn-cheio btn-largo" onclick="iniciar()">Fazer a conta da minha clínica</button></div>
+        <p class="small" style="margin-top:18px">Sem apresentação comercial. Você responde, vê o número e decide o que fazer com ele.</p>
+      </div>
+    </section>
+
+    <!-- PERGUNTA -->
+    <section class="tela" id="telaPergunta">
+      <div class="stagger">
+        <div class="kicker" id="kickerP"></div>
+        <h2 id="textoPergunta"></h2>
+        <p class="ajuda" id="textoAjuda"></p>
+        <div class="opcoes" id="opcoes"></div>
+        <div class="acoes"><button class="btn btn-fantasma" id="btnVoltar" onclick="voltar()">Voltar</button></div>
+      </div>
+    </section>
+
+    <!-- GATE -->
+    <section class="tela" id="telaGate">
+      <div class="stagger">
+        <div class="kicker">Último passo <b>·</b> falta só isso</div>
+        <h2>Seu número já está <span class="grad">calculado.</span></h2>
+        <p class="ajuda">Só precisamos saber para quem ele é.</p>
+        <div class="campo">
+          <label for="nome">Seu nome</label>
+          <input type="text" id="nome" placeholder="Como podemos te chamar" autocomplete="name">
+          <div class="erro" id="erroNome">Preencha seu nome</div>
+        </div>
+        <div class="campo">
+          <label for="zap">WhatsApp</label>
+          <input type="tel" id="zap" placeholder="(00) 00000-0000" autocomplete="tel" inputmode="numeric">
+          <div class="erro" id="erroZap">Preencha um WhatsApp válido</div>
+        </div>
+        <div class="acoes">
+          <button class="btn btn-fantasma" onclick="voltarDoGate()">Voltar</button>
+          <button class="btn btn-cheio" onclick="revelar()">Ver meu número</button>
+        </div>
+        <p class="small" style="margin-top:16px">Usamos seu contato só para enviar o cálculo detalhado. Sem lista, sem disparo em massa, e você sai quando quiser.</p>
+      </div>
+    </section>
+
+    <!-- CARREGANDO -->
+    <section class="tela" id="telaCarregando">
+      <div class="carregando">
+        <div class="anel"></div>
+        <p class="lead" style="margin:0 auto;text-align:center;max-width:32ch" id="textoCarregando">Cruzando suas respostas</p>
+      </div>
+    </section>
+
+    <!-- RESULTADO -->
+    <section class="tela" id="telaResultado">
+
+      <div class="stagger">
+        <div class="res-topo">
+          <div class="kicker">Seu resultado, <span id="nomeKicker"></span></div>
+          <div class="numerao grad" id="numerao">R$ 0</div>
+          <p class="lead" style="margin-top:0">é o que está parado na sua clínica neste momento, entre orçamento aberto e paciente que não voltou.</p>
+        </div>
+      </div>
+
+      <div class="bloco forte rev">
+        <div class="tag">Parado no seu sistema agora</div>
+        <div class="cifra" id="v1">R$ 0</div>
+        <p>Orçamento aprovado que ficou no sistema sem ninguém retomar. Esse paciente já ouviu o valor e não disse não. Ele só sumiu no caminho.</p>
+      </div>
+
+      <div class="bloco rev">
+        <div class="tag">Perdido todo mês</div>
+        <div class="cifra" id="v2">R$ 0</div>
+        <p>Entre a avaliação que não vira protocolo e o paciente que marca e não comparece. Todo mês, de novo, sem ninguém contar.</p>
+      </div>
+
+      <div class="bloco rev">
+        <div class="tag">Dormindo na sua base</div>
+        <div class="cifra" id="v3">R$ 0</div>
+        <p>Tratamento que parou no meio e paciente que já confiou em você uma vez. É o dinheiro mais barato de buscar, porque não custa mídia nenhuma.</p>
+      </div>
+
+      <div class="somatorio rev">
+        <div class="tag">No ano, isso soma</div>
+        <div class="cifra grad" id="vTotal">R$ 0</div>
+        <p>E a conta usa as estimativas mais conservadoras que existem. O número real tende a ser maior.</p>
+      </div>
+
+      <div class="gargalo rev">
+        <div class="tag">Seu maior gargalo</div>
+        <h3 id="gargaloTitulo"></h3>
+        <p id="gargaloTexto"></p>
+      </div>
+
+      <div class="comparacao rev" id="boxComparacao">
+        <span class="tag">Índice de Aproveitamento</span>
+        <div class="titulo-idx">Quanto da oportunidade que já chega vira faturamento</div>
+        <div class="linha eu">
+          <div class="linha-topo"><span class="linha-nome">Sua clínica</span><span class="linha-num" id="n1">0</span></div>
+          <div class="trilha"><div class="fill eu" id="b1"></div></div>
+        </div>
+        <div class="linha">
+          <div class="linha-topo"><span class="linha-nome">Média das clínicas que já abrimos</span><span class="linha-num" id="n2">0</span></div>
+          <div class="trilha"><div class="fill med" id="b2"></div></div>
+        </div>
+        <div class="linha">
+          <div class="linha-topo"><span class="linha-nome">As que organizaram o comercial</span><span class="linha-num" id="n3">0</span></div>
+          <div class="trilha"><div class="fill top" id="b3"></div></div>
+        </div>
+      </div>
+
+      <div class="prova rev">
+        <div class="tag">Aconteceu de verdade</div>
+        <p>Uma clínica com base parecida com a sua recuperou <strong>R$ 94 mil em 3 meses</strong> trabalhando os contatos que já tinha, aos poucos, sem gastar um real a mais em anúncio.</p>
+      </div>
+
+      <div class="cta rev">
+        <h3>Quer ver de onde sai esse número?</h3>
+        <p>Uma conversa pra entender a sua clínica antes de qualquer proposta. A gente abre a operação por dentro e mostra o cálculo real, não o estimado.</p>
+        <button class="btn btn-cheio btn-largo" onclick="chamarWhats()">Quero destravar minha clínica</button>
+      </div>
+
+      <details class="formula rev">
+        <summary>Como essa conta é feita</summary>
+        <div class="formula-corpo">
+          <p><b>Orçamento parado:</b> contamos 15% do que está aberto como recuperável.</p>
+          <p><b>Perdido por mês:</b> 10% da avaliação que não fechou, mais 30% das faltas.</p>
+          <p><b>Base dormindo:</b> um contato a cada mil, com ticket pela metade.</p>
+          <p><b>Ajuste:</b> quem não acompanha ninguém e demora pra responder perde mais. Quem tem processo no CRM perde menos.</p>
+          <p>São as taxas mais baixas que encontramos, de propósito. É estimativa direcional, feita com faixas, pra mostrar a ordem de grandeza.</p>
+        </div>
+      </details>
+
+      <p class="small rev" style="text-align:center;padding:0 10px">Tudo começa com atenção. A nossa é em você.</p>
+
+    </section>
+
+  </div>
+</main>
+
+<div class="rodape">GENOS GROUP</div>
+
+<script>
+/* ============================================================
+   CONFIGURAÇÃO
+   ============================================================ */
+const CONFIG = {
+  // URL do Google Apps Script publicado como app da web.
+  // Ver README. Vazio = o lead não é gravado em lugar nenhum.
+  WEBHOOK: '',
+  WHATSAPP: '5521975613690',
+  ORIGEM: 'orcamento-parado'
+};
+
+/* ============================================================
+   PERGUNTAS
+   ============================================================ */
+const PERGUNTAS = [
+  {id:'avaliacoes',texto:'Quantas avaliações novas sua clínica recebe por mês?',ajuda:'Paciente novo que senta na cadeira para ouvir uma proposta.',
+   opcoes:[{t:'Até 20',v:15},{t:'De 21 a 50',v:35},{t:'De 51 a 100',v:75},{t:'Mais de 100',v:130}]},
+  {id:'ticket',texto:'Qual o ticket médio do seu tratamento principal?',ajuda:'O procedimento que mais pesa no seu faturamento.',
+   opcoes:[{t:'Até R$ 3 mil',v:2000},{t:'De R$ 3 mil a R$ 8 mil',v:5500},{t:'De R$ 8 mil a R$ 15 mil',v:11500},{t:'Mais de R$ 15 mil',v:20000}]},
+  {id:'conversao',texto:'De cada 10 avaliações, quantas viram tratamento fechado?',ajuda:'Se não souber o número exato, vá pela sensação. A ordem de grandeza já basta.',
+   opcoes:[{t:'Menos de 3',v:.2},{t:'De 3 a 5',v:.4},{t:'De 6 a 8',v:.7},{t:'Mais de 8',v:.9}]},
+  {id:'noshow',texto:'De cada 10 pacientes agendados, quantos não comparecem?',ajuda:'Marcou e não veio, sem avisar ou avisando em cima da hora.',
+   opcoes:[{t:'Menos de 1',v:.05},{t:'De 1 a 2',v:.15},{t:'De 3 a 4',v:.35},{t:'Mais de 4',v:.5}]},
+  {id:'abertos',texto:'Quantos orçamentos estão aprovados e parados hoje?',ajuda:'Foi apresentado, o paciente não disse não, e ninguém retomou.',
+   opcoes:[{t:'Não sei dizer',v:null},{t:'Até 10',v:7},{t:'De 11 a 30',v:20},{t:'Mais de 30',v:45}]},
+  {id:'acompanha',texto:'Quem acompanha o paciente que não fechou?',ajuda:'Depois que ele sai da clínica sem assinar nada.',
+   opcoes:[{t:'Ninguém, na prática',v:1.3},{t:'A recepção, quando dá tempo',v:1.15},{t:'Uma pessoa dedicada a isso',v:.9},{t:'Temos processo rodando no CRM',v:.7}]},
+  {id:'base',texto:'Quantos contatos existem na sua base?',ajuda:'Pacientes antigos e interessados que nunca fecharam, tudo somado.',
+   opcoes:[{t:'Menos de 1.000',v:600},{t:'De 1.000 a 5.000',v:3000},{t:'De 5.000 a 15.000',v:9000},{t:'Mais de 15.000',v:20000}]},
+  {id:'resposta',texto:'Em quanto tempo vocês respondem um paciente novo?',ajuda:'Da mensagem dele até alguém responder de verdade.',
+   opcoes:[{t:'Em minutos',v:.9},{t:'Em até 1 hora',v:1.0},{t:'No mesmo dia',v:1.1},{t:'Às vezes demora mais',v:1.25}]}
+];
+
+const LETRAS=['A','B','C','D'];
+let atual=0;
+const respostas={};
+let resultado=null;
+
+/* ============================================================
+   NAVEGAÇÃO
+   ============================================================ */
+function mostrarTela(id){
+  document.querySelectorAll('.tela').forEach(t=>t.classList.remove('ativa'));
+  const el=document.getElementById(id);
+  void el.offsetWidth;
+  el.classList.add('ativa');
+  window.scrollTo({top:0,behavior:'instant'});
+}
+function iniciar(){atual=0;renderPergunta();mostrarTela('telaPergunta');}
+function progresso(){document.getElementById('bar').style.width=((atual/(PERGUNTAS.length+1))*100)+'%';}
+
+function renderPergunta(){
+  const p=PERGUNTAS[atual];
+  document.getElementById('kickerP').innerHTML=`<b>${String(atual+1).padStart(2,'0')}</b> de ${String(PERGUNTAS.length).padStart(2,'0')}`;
+  document.getElementById('textoPergunta').textContent=p.texto;
+  document.getElementById('textoAjuda').textContent=p.ajuda;
+  const box=document.getElementById('opcoes');box.innerHTML='';
+  p.opcoes.forEach((o,i)=>{
+    const b=document.createElement('button');
+    b.className='opcao'+(respostas[p.id]!==undefined&&respostas[p.id].i===i?' marcada':'');
+    b.innerHTML=`<span class="letra">${LETRAS[i]}</span><span>${o.t}</span>`;
+    b.onclick=()=>escolher(p.id,i,o.v,o.t);
+    box.appendChild(b);
+  });
+  document.getElementById('btnVoltar').style.visibility=atual===0?'hidden':'visible';
+  progresso();
+}
+function escolher(id,i,v,t){
+  respostas[id]={i,v,t};
+  document.querySelectorAll('#opcoes .opcao').forEach((el,idx)=>el.classList.toggle('marcada',idx===i));
+  setTimeout(avancar,240);
+}
+function avancar(){
+  if(atual<PERGUNTAS.length-1){atual++;renderPergunta();}
+  else{document.getElementById('bar').style.width='92%';mostrarTela('telaGate');}
+}
+function voltar(){if(atual>0){atual--;renderPergunta();}}
+function voltarDoGate(){atual=PERGUNTAS.length-1;renderPergunta();mostrarTela('telaPergunta');}
+
+/* ============================================================
+   O CÁLCULO
+   ============================================================ */
+function calcular(){
+  const av=respostas.avaliacoes.v, ticket=respostas.ticket.v, conv=respostas.conversao.v;
+  const noshow=respostas.noshow.v, base=respostas.base.v;
+  const multAcomp=respostas.acompanha.v, multResp=respostas.resposta.v;
+  let abertos=respostas.abertos.v;
+  const estimado = abertos===null;
+  if(estimado) abertos = Math.round(av*(1-conv)*2);
+  const mult=(multAcomp+multResp)/2;
+  const parado = abertos*ticket*0.15*mult;
+  const perdaOrcamento = av*(1-conv)*ticket*0.10;
+  const perdaFalta = av*noshow*ticket*conv*0.30;
+  const perdidoMes = (perdaOrcamento+perdaFalta)*mult;
+  const dormindo = base*0.001*ticket*0.5;
+  const anual = parado + dormindo + (perdidoMes*12);
+  const notaConv=conv*100, notaShow=(1-noshow)*100, notaProc=((1.3-multAcomp)/0.6)*100;
+  const indice=Math.round(Math.max(5,Math.min(98,(notaConv*0.45)+(notaShow*0.25)+(notaProc*0.30))));
+  const gargalos=[
+    {chave:'orcamento',peso:perdaOrcamento*12},{chave:'falta',peso:perdaFalta*12},
+    {chave:'parado',peso:parado},{chave:'base',peso:dormindo}
+  ].sort((a,b)=>b.peso-a.peso);
+  return {parado,perdidoMes,dormindo,anual,indice,abertos,estimado,gargalo:gargalos[0].chave,ticket,base};
+}
+
+const GARGALOS={
+  orcamento:{titulo:'A avaliação que não vira protocolo',
+    texto:'É daqui que sai a maior parte do seu dinheiro. O paciente chega, senta, ouve o valor e vai embora sem fechar. Na maioria das vezes não é preço: é dúvida que ficou sem resposta e ninguém retomando a conversa depois.'},
+  falta:{titulo:'O paciente que marca e não comparece',
+    texto:'Cadeira parada é custo fixo rodando sem receita. E o pior é que boa parte de quem falta voltaria se alguém chamasse, mas ninguém chama porque não existe rotina para isso.'},
+  parado:{titulo:'O orçamento aprovado que ninguém retomou',
+    texto:'Esse é o mais barato de resolver, porque o paciente já conhece você, já ouviu o valor e não disse não. Ele só sumiu no meio do caminho e ninguém foi atrás.'},
+  base:{titulo:'A base que está dormindo',
+    texto:'Você tem gente que já confiou em você uma vez e nunca mais voltou, e tratamento que começou e parou no meio. Buscar essa pessoa custa uma fração do que custa trazer paciente novo.'}
+};
+
+const dinheiro=n=>'R$ '+Math.round(n).toLocaleString('pt-BR');
+
+/* ============================================================
+   ANIMAÇÃO DE NÚMERO
+   ============================================================ */
+function contar(el,alvo,dur=1400,formato=dinheiro){
+  const t0=performance.now();
+  function passo(t){
+    const p=Math.min(1,(t-t0)/dur);
+    const e=1-Math.pow(1-p,3);
+    el.textContent=formato(alvo*e);
+    if(p<1)requestAnimationFrame(passo);
+    else el.textContent=formato(alvo);
+  }
+  requestAnimationFrame(passo);
+}
+
+/* ============================================================
+   GATE E RESULTADO
+   ============================================================ */
+function validar(){
+  const nome=document.getElementById('nome').value.trim();
+  const zap=document.getElementById('zap').value.replace(/\D/g,'');
+  document.getElementById('erroNome').classList.toggle('on',nome.length<2);
+  document.getElementById('erroZap').classList.toggle('on',zap.length<10);
+  return nome.length>=2 && zap.length>=10;
+}
+function revelar(){
+  if(!validar())return;
+  resultado=calcular();
+  mostrarTela('telaCarregando');
+  document.getElementById('bar').style.width='100%';
+  const frases=['Cruzando suas respostas','Comparando com clínicas reais','Montando o seu número'];
+  let i=0;
+  const t=setInterval(()=>{i++;if(i<frases.length)document.getElementById('textoCarregando').textContent=frases[i];},850);
+  enviarLead();
+  setTimeout(()=>{clearInterval(t);renderResultado();mostrarTela('telaResultado');},2600);
+}
+
+function renderResultado(){
+  const r=resultado;
+  const nome=document.getElementById('nome').value.trim().split(' ')[0];
+  document.getElementById('nomeKicker').textContent=nome;
+
+  const g=GARGALOS[r.gargalo];
+  document.getElementById('gargaloTitulo').textContent=g.titulo;
+  document.getElementById('gargaloTexto').textContent=g.texto;
+
+  // número principal conta assim que a tela aparece
+  const nEl=document.getElementById('numerao');
+  setTimeout(()=>{contar(nEl,r.parado+r.dormindo,1600);nEl.classList.add('pulsa');},450);
+
+  ligarRevelacao(r);
+}
+
+/* revela cada bloco ao entrar na tela e dispara o número dele */
+function ligarRevelacao(r){
+  const disparos=new Map([
+    ['v1',()=>contar(document.getElementById('v1'),r.parado)],
+    ['v2',()=>contar(document.getElementById('v2'),r.perdidoMes)],
+    ['v3',()=>contar(document.getElementById('v3'),r.dormindo)],
+    ['vTotal',()=>contar(document.getElementById('vTotal'),r.anual,1700)],
+    ['boxComparacao',()=>{
+      const media=52,top=78;
+      contar(document.getElementById('n1'),r.indice,1200,n=>Math.round(n));
+      contar(document.getElementById('n2'),media,1200,n=>Math.round(n));
+      contar(document.getElementById('n3'),top,1200,n=>Math.round(n));
+      document.getElementById('b1').style.width=r.indice+'%';
+      document.getElementById('b2').style.width=media+'%';
+      document.getElementById('b3').style.width=top+'%';
+    }]
+  ]);
+
+  const obs=new IntersectionObserver((entradas)=>{
+    entradas.forEach(e=>{
+      if(!e.isIntersecting)return;
+      e.target.classList.add('on');
+      const alvo=[...e.target.querySelectorAll('[id]')].map(x=>x.id).find(id=>disparos.has(id))
+                 || (disparos.has(e.target.id)?e.target.id:null);
+      if(alvo){disparos.get(alvo)();disparos.delete(alvo);}
+      obs.unobserve(e.target);
+    });
+  },{threshold:.35,rootMargin:'0px 0px -40px 0px'});
+
+  document.querySelectorAll('#telaResultado .rev').forEach(el=>obs.observe(el));
+}
+
+function chamarWhats(){
+  const nome=document.getElementById('nome').value.trim();
+  const r=resultado;
+  const msg=`Oi! Sou ${nome}. Fiz o Orçamento Parado e deu ${dinheiro(r.parado+r.dormindo)} parados e ${dinheiro(r.perdidoMes)} por mês. Quero destravar minha clínica.`;
+  window.open(`https://wa.me/${CONFIG.WHATSAPP}?text=${encodeURIComponent(msg)}`,'_blank');
+}
+
+/* ============================================================
+   ENVIO DO LEAD
+   ============================================================ */
+function enviarLead(){
+  if(!CONFIG.WEBHOOK)return;
+  const r=resultado;
+  const dados={
+    origem:CONFIG.ORIGEM,data:new Date().toISOString(),
+    nome:document.getElementById('nome').value.trim(),
+    whatsapp:document.getElementById('zap').value.replace(/\D/g,''),
+    respostas:Object.fromEntries(Object.entries(respostas).map(([k,v])=>[k,v.t])),
+    calculo:{parado:Math.round(r.parado),perdido_mes:Math.round(r.perdidoMes),
+      dormindo:Math.round(r.dormindo),anual:Math.round(r.anual),
+      indice:r.indice,gargalo:r.gargalo,orcamentos_estimados:r.estimado},
+    qualifica_intervencao:r.base>=5000,
+    url:window.location.href,
+    utm:Object.fromEntries(new URLSearchParams(window.location.search))
+  };
+  // text/plain evita o preflight CORS, que o Apps Script não responde
+  fetch(CONFIG.WEBHOOK,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(dados)}).catch(()=>{});
+}
+
+/* ============================================================
+   PARALLAX SUAVE NAS AURAS
+   ============================================================ */
+const auraA=document.getElementById('auraA'), auraB=document.getElementById('auraB');
+let ticking=false;
+addEventListener('scroll',()=>{
+  if(ticking)return;
+  ticking=true;
+  requestAnimationFrame(()=>{
+    const y=window.scrollY;
+    auraA.style.transform=`translate3d(0,${y*0.16}px,0)`;
+    auraB.style.transform=`translate3d(0,${y*-0.11}px,0)`;
+    ticking=false;
+  });
+},{passive:true});
+
+/* ============================================================
+   MÁSCARA E ATALHOS
+   ============================================================ */
+document.getElementById('zap').addEventListener('input',e=>{
+  let v=e.target.value.replace(/\D/g,'').slice(0,11);
+  if(v.length>6) v=`(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+  else if(v.length>2) v=`(${v.slice(0,2)}) ${v.slice(2)}`;
+  else if(v.length>0) v=`(${v}`;
+  e.target.value=v;
+});
+document.getElementById('zap').addEventListener('keydown',e=>{if(e.key==='Enter')revelar()});
+document.getElementById('nome').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('zap').focus()});
+</script>
+</body>
+</html>

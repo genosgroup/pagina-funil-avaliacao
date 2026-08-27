@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Genos · Gerador de Links</title>
+<style>
+:root{
+  --papel:#FDFCFA;--papel-2:#F5F2ED;--tinta:#14161C;--tinta-2:#5A606C;--tinta-3:#8E939D;
+  --linha:#E9E4DC;--linha-2:#D8D2C8;--a1:#E8722F;--a2:#D9922F;--a3:#A86A3D;
+  --a-texto:#C4501B;--a-fundo:#FDF3EC;
+  --sombra:0 1px 2px rgba(20,22,28,.04),0 8px 28px rgba(20,22,28,.05);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--papel);color:var(--tinta);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;padding:44px 24px 60px}
+.folha{max-width:760px;margin:0 auto}
+.kicker{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--tinta-3);font-weight:700;margin-bottom:16px}
+.kicker b{color:var(--a-texto)}
+h1{font-size:clamp(28px,4.4vw,40px);font-weight:800;letter-spacing:-.025em;line-height:1.1}
+.grad{background:linear-gradient(100deg,var(--a1),var(--a2) 55%,var(--a3));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{font-size:16px;line-height:1.6;color:var(--tinta-2);margin-top:16px;max-width:56ch}
+
+h2{font-size:19px;font-weight:800;letter-spacing:-.015em;margin:44px 0 6px}
+.sub{font-size:14px;color:var(--tinta-3);margin-bottom:20px;line-height:1.5}
+
+.painel{background:#fff;border:1px solid var(--linha);border-radius:18px;padding:26px;box-shadow:var(--sombra)}
+.linha-campos{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.campo label{display:block;font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--tinta-3);margin-bottom:7px}
+.campo input,.campo select{width:100%;font-family:inherit;font-size:15px;padding:13px 15px;border:1.5px solid var(--linha);border-radius:11px;background:#fff;color:var(--tinta);transition:.2s}
+.campo input:focus,.campo select:focus{outline:none;border-color:var(--a1);box-shadow:0 0 0 4px rgba(232,114,47,.09)}
+.campo .dica{font-size:12px;color:var(--tinta-3);margin-top:6px;line-height:1.4}
+
+.saida{margin-top:22px;background:var(--a-fundo);border:1px solid rgba(232,114,47,.3);border-radius:13px;padding:18px}
+.saida .rot{font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--a-texto);margin-bottom:10px}
+.saida .url{font-family:ui-monospace,Menlo,monospace;font-size:13px;line-height:1.6;word-break:break-all;color:var(--tinta);margin-bottom:14px}
+.btn{font-family:inherit;font-weight:700;border:none;cursor:pointer;background:linear-gradient(100deg,var(--a1),var(--a2));color:#fff;font-size:14.5px;padding:13px 26px;border-radius:11px;transition:transform .12s}
+.btn:active{transform:scale(.98)}
+.btn.copiado{background:#2E7D4F}
+
+table{width:100%;border-collapse:collapse;font-size:14px;background:#fff;border:1px solid var(--linha);border-radius:14px;overflow:hidden;box-shadow:var(--sombra)}
+th{background:var(--papel-2);text-align:left;padding:13px 16px;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--tinta-3);font-weight:800;border-bottom:1px solid var(--linha)}
+td{padding:13px 16px;border-bottom:1px solid var(--linha);color:var(--tinta-2);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td code{background:var(--papel-2);padding:2px 7px;border-radius:5px;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;color:var(--a-texto)}
+td b{color:var(--tinta)}
+
+.aviso{background:var(--papel-2);border-left:3px solid var(--a1);border-radius:0 12px 12px 0;padding:18px 20px;margin-top:20px;font-size:14px;line-height:1.6;color:var(--tinta-2)}
+.aviso b{color:var(--tinta)}
+
+.rodape{text-align:center;margin-top:56px;padding-top:26px;border-top:1px solid var(--linha);font-size:11px;color:var(--tinta-3);letter-spacing:.22em;text-transform:uppercase;font-weight:800}
+
+@media(max-width:620px){.linha-campos{grid-template-columns:1fr}body{padding:32px 18px 44px}.painel{padding:20px}}
+</style>
+</head>
+<body>
+<div class="folha">
+
+  <div class="kicker">Genos <b>·</b> ferramenta interna</div>
+  <h1>Gerador de <span class="grad">links rastreáveis</span></h1>
+  <p class="lead">Monte o link antes de publicar em qualquer lugar. Sem link montado aqui, o lead cai na planilha sem origem, e você perde a única informação que diz qual canal está funcionando.</p>
+
+  <h2>Montar um link</h2>
+  <p class="sub">Preencha, copie e use. Os campos já vêm com a convenção da casa.</p>
+
+  <div class="painel">
+    <div class="campo" style="margin-bottom:14px">
+      <label for="destino">Página de destino</label>
+      <input type="text" id="destino" value="https://clinicas.genosgroup.com.br/orcamento-parado">
+    </div>
+
+    <div class="linha-campos">
+      <div class="campo">
+        <label for="source">De onde vem</label>
+        <select id="source">
+          <option value="instagram">instagram</option>
+          <option value="whatsapp">whatsapp</option>
+          <option value="meta">meta (anúncio)</option>
+          <option value="google">google</option>
+          <option value="email">email</option>
+          <option value="indicacao">indicacao</option>
+          <option value="youtube">youtube</option>
+          <option value="linkedin">linkedin</option>
+        </select>
+        <div class="dica">a plataforma</div>
+      </div>
+      <div class="campo">
+        <label for="medium">Como aparece</label>
+        <select id="medium">
+          <option value="bio">bio</option>
+          <option value="stories">stories</option>
+          <option value="reels">reels</option>
+          <option value="feed">feed</option>
+          <option value="cpc">cpc (pago)</option>
+          <option value="prospeccao">prospeccao</option>
+          <option value="assinatura">assinatura</option>
+          <option value="qrcode">qrcode</option>
+        </select>
+        <div class="dica">o formato dentro da plataforma</div>
+      </div>
+    </div>
+
+    <div class="linha-campos">
+      <div class="campo">
+        <label for="campaign">Campanha</label>
+        <input type="text" id="campaign" value="orcamento-parado">
+        <div class="dica">o que está sendo divulgado</div>
+      </div>
+      <div class="campo">
+        <label for="content">Variação</label>
+        <input type="text" id="content" placeholder="perfil-thalita, criativo-01...">
+        <div class="dica">opcional, para separar o que é igual</div>
+      </div>
+    </div>
+
+    <div class="saida">
+      <div class="rot">Seu link</div>
+      <div class="url" id="resultado"></div>
+      <button class="btn" id="btnCopiar" onclick="copiar()">Copiar link</button>
+    </div>
+  </div>
+
+  <h2>A convenção da casa</h2>
+  <p class="sub">Se cada um escrever de um jeito, a planilha vira lixo. Use exatamente assim.</p>
+
+  <table>
+    <thead><tr><th>Onde você vai publicar</th><th>O link fica com</th></tr></thead>
+    <tbody>
+      <tr><td><b>Bio do perfil da Genos</b></td><td><code>instagram</code> · <code>bio</code> · <code>perfil-genos</code></td></tr>
+      <tr><td><b>Bio do perfil pessoal</b></td><td><code>instagram</code> · <code>bio</code> · <code>perfil-thalita</code></td></tr>
+      <tr><td><b>Story com link</b></td><td><code>instagram</code> · <code>stories</code> · a data ou o tema</td></tr>
+      <tr><td><b>Reel que manda pro link</b></td><td><code>instagram</code> · <code>reels</code> · o tema do reel</td></tr>
+      <tr><td><b>Mensagem de prospecção</b></td><td><code>whatsapp</code> · <code>prospeccao</code> · o lote ou a semana</td></tr>
+      <tr><td><b>Anúncio no Meta</b></td><td><code>meta</code> · <code>cpc</code> · o nome do criativo</td></tr>
+      <tr><td><b>E-mail</b></td><td><code>email</code> · <code>assinatura</code> ou o nome do disparo</td></tr>
+    </tbody>
+  </table>
+
+  <div class="aviso">
+    <b>Três regras que evitam sujeira na planilha.</b><br>
+    Sempre minúsculo, sempre sem acento, e sempre com hífen no lugar do espaço. <code>Perfil Thalita</code> e <code>perfil-thalita</code> viram duas linhas diferentes no relatório, e aí ninguém sabe qual é qual.
+  </div>
+
+  <h2>Como isso vira relatório</h2>
+  <p class="sub">Sem pagar nada por ferramenta.</p>
+
+  <table>
+    <thead><tr><th>Passo</th><th>O que fazer</th></tr></thead>
+    <tbody>
+      <tr><td><b>1</b></td><td>Monte o link aqui antes de publicar. Sempre.</td></tr>
+      <tr><td><b>2</b></td><td>O formulário lê os parâmetros da URL sozinho e grava na planilha, nas colunas UTM Source, Medium e Campaign.</td></tr>
+      <tr><td><b>3</b></td><td>Na planilha, crie uma Tabela Dinâmica com UTM Source nas linhas e a contagem de leads nos valores. Leva dois minutos e responde qual canal traz gente.</td></tr>
+      <tr><td><b>4</b></td><td>Para saber qual canal traz gente <b>boa</b>, e não só gente, use Qualifica Intervenção como filtro. Volume sem qualidade engana.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="aviso">
+    <b>Sobre link curto.</b> Se um dia quiser <code>genos.com.br/bio</code> em vez do link longo, dá pra fazer no próprio servidor com um redirecionamento, sem contratar encurtador. O link curto aparece limpo e o UTM continua chegando. Custa uma linha de configuração e mantém o domínio de vocês na frente do cliente.
+  </div>
+
+  <div class="rodape">GENOS GROUP</div>
+</div>
+
+<script>
+const els=['destino','source','medium','campaign','content'].map(id=>document.getElementById(id));
+
+function limpar(s){
+  return s.trim().toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g,'')
+    .replace(/[^a-z0-9\-_]+/g,'-')
+    .replace(/^-+|-+$/g,'');
+}
+
+function montar(){
+  const destino=document.getElementById('destino').value.trim();
+  if(!destino){document.getElementById('resultado').textContent='Preencha a página de destino';return;}
+  const p=new URLSearchParams();
+  const source=limpar(document.getElementById('source').value);
+  const medium=limpar(document.getElementById('medium').value);
+  const campaign=limpar(document.getElementById('campaign').value);
+  const content=limpar(document.getElementById('content').value);
+  if(source)p.set('utm_source',source);
+  if(medium)p.set('utm_medium',medium);
+  if(campaign)p.set('utm_campaign',campaign);
+  if(content)p.set('utm_content',content);
+  const base=destino.split('?')[0];
+  document.getElementById('resultado').textContent = p.toString() ? base+'?'+p.toString() : base;
+}
+
+function copiar(){
+  const txt=document.getElementById('resultado').textContent;
+  const b=document.getElementById('btnCopiar');
+  navigator.clipboard.writeText(txt).then(()=>{
+    b.textContent='Copiado';b.classList.add('copiado');
+    setTimeout(()=>{b.textContent='Copiar link';b.classList.remove('copiado')},1800);
+  }).catch(()=>{
+    const t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);
+    t.select();document.execCommand('copy');document.body.removeChild(t);
+    b.textContent='Copiado';b.classList.add('copiado');
+    setTimeout(()=>{b.textContent='Copiar link';b.classList.remove('copiado')},1800);
+  });
+}
+
+els.forEach(el=>{el.addEventListener('input',montar);el.addEventListener('change',montar)});
+montar();
+</script>
+</body>
+</html>
