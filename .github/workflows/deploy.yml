@@ -24,6 +24,10 @@ jobs:
       - name: Publicar no Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
+          # Fixa a major 4. A action instala wrangler 3 por padrão, e o
+          # wrangler 3 exige um script de entrada — não sabe publicar um
+          # Worker feito só de assets, que é o caso desta página.
+          wranglerVersion: '4.127.1'
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           # O Account ID não é segredo: é o mesmo que aparece na URL do painel.
           accountId: 65631e6b5e80edc3753e94ce5e81e39b
