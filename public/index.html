@@ -519,6 +519,9 @@ const REF = {agendamento:.60, comparecimento:.88, conversao:.60};
 const LETRAS=['A','B','C','D','E'];
 let atual=0;
 const respostas={};
+// Trava a transição entre perguntas. Sem ela, dois cliques dentro da animação
+// agendavam dois avanços e a pergunta seguinte era pulada sem resposta.
+let avancando=false;
 let resultado=null;
 
 /* ============================================================
@@ -551,15 +554,17 @@ function renderPergunta(){
   progresso();
 }
 function escolher(id,i,v,t){
+  if(avancando)return;
+  avancando=true;
   respostas[id]={i,v,t};
   document.querySelectorAll('#opcoes .opcao').forEach((el,idx)=>el.classList.toggle('marcada',idx===i));
-  setTimeout(avancar,240);
+  setTimeout(()=>{avancando=false;avancar();},240);
 }
 function avancar(){
   if(atual<PERGUNTAS.length-1){atual++;renderPergunta();}
   else{document.getElementById('bar').style.width='92%';mostrarTela('telaGate');}
 }
-function voltar(){if(atual>0){atual--;renderPergunta();}}
+function voltar(){if(avancando)return;if(atual>0){atual--;renderPergunta();}}
 function voltarDoGate(){atual=PERGUNTAS.length-1;renderPergunta();mostrarTela('telaPergunta');}
 
 /* ============================================================
@@ -743,6 +748,10 @@ function validar(){
 }
 function revelar(){
   if(!validar())return;
+  // Rede de segurança: se por qualquer motivo faltar uma resposta, leva de volta
+  // à pergunta em vez de estourar no cálculo e perder o lead em silêncio.
+  const faltando=PERGUNTAS.findIndex(q=>respostas[q.id]===undefined);
+  if(faltando>=0){atual=faltando;renderPergunta();mostrarTela('telaPergunta');return;}
   resultado=calcular();
   mostrarTela('telaCarregando');
   document.getElementById('bar').style.width='100%';
