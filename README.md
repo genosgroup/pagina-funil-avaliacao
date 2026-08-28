@@ -73,6 +73,17 @@ Depende de um segredo no repositório: **`CLOUDFLARE_API_TOKEN`**, em
 **Account › Workers Scripts › Edit**. O Account ID está no próprio workflow — não é
 segredo, é o mesmo que aparece na URL do painel.
 
+### Onde a implantação responde
+
+O Worker se chama `funil-avaliacao` e responde sempre em:
+
+```
+https://funil-avaliacao.group-656.workers.dev
+```
+
+Esse endereço serve para conferir uma implantação antes de mexer na rota, e continua
+respondendo depois — é o mesmo conteúdo, sem passar pelo domínio.
+
 ### A rota
 
 A rota fica no painel (**Worker › Settings › Domains & Routes**), não no
