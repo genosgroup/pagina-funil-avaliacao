@@ -1,0 +1,29 @@
+name: Deploy do funil avaliação
+
+# O deploy roda no runner do GitHub, não na máquina de quem edita.
+# Só dispara quando muda algo que vai ao ar: a página ou a config do Worker.
+on:
+  push:
+    branches: [main, claude/tarefa-repositorio-w4vuxf]
+    paths:
+      - 'public/**'
+      - 'wrangler.jsonc'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # Impede que dois pushes seguidos publiquem fora de ordem.
+    concurrency:
+      group: deploy-funil-avaliacao
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Publicar no Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          # O Account ID não é segredo: é o mesmo que aparece na URL do painel.
+          accountId: 65631e6b5e80edc3753e94ce5e81e39b

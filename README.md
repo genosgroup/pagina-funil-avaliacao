@@ -4,7 +4,8 @@ Diagnóstico de 12 perguntas que faz a clínica descobrir sozinha onde está o d
 É a porta de entrada do funil AVALIAÇÃO e classifica o lead entre as duas saídas:
 Tratamento e Intervenção.
 
-**URL de destino:** `https://clinicas.genosgroup.com.br/orcamento-parado`
+**URL de destino:** `https://clinicas.genosgroup.com.br/avaliacao`
+**Hospedagem:** Cloudflare Workers (assets estáticos), com deploy automático a partir deste repositório.
 
 ---
 
@@ -12,7 +13,8 @@ Tratamento e Intervenção.
 
 | Caminho | O que é |
 | --- | --- |
-| `orcamento-parado/index.html` | A página. HTML único, sem build, sem CDN, sem framework. Abre com duplo clique e funciona offline. |
+| `public/index.html` | A página. HTML único, sem build, sem CDN, sem framework. Abre com duplo clique e funciona offline. É a única pasta que vai ao ar. |
+| `wrangler.jsonc` | Configuração do Worker que serve a página. |
 | `apps-script/leads.gs` | Código do Google Apps Script que grava os leads na planilha (41 colunas). |
 | `ferramentas/gerador-de-links.html` | Ferramenta interna para montar links com UTM sem errar a grafia. **Não publicar junto com a página.** |
 | `docs/README-original.md` | README que veio no `funil-avaliacao-v2.zip`, preservado. Traz o racional completo do cálculo. |
@@ -41,7 +43,7 @@ Se não responder isso, pare aqui — o resto não vai funcionar.
 
 **4. Cole a URL no HTML,** em `CONFIG.WEBHOOK` (veja abaixo).
 
-**5. Só agora suba a página.**
+**5. Só agora suba a página** (basta o push: o deploy é automático).
 
 **6. Preencha o formulário inteiro no ar** e confira se a linha apareceu na planilha
 com as 41 colunas. Se não apareceu, veja a aba `Erros`: o script grava lá o que deu
@@ -54,17 +56,49 @@ e os links rastreados são montados em cima dela.
 
 ## Como publicar
 
-A pasta `orcamento-parado/` é servida como está. Copiando a pasta para a raiz do site,
-a URL fica `clinicas.genosgroup.com.br/orcamento-parado` — limpa, sem `.html` no fim.
+O deploy é automático: **todo push nesta branch republica o Worker**. Não há build —
+o Cloudflare só copia o conteúdo de `public/`.
 
-Publique **somente** a pasta `orcamento-parado/`. As pastas `apps-script/`,
-`ferramentas/` e `docs/` são de uso interno e não vão para o ar.
+Só o que está em `public/` vai ao ar. As pastas `apps-script/`, `ferramentas/` e
+`docs/` são de uso interno e ficam fora, porque o Worker serve exclusivamente
+o diretório declarado em `wrangler.jsonc`.
+
+### Como o deploy acontece
+
+`.github/workflows/deploy.yml` roda `wrangler deploy` no runner do GitHub a cada push
+que toque `public/` ou `wrangler.jsonc`. Mudança só de documentação não republica.
+
+Depende de um segredo no repositório: **`CLOUDFLARE_API_TOKEN`**, em
+*Settings › Secrets and variables › Actions*. O token precisa da permissão
+**Account › Workers Scripts › Edit**. O Account ID está no próprio workflow — não é
+segredo, é o mesmo que aparece na URL do painel.
+
+### A rota
+
+A rota fica no painel (**Worker › Settings › Domains & Routes**), não no
+`wrangler.jsonc`, para que uma mudança de zona ou de permissão não quebre o deploy.
+
+Rota em uso:
+
+```
+clinicas.genosgroup.com.br/avaliacao*
+```
+
+Esse hostname também é servido pelo Worker `lp-genos-exclusivo-clinicas`. Os dois
+convivem: a Cloudflare escolhe a rota mais específica, então `/avaliacao*` vem para cá
+e todo o resto continua na landing page. **Não use uma rota `/*` neste Worker** — ela
+empataria em especificidade com a da landing e o resultado passaria a depender de
+ordem, não de regra.
+
+Como `not_found_handling` está em `single-page-application`, qualquer caminho servido
+por este Worker devolve a página. Isso é proposital: a URL vai para anúncio, bio e
+prospecção, e um caractere a mais no fim do link não pode virar 404.
 
 ---
 
 ## ⚠️ Pendência que trava a gravação dos leads
 
-No topo do `<script>` do `orcamento-parado/index.html`:
+No topo do `<script>` do `public/index.html`:
 
 ```js
 const CONFIG = {

@@ -1,0 +1,19 @@
+{
+  // Worker de assets estáticos. Não há script: a página é um HTML único,
+  // sem build e sem dependência, servido como está.
+  "name": "funil-avaliacao",
+  "compatibility_date": "2026-08-28",
+
+  "assets": {
+    "directory": "./public",
+
+    // Qualquer caminho que não case com um arquivo serve o index.html com 200.
+    // É o que faz a mesma implantação atender a raiz e /avaliacao sem duplicar
+    // o arquivo, e evita 404 por link digitado errado em anúncio ou bio.
+    "not_found_handling": "single-page-application"
+  }
+
+  // A rota NÃO fica aqui de propósito: ela é definida no painel, em
+  // Settings > Domains & Routes. Assim o deploy não quebra se a zona ou a
+  // permissão mudar. A rota em uso está registrada no README.
+}
