@@ -101,6 +101,22 @@ Planilha de destino: [**[Funil AVALIAÇÃO] Leads**](https://docs.google.com/spr
 
 ---
 
+## Fuso horário
+
+A coluna `Data e hora` é gravada no fuso da **planilha**, não no do script. Planilha
+nova do Google nasce em horário do Pacífico, e o lead chega 4 horas atrasado sem
+ninguém perceber até comparar com o relógio.
+
+O script corrige isso sozinho (`garantirFuso`, fixado em `America/Sao_Paulo`), mas
+vale conferir uma vez em **Arquivo › Configurações › Fuso horário**. Se a conta não
+tiver permissão para alterar o fuso pelo código, o script segue gravando e deixa um
+aviso no log em vez de falhar — nesse caso o ajuste manual é obrigatório.
+
+Linhas gravadas antes do ajuste não são corrigidas retroativamente: o valor já foi
+armazenado traduzido.
+
+---
+
 ## Dois detalhes técnicos que não devem ser mexidos
 
 **1. `Content-Type: text/plain` é de propósito.** Com `application/json`, o navegador

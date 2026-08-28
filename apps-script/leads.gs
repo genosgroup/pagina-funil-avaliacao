@@ -25,6 +25,11 @@
 
 var ABA = 'Leads';
 
+// A planilha nasce em horário do Pacífico por padrão, e a coluna Data e hora
+// sai 4 horas atrasada em relação ao Brasil. Garantimos o fuso no código para
+// não depender de ninguém lembrar de configurar.
+var FUSO = 'America/Sao_Paulo';
+
 var CABECALHO = [
   'Data e hora','Nome','WhatsApp',
   // classificação
@@ -129,6 +134,7 @@ function doGet() {
 
 function pegarAba() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
+  garantirFuso(ss);
   var aba = ss.getSheetByName(ABA);
   if (!aba) {
     aba = ss.insertSheet(ABA);
@@ -138,6 +144,22 @@ function pegarAba() {
     aba.setFrozenColumns(3);
   }
   return aba;
+}
+
+/**
+ * A coluna Data e hora é gravada no fuso da planilha, não no do script. Se a
+ * planilha estiver em outro fuso, o horário do lead sai errado e ninguém
+ * percebe até comparar com o relógio. Barato conferir a cada envio.
+ */
+function garantirFuso(ss) {
+  try {
+    if (ss.getSpreadsheetTimeZone() !== FUSO) {
+      ss.setSpreadsheetTimeZone(FUSO);
+    }
+  } catch (err) {
+    // Sem permissão para trocar o fuso: segue gravando, mas registra o aviso.
+    console.warn('Não foi possível ajustar o fuso da planilha: ' + err);
+  }
 }
 
 /**
