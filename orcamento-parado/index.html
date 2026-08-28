@@ -6,7 +6,7 @@
 <title>Genos · Orçamento Parado</title>
 <meta name="description" content="Descubra em 2 minutos quanto a sua clínica tem parado entre orçamento aberto, avaliação que não fecha e paciente que sumiu.">
 <meta property="og:title" content="Quanto a sua clínica tem em orçamento parado?">
-<meta property="og:description" content="8 perguntas. 2 minutos. O número que quase nenhum dono de clínica sabe responder.">
+<meta property="og:description" content="12 perguntas. 2 minutos. O número que quase nenhum dono de clínica sabe responder.">
 <meta name="theme-color" content="#FDFCFA">
 <style>
 :root{
@@ -196,6 +196,48 @@ details.formula[open] summary{color:var(--a-texto)}
 .formula-corpo p:last-child{margin-bottom:0;color:var(--tinta-3);font-size:12.5px}
 .formula-corpo b{color:var(--tinta);font-weight:700}
 
+/* ===== PERCEPÇÃO x NÚMEROS ===== */
+.confronto{border:1px solid var(--linha);border-radius:18px;padding:clamp(20px,2.3vw,26px);margin-bottom:11px;background:#fff;box-shadow:var(--sombra)}
+.confronto .tag{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--a3);font-weight:800;display:block;margin-bottom:14px}
+.par{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center}
+.par-lado{text-align:center}
+.par-lado .rot{font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--tinta-3);font-weight:800;margin-bottom:7px}
+.par-lado .val{font-size:clamp(13.5px,1.5vw,15.5px);font-weight:700;line-height:1.3;color:var(--tinta)}
+.par-lado.destaque .val{color:var(--a-texto)}
+.par-vs{font-size:11px;font-weight:800;color:var(--tinta-3);letter-spacing:.1em}
+.confronto .veredito{font-size:clamp(13.5px,1.35vw,15px);line-height:1.6;color:var(--tinta-2);margin-top:16px;padding-top:16px;border-top:1px solid var(--linha)}
+
+/* ===== EIXO DE DEMANDA ===== */
+.eixo{border:1px solid var(--linha);border-radius:18px;padding:clamp(20px,2.3vw,26px);margin-bottom:20px;background:#fff;box-shadow:var(--sombra)}
+.eixo .tag{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--a3);font-weight:800;display:block;margin-bottom:6px}
+.eixo .cifra{font-size:clamp(27px,6.6vw,38px);font-weight:800;letter-spacing:-.032em;line-height:1;margin:8px 0 4px;font-variant-numeric:tabular-nums}
+.eixo .unid{font-size:13px;color:var(--tinta-3);font-weight:600;margin-bottom:16px}
+.regua{display:flex;height:7px;border-radius:99px;overflow:hidden;background:var(--papel-2);margin-bottom:9px}
+.regua span{flex:1}
+.regua .z1{background:#D8D2C8}.regua .z2{background:linear-gradient(90deg,var(--a1),var(--a2))}.regua .z3{background:#B4BCC6}
+.regua-rot{display:flex;justify-content:space-between;font-size:10.5px;color:var(--tinta-3);font-weight:700;letter-spacing:.04em}
+.regua-rot b{color:var(--a-texto)}
+.eixo p{font-size:clamp(13.5px,1.35vw,15px);line-height:1.6;color:var(--tinta-2);margin-top:15px}
+
+/* ===== AVISO DE LIMITE DO CÁLCULO ===== */
+.limite{border:1px solid var(--linha-2);border-left:3px solid var(--tinta-3);border-radius:0 18px 18px 0;padding:clamp(20px,2.3vw,26px);margin-bottom:20px;background:var(--papel-2)}
+.limite .tag{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--tinta-2);font-weight:800}
+.limite h3{font-size:clamp(16px,1.8vw,20px);font-weight:800;margin:9px 0 11px;letter-spacing:-.015em;line-height:1.28}
+.limite p{font-size:clamp(13.5px,1.35vw,15px);line-height:1.62;color:var(--tinta-2)}
+
+/* ===== PERGUNTA PÓS-GATE ===== */
+.posgate{border:1px dashed var(--linha-2);border-radius:18px;padding:clamp(20px,2.3vw,26px);margin-bottom:20px;background:#fff}
+.posgate .tag{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--a3);font-weight:800}
+.posgate h3{font-size:clamp(16px,1.7vw,19px);font-weight:800;margin:9px 0 6px;letter-spacing:-.015em;line-height:1.3}
+.posgate .sub{font-size:13.5px;color:var(--tinta-3);line-height:1.5;margin-bottom:16px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:inherit;font-size:14px;font-weight:600;color:var(--tinta-2);background:var(--papel-2);border:1.5px solid var(--linha);border-radius:11px;padding:11px 16px;cursor:pointer;transition:.18s}
+.chip:hover{border-color:var(--a1);color:var(--tinta)}
+.chip.marcada{background:var(--a-fundo);border-color:var(--a1);color:var(--a-texto)}
+.posgate .obrigado{font-size:14px;color:var(--a-texto);font-weight:700;display:none}
+.posgate.respondido .chips,.posgate.respondido .sub{display:none}
+.posgate.respondido .obrigado{display:block}
+
 .rodape{text-align:center;padding:26px 24px 32px;font-size:11px;color:var(--tinta-3);letter-spacing:.22em;text-transform:uppercase;position:relative;z-index:1;border-top:1px solid var(--linha);font-weight:800}
 
 @media(max-width:640px){
@@ -229,12 +271,11 @@ details.formula[open] summary{color:var(--a-texto)}
         <h1>Quanto a sua clínica<br>tem <span class="grad">parado agora?</span></h1>
         <p class="lead">Orçamento aprovado que ninguém retomou. Avaliação que ouviu o valor, pediu pra pensar e sumiu. Tratamento que parou no meio. Quase nenhum dono de clínica sabe somar isso.</p>
         <div class="trio">
-          <div class="trio-item"><div class="n">8</div><div class="t">perguntas rápidas</div></div>
+          <div class="trio-item"><div class="n">12</div><div class="t">perguntas rápidas</div></div>
           <div class="trio-item"><div class="n">2 min</div><div class="t">e o número aparece</div></div>
           <div class="trio-item"><div class="n">40</div><div class="t">clínicas na comparação</div></div>
         </div>
         <div class="acoes"><button class="btn btn-cheio btn-largo" onclick="iniciar()">Fazer a conta da minha clínica</button></div>
-        <p class="small" style="margin-top:18px">Sem apresentação comercial. Você responde, vê o número e decide o que fazer com ele.</p>
       </div>
     </section>
 
@@ -288,32 +329,56 @@ details.formula[open] summary{color:var(--a-texto)}
         <div class="res-topo">
           <div class="kicker">Seu resultado, <span id="nomeKicker"></span></div>
           <div class="numerao grad" id="numerao">R$ 0</div>
-          <p class="lead" style="margin-top:0">é o que está parado na sua clínica neste momento, entre orçamento aberto e paciente que não voltou.</p>
+          <p class="lead" style="margin-top:0" id="leadNumerao">é o que a sua clínica deixa na mesa em 12 meses. Não é meta nem projeção de crescimento: é dinheiro que já passou pela sua porta e escapou, somado ao que está parado agora esperando alguém ir buscar.</p>
         </div>
       </div>
 
-      <div class="bloco forte rev">
-        <div class="tag">Parado no seu sistema agora</div>
+      <div class="limite rev" id="boxLimite" style="display:none">
+        <div class="tag">Antes do número</div>
+        <h3>Você não soube responder três perguntas do seu próprio funil.</h3>
+        <p>Isso não é um problema do formulário. É o diagnóstico. Antes de conversão, agendamento ou falta, o gargalo da sua clínica é que ela não se mede. Enquanto esses números não existirem, qualquer decisão comercial é chute, inclusive a nossa. Por isso o valor anual abaixo não vai ser estimado: seria inventar precisão que não temos.</p>
+      </div>
+
+      <p class="small rev" style="margin:0 0 14px;padding:0 2px">Esse número se divide em três, e cada um se resolve de um jeito diferente.</p>
+
+      <div class="bloco forte rev" id="boxOrigem">
+        <div class="tag">Parado agora · orçamento sem resposta</div>
         <div class="cifra" id="v1">R$ 0</div>
-        <p>Orçamento aprovado que ficou no sistema sem ninguém retomar. Esse paciente já ouviu o valor e não disse não. Ele só sumiu no caminho.</p>
+        <p id="txtV1">Orçamento que foi apresentado, o paciente não disse não, e a conversa simplesmente parou. Ele já conhece você, já ouviu o valor e não recusou. É o dinheiro mais barato de buscar que existe na sua clínica: não custa mídia e não depende de convencer ninguém do zero.</p>
       </div>
 
       <div class="bloco rev">
-        <div class="tag">Perdido todo mês</div>
-        <div class="cifra" id="v2">R$ 0</div>
-        <p>Entre a avaliação que não vira protocolo e o paciente que marca e não comparece. Todo mês, de novo, sem ninguém contar.</p>
-      </div>
-
-      <div class="bloco rev">
-        <div class="tag">Dormindo na sua base</div>
+        <div class="tag">Parado agora · dormindo na base</div>
         <div class="cifra" id="v3">R$ 0</div>
-        <p>Tratamento que parou no meio e paciente que já confiou em você uma vez. É o dinheiro mais barato de buscar, porque não custa mídia nenhuma.</p>
+        <p>Paciente antigo e interessado que nunca fechou. Já confiou em você uma vez, e buscar essa pessoa também não custa mídia. Aqui a estimativa é mais grosseira, porque depende de quanto dessa base é paciente seu e quanto é gente que nunca passou pela cadeira.</p>
       </div>
 
-      <div class="somatorio rev">
-        <div class="tag">No ano, isso soma</div>
+      <div class="bloco rev">
+        <div class="tag">Escapa todo mês · e volta a escapar</div>
+        <div class="cifra" id="v2">R$ 0</div>
+        <p>Entre quem entra em contato e não chega a marcar, e quem marca e não aparece. Esse é o único dos três que não se resolve uma vez: no mês que vem ele acontece de novo, do mesmo tamanho, enquanto o processo for o mesmo.</p>
+      </div>
+
+      <div class="somatorio rev" id="boxAnual">
+        <div class="tag">Por isso o número lá em cima</div>
         <div class="cifra grad" id="vTotal">R$ 0</div>
-        <p>E a conta usa as estimativas mais conservadoras que existem. O número real tende a ser maior.</p>
+        <p>O que está parado hoje entra uma vez. O que escapa todo mês entra doze. Com as taxas mais conservadoras que encontramos, e você pode conferir cada uma no fim da página.</p>
+      </div>
+
+      <div class="confronto rev" id="boxConfronto">
+        <span class="tag">O que você achava e o que os números dizem</span>
+        <div class="par">
+          <div class="par-lado">
+            <div class="rot">Sua leitura</div>
+            <div class="val" id="percepcaoDono"></div>
+          </div>
+          <div class="par-vs">VS</div>
+          <div class="par-lado destaque">
+            <div class="rot">Seus números</div>
+            <div class="val" id="percepcaoNumeros"></div>
+          </div>
+        </div>
+        <p class="veredito" id="percepcaoVeredito"></p>
       </div>
 
       <div class="gargalo rev">
@@ -339,9 +404,26 @@ details.formula[open] summary{color:var(--a-texto)}
         </div>
       </div>
 
+      <div class="eixo rev" id="boxEixo">
+        <span class="tag">Quanta gente chega por cadeira</span>
+        <div class="cifra" id="vEixo">0</div>
+        <div class="unid">contatos por mês, para cada cadeira em funcionamento</div>
+        <div class="regua"><span class="z1"></span><span class="z2"></span><span class="z3"></span></div>
+        <div class="regua-rot" id="reguaRot"><span>Volume baixo</span><span>Adequado</span><span>Alto</span></div>
+        <p id="txtEixo"></p>
+      </div>
+
       <div class="prova rev">
         <div class="tag">Aconteceu de verdade</div>
         <p>Uma clínica com base parecida com a sua recuperou <strong>R$ 94 mil em 3 meses</strong> trabalhando os contatos que já tinha, aos poucos, sem gastar um real a mais em anúncio.</p>
+      </div>
+
+      <div class="posgate rev" id="boxPosGate">
+        <div class="tag">Uma última coisa</div>
+        <h3>Qual sistema de gestão a clínica usa?</h3>
+        <p class="sub">Para prepararmos o cálculo com os seus números reais.</p>
+        <div class="chips" id="chipsSistema"></div>
+        <p class="obrigado">Anotado. Vamos usar isso para levantar os seus números de verdade.</p>
       </div>
 
       <div class="cta rev">
@@ -353,11 +435,13 @@ details.formula[open] summary{color:var(--a-texto)}
       <details class="formula rev">
         <summary>Como essa conta é feita</summary>
         <div class="formula-corpo">
-          <p><b>Orçamento parado:</b> contamos 15% do que está aberto como recuperável.</p>
-          <p><b>Perdido por mês:</b> 10% da avaliação que não fechou, mais 30% das faltas.</p>
-          <p><b>Base dormindo:</b> um contato a cada mil, com ticket pela metade.</p>
-          <p><b>Ajuste:</b> quem não acompanha ninguém e demora pra responder perde mais. Quem tem processo no CRM perde menos.</p>
-          <p>São as taxas mais baixas que encontramos, de propósito. É estimativa direcional, feita com faixas, pra mostrar a ordem de grandeza.</p>
+          <p><b>Separamos o que está parado do que escapa.</b> O que está parado se recupera uma vez. O que escapa volta a escapar todo mês. Somar os dois no mesmo número infla a conta, e é o erro mais comum nesse tipo de cálculo.</p>
+          <p><b>Orçamento parado:</b> 15% do que está em aberto, tratado como recuperável.</p>
+          <p><b>Base dormindo:</b> 3 em cada 100 contatos voltando, e cada um valendo 10% do seu ticket. A referência de mercado para reativação de paciente inativo vai de 10% a 20% ao ano, então trabalhamos bem abaixo dela de propósito: quem volta de uma base parada costuma marcar uma consulta ou uma limpeza, e não fechar o tratamento mais caro da clínica.</p>
+          <p><b>Escapa por mês:</b> 10% de quem entrou em contato e não marcou, mais 30% de quem marcou e não apareceu.</p>
+          <p><b>Ajuste de confiança:</b> quem demora a responder e não acompanha quem não fechou tem a estimativa reduzida, nunca aumentada. Processo ruim deixa a conta mais conservadora, e não o contrário.</p>
+          <p><b>Índice de Aproveitamento:</b> compara suas três etapas de funil com a referência de mercado (6 em 10 marcam, 8,8 em 10 comparecem, 6 em 10 fecham) e pesa também quem acompanha o paciente que não fechou.</p>
+          <p>São as taxas mais baixas que encontramos, de propósito. É estimativa direcional, feita com faixas, para mostrar a ordem de grandeza.</p>
         </div>
       </details>
 
@@ -385,26 +469,51 @@ const CONFIG = {
 /* ============================================================
    PERGUNTAS
    ============================================================ */
+/* A ORDEM NÃO É NEGOCIÁVEL.
+   As perguntas de volume, agendamento, comparecimento e conversão estão em
+   sequência de funil de propósito: o dono vê o próprio funil encolher enquanto
+   responde. Agrupar por tema destrói o efeito e transforma isto em cadastro. */
 const PERGUNTAS = [
-  {id:'avaliacoes',texto:'Quantas avaliações novas sua clínica recebe por mês?',ajuda:'Paciente novo que senta na cadeira para ouvir uma proposta.',
-   opcoes:[{t:'Até 20',v:15},{t:'De 21 a 50',v:35},{t:'De 51 a 100',v:75},{t:'Mais de 100',v:130}]},
+  // ---- BLOCO 1 · percepção e porte (nada aqui exige consultar sistema) ----
+  {id:'percepcao',texto:'Onde você acha que está o maior problema da sua clínica hoje?',ajuda:'Não existe resposta certa. É a sua leitura.',
+   opcoes:[{t:'Falta de paciente novo',v:'demanda'},{t:'O paciente chega e não fecha',v:'conversao'},{t:'A equipe não dá conta',v:'equipe'},{t:'Não sobra dinheiro no fim do mês',v:'financeiro'},{t:'Sinceramente, não sei',v:'indefinido'}]},
+  {id:'cadeiras',texto:'Quantas cadeiras ou consultórios estão em funcionamento?',ajuda:'Só os que estão operando hoje, não os que existem na estrutura.',
+   opcoes:[{t:'1',v:1},{t:'2 ou 3',v:2.5},{t:'4 a 6',v:5},{t:'Mais de 6',v:8}]},
   {id:'ticket',texto:'Qual o ticket médio do seu tratamento principal?',ajuda:'O procedimento que mais pesa no seu faturamento.',
    opcoes:[{t:'Até R$ 3 mil',v:2000},{t:'De R$ 3 mil a R$ 8 mil',v:5500},{t:'De R$ 8 mil a R$ 15 mil',v:11500},{t:'Mais de R$ 15 mil',v:20000}]},
-  {id:'conversao',texto:'De cada 10 avaliações, quantas viram tratamento fechado?',ajuda:'Se não souber o número exato, vá pela sensação. A ordem de grandeza já basta.',
-   opcoes:[{t:'Menos de 3',v:.2},{t:'De 3 a 5',v:.4},{t:'De 6 a 8',v:.7},{t:'Mais de 8',v:.9}]},
-  {id:'noshow',texto:'De cada 10 pacientes agendados, quantos não comparecem?',ajuda:'Marcou e não veio, sem avisar ou avisando em cima da hora.',
-   opcoes:[{t:'Menos de 1',v:.05},{t:'De 1 a 2',v:.15},{t:'De 3 a 4',v:.35},{t:'Mais de 4',v:.5}]},
-  {id:'abertos',texto:'Quantos orçamentos estão aprovados e parados hoje?',ajuda:'Foi apresentado, o paciente não disse não, e ninguém retomou.',
-   opcoes:[{t:'Não sei dizer',v:null},{t:'Até 10',v:7},{t:'De 11 a 30',v:20},{t:'Mais de 30',v:45}]},
-  {id:'acompanha',texto:'Quem acompanha o paciente que não fechou?',ajuda:'Depois que ele sai da clínica sem assinar nada.',
-   opcoes:[{t:'Ninguém, na prática',v:1.3},{t:'A recepção, quando dá tempo',v:1.15},{t:'Uma pessoa dedicada a isso',v:.9},{t:'Temos processo rodando no CRM',v:.7}]},
-  {id:'base',texto:'Quantos contatos existem na sua base?',ajuda:'Pacientes antigos e interessados que nunca fecharam, tudo somado.',
-   opcoes:[{t:'Menos de 1.000',v:600},{t:'De 1.000 a 5.000',v:3000},{t:'De 5.000 a 15.000',v:9000},{t:'Mais de 15.000',v:20000}]},
+
+  // ---- BLOCO 2 · o funil, em ordem ----
+  {id:'contatos',texto:'Quantas pessoas novas entram em contato com a clínica por mês?',ajuda:'Somando WhatsApp, direct, telefone e formulário. Gente que nunca foi paciente.',
+   opcoes:[{t:'Até 30',v:20},{t:'De 31 a 80',v:55},{t:'De 81 a 150',v:115},{t:'Mais de 150',v:200},{t:'Não sei dizer',v:null}]},
   {id:'resposta',texto:'Em quanto tempo vocês respondem um paciente novo?',ajuda:'Da mensagem dele até alguém responder de verdade.',
-   opcoes:[{t:'Em minutos',v:.9},{t:'Em até 1 hora',v:1.0},{t:'No mesmo dia',v:1.1},{t:'Às vezes demora mais',v:1.25}]}
+   opcoes:[{t:'Em minutos',v:1.00},{t:'Em até 1 hora',v:.95},{t:'No mesmo dia',v:.85},{t:'Às vezes demora mais',v:.75}]},
+  {id:'agendamento',texto:'De cada 10 pessoas que entram em contato, quantas marcam avaliação?',ajuda:'Do primeiro contato até ter data marcada na agenda.',
+   opcoes:[{t:'Menos de 3',v:.20},{t:'De 3 a 5',v:.40},{t:'De 6 a 8',v:.70},{t:'Mais de 8',v:.90},{t:'Não sei dizer',v:null}]},
+  {id:'comparecimento',texto:'De cada 10 avaliações marcadas, quantas realmente acontecem?',ajuda:'As outras faltaram, desmarcaram ou sumiram.',
+   opcoes:[{t:'Menos de 5',v:.35},{t:'De 5 a 7',v:.60},{t:'De 8 a 9',v:.85},{t:'Praticamente todas',v:.97},{t:'Não sei dizer',v:null}]},
+  {id:'conversao',texto:'De cada 10 pacientes que sentam na cadeira para ouvir uma proposta, quantos fecham?',ajuda:'Se não souber o número exato, a ordem de grandeza já basta.',
+   opcoes:[{t:'Menos de 3',v:.20},{t:'De 3 a 5',v:.40},{t:'De 6 a 8',v:.70},{t:'Mais de 8',v:.90},{t:'Não sei dizer',v:null}]},
+
+  // ---- BLOCO 3 · estoque parado e estrutura ----
+  {id:'orcamentos',texto:'Quantos orçamentos foram apresentados e nunca tiveram uma resposta final?',ajuda:'O paciente ouviu o valor, não disse não, e a conversa simplesmente parou.',
+   opcoes:[{t:'Não sei dizer',v:null},{t:'Até 10',v:5},{t:'De 11 a 30',v:20},{t:'Mais de 30',v:45}]},
+  {id:'acompanha',texto:'Quem acompanha o paciente que não fechou?',ajuda:'Depois que ele sai da clínica sem assinar nada.',
+   opcoes:[{t:'Ninguém, na prática',v:.60},{t:'A recepção, quando dá tempo',v:.75},{t:'Uma pessoa dedicada a isso',v:.90},{t:'Temos processo rodando no CRM',v:1.00}]},
+  {id:'base',texto:'Quantos contatos existem na sua base?',ajuda:'Pacientes antigos e interessados que nunca fecharam, tudo somado.',
+   opcoes:[{t:'Menos de 1.000',v:500},{t:'De 1.000 a 5.000',v:3000},{t:'De 5.000 a 15.000',v:10000},{t:'Mais de 15.000',v:20000}]},
+  {id:'estrutura',texto:'Quem cuida do comercial da clínica hoje?',ajuda:'Quem responde, negocia e faz o paciente voltar.',
+   opcoes:[{t:'Eu mesmo, o dono',v:'dono'},{t:'A recepção, junto com o resto',v:'recepcao'},{t:'Uma pessoa dedicada ao comercial',v:'dedicada'},{t:'Um time comercial',v:'time'}]}
 ];
 
-const LETRAS=['A','B','C','D'];
+/* Pergunta 13. Fica depois do gate, na tela de resultado, quando o lead já
+   entregou o contato e já está olhando o próprio número. */
+const SISTEMAS = ['Clinicorp','Simples Dental','Dental Office','Feegow','ProDoctor','Outro','Não usamos sistema'];
+
+/* Referências de mercado adotadas. Se mudar aqui, mude também o texto do
+   acordeão "Como essa conta é feita", senão a página mente sobre a própria conta. */
+const REF = {agendamento:.60, comparecimento:.88, conversao:.60};
+
+const LETRAS=['A','B','C','D','E'];
 let atual=0;
 const respostas={};
 let resultado=null;
@@ -454,37 +563,152 @@ function voltarDoGate(){atual=PERGUNTAS.length-1;renderPergunta();mostrarTela('t
    O CÁLCULO
    ============================================================ */
 function calcular(){
-  const av=respostas.avaliacoes.v, ticket=respostas.ticket.v, conv=respostas.conversao.v;
-  const noshow=respostas.noshow.v, base=respostas.base.v;
-  const multAcomp=respostas.acompanha.v, multResp=respostas.resposta.v;
-  let abertos=respostas.abertos.v;
+  const R=respostas;
+  const ticket=R.ticket.v, cadeiras=R.cadeiras.v, base=R.base.v;
+  const estrutura=R.estrutura.v, percepcao=R.percepcao.v;
+
+  // Quantas perguntas do funil o dono não soube responder.
+  // Três ou mais mudam o diagnóstico inteiro.
+  const camposFunil=['contatos','agendamento','comparecimento','conversao'];
+  const naoSei=camposFunil.filter(k=>R[k].v===null);
+
+  // Quando falta o dado, entra a referência de mercado. A conta continua,
+  // mas o relatório precisa declarar que ali havia um buraco.
+  const contatos = R.contatos.v!==null ? R.contatos.v : 55;
+  const tAgend   = R.agendamento.v!==null ? R.agendamento.v : REF.agendamento;
+  const tComp    = R.comparecimento.v!==null ? R.comparecimento.v : REF.comparecimento;
+  const tConv    = R.conversao.v!==null ? R.conversao.v : REF.conversao;
+
+  // Redutor de confiança. Nunca aumenta a estimativa, só reduz:
+  // processo pior deixa a conta mais conservadora, e não o contrário.
+  const mult=Math.min(1,(R.resposta.v+R.acompanha.v)/2);
+
+  // Se o dono não sabe quantos orçamentos estão parados, estimamos com
+  // dois meses de avaliações que aconteceram e não fecharam.
+  let abertos=R.orcamentos.v;
   const estimado = abertos===null;
-  if(estimado) abertos = Math.round(av*(1-conv)*2);
-  const mult=(multAcomp+multResp)/2;
-  const parado = abertos*ticket*0.15*mult;
-  const perdaOrcamento = av*(1-conv)*ticket*0.10;
-  const perdaFalta = av*noshow*ticket*conv*0.30;
-  const perdidoMes = (perdaOrcamento+perdaFalta)*mult;
-  const dormindo = base*0.001*ticket*0.5;
-  const anual = parado + dormindo + (perdidoMes*12);
-  const notaConv=conv*100, notaShow=(1-noshow)*100, notaProc=((1.3-multAcomp)/0.6)*100;
-  const indice=Math.round(Math.max(5,Math.min(98,(notaConv*0.45)+(notaShow*0.25)+(notaProc*0.30))));
-  const gargalos=[
-    {chave:'orcamento',peso:perdaOrcamento*12},{chave:'falta',peso:perdaFalta*12},
-    {chave:'parado',peso:parado},{chave:'base',peso:dormindo}
-  ].sort((a,b)=>b.peso-a.peso);
-  return {parado,perdidoMes,dormindo,anual,indice,abertos,estimado,gargalo:gargalos[0].chave,ticket,base};
+  if(estimado) abertos = Math.max(1,Math.round(contatos*tAgend*tComp*(1-tConv)*2));
+
+  // ESTOQUE: recuperável uma vez
+  const estoqueOrcamento = abertos*ticket*0.15*mult;
+
+  // Base: 3% de reativação, com cada pessoa que volta valendo 10% do ticket.
+  // As duas premissas são separadas de propósito, porque cada uma responde
+  // por uma coisa diferente e cada uma tem que se sustentar sozinha.
+  //   3%  → benchmark de reativação odontológica é de 10% a 20% ao ano para
+  //         paciente inativo. 3% continua conservador, e precisa continuar,
+  //         porque a pergunta 11 mistura paciente antigo com lead que nunca
+  //         fechou, e o segundo reativa muito abaixo do primeiro.
+  //   10% → quem volta de base fria faz consulta, limpeza ou avaliação.
+  //         Não fecha o tratamento mais caro da clínica de cara.
+  // Cuidado ao mexer: 3% com meio ticket dava R$4 milhões no cenário extremo,
+  // e acima de ~2 meses de faturamento parado o dono para de acreditar.
+  const estoqueBase      = base*0.03*ticket*0.10*mult;
+
+  // FLUXO: perde todo mês, e volta a perder no mês seguinte
+  const perdaAgendamento = contatos*(1-tAgend)*0.10*tComp*tConv*ticket*mult;
+  const perdaFalta       = (contatos*tAgend)*(1-tComp)*tConv*ticket*0.30*mult;
+  const fluxoMensal      = perdaAgendamento+perdaFalta;
+
+  const numeroPrincipal = estoqueOrcamento;
+  const estoqueTotal = estoqueOrcamento+estoqueBase;
+  const anual = (fluxoMensal*12)+estoqueOrcamento+estoqueBase;
+
+  // ÍNDICE. Cada etapa vira nota contra o TETO da própria escala, não contra
+  // a referência de mercado. Normalizar pela referência satura: com REF 0,60,
+  // quem faz 0,70 já bate 100 e quase toda clínica tira nota acima de 90,
+  // o que destrói a comparação com a média (52) e o topo (78) na tela.
+  const TETO={agendamento:.90, comparecimento:.97, conversao:.90};
+  const nota=(v,teto)=>Math.min(100,(v/teto)*100);
+  const indice=Math.round(Math.max(5,Math.min(98,
+      nota(tAgend,TETO.agendamento)*0.20
+    + nota(tComp,TETO.comparecimento)*0.20
+    + nota(tConv,TETO.conversao)*0.35
+    // O acompanhamento entra com 25% de propósito: sem ele, clínica que
+    // converte bem e não tem follow-up recebe nota alta enquanto a mesma
+    // tela mostra o estoque parado dela. A leitura se contradiria.
+    + (R.acompanha.v*100)*0.25
+  )));
+
+  // SEGUNDO EIXO. Sem ele, clínica organizada com pouca demanda recebe
+  // índice alto e o relatório conclui que está tudo bem.
+  // Só existe se o dono soube dizer quantos contatos recebe.
+  const temVolume = R.contatos.v!==null;
+  const porCadeira = contatos/cadeiras;
+  const faixaDemanda = !temVolume ? 'desconhecida'
+      : (porCadeira<12 ? 'baixa' : (porCadeira<=25 ? 'adequada' : 'alta'));
+  const indiceBom = indice>=65;
+  const leitura = !temVolume ? 'semVolume'
+      : (faixaDemanda==='baixa'
+          ? (indiceBom ? 'faltaDemanda' : 'ambos')
+          : (indiceBom ? 'saudavel' : 'faltaProcesso'));
+
+  // GARGALO
+  let gargalo;
+  if(naoSei.length>=3){
+    gargalo='medicao';
+  } else if(leitura==='faltaDemanda'){
+    // Quem agenda 9 em 10 e comparece quase todos não tem gargalo de funil.
+    // Apontar uma etapa aqui só porque ela é a maior em reais seria mentira.
+    gargalo='demanda';
+  } else {
+    gargalo=[
+      {chave:'agendamento',peso:perdaAgendamento*12},
+      {chave:'falta',peso:perdaFalta*12},
+      {chave:'parado',peso:estoqueOrcamento},
+      {chave:'base',peso:estoqueBase}
+    ].sort((a,b)=>b.peso-a.peso)[0].chave;
+  }
+
+  // CLASSIFICAÇÃO DE SAÍDA. Critério é caixa, definido em 26/08.
+  // Ver Log de Decisões da Oferta.
+  const potencialMes = contatos*tAgend*tComp*tConv*ticket;
+  let saida;
+  if(ticket<=2000) saida='intervencao';
+  else if(ticket<=5500) saida = potencialMes<40000 ? 'intervencao' : 'tratamento';
+  else saida='tratamento';
+
+  return {
+    estoqueOrcamento, estoqueBase, estoqueTotal, fluxoMensal, numeroPrincipal, anual,
+    indice, porCadeira, faixaDemanda, leitura, gargalo, saida, potencialMes, temVolume,
+    abertos, estimado, naoSei:naoSei.length, camposNaoSei:naoSei,
+    naoMede:naoSei.length>=3, ticket, base, percepcao, estrutura, mult
+  };
 }
 
 const GARGALOS={
-  orcamento:{titulo:'A avaliação que não vira protocolo',
-    texto:'É daqui que sai a maior parte do seu dinheiro. O paciente chega, senta, ouve o valor e vai embora sem fechar. Na maioria das vezes não é preço: é dúvida que ficou sem resposta e ninguém retomando a conversa depois.'},
+  demanda:{titulo:'Não é o funil. É quanta gente chega até ele',
+    texto:'Sua clínica aproveita bem quem aparece: marca, o paciente comparece e uma boa parte fecha. O aperto está antes disso. Chega pouca gente para o tamanho da estrutura que você mantém funcionando, e cadeira parada é custo fixo rodando sem receita. Mexer no comercial aqui rende pouco, porque ele já está fazendo o trabalho dele.'},
+  medicao:{titulo:'Antes de qualquer gargalo: a clínica não se mede',
+    texto:'Você não soube responder três ou mais perguntas do próprio funil, e isso é mais grave do que qualquer taxa ruim. Não dá para corrigir o que não se enxerga, e qualquer decisão comercial tomada assim é palpite. O primeiro trabalho não é vender mais, é passar a saber.'},
+  agendamento:{titulo:'A pessoa que fala com você e não chega a marcar',
+    texto:'A maior perda está antes da cadeira. Gente que mandou mensagem, tirou dúvida e nunca virou agenda. Quase sempre não é falta de interesse: é demora para responder e ninguém retomando a conversa que ficou pela metade.'},
   falta:{titulo:'O paciente que marca e não comparece',
     texto:'Cadeira parada é custo fixo rodando sem receita. E o pior é que boa parte de quem falta voltaria se alguém chamasse, mas ninguém chama porque não existe rotina para isso.'},
-  parado:{titulo:'O orçamento aprovado que ninguém retomou',
+  parado:{titulo:'O orçamento que ficou sem resposta final',
     texto:'Esse é o mais barato de resolver, porque o paciente já conhece você, já ouviu o valor e não disse não. Ele só sumiu no meio do caminho e ninguém foi atrás.'},
   base:{titulo:'A base que está dormindo',
     texto:'Você tem gente que já confiou em você uma vez e nunca mais voltou, e tratamento que começou e parou no meio. Buscar essa pessoa custa uma fração do que custa trazer paciente novo.'}
+};
+
+/* Confronto entre o que o dono declarou na pergunta 01 e o que os números
+   dele mostram. É a melhor abertura de reunião que o diagnóstico produz. */
+const PERCEPCAO_ROTULO={
+  demanda:'Falta paciente novo', conversao:'O paciente chega e não fecha',
+  equipe:'A equipe não dá conta', financeiro:'Não sobra dinheiro',
+  indefinido:'Você não sabia dizer'
+};
+const LEITURA={
+  faltaDemanda:{rotulo:'Falta gente chegando',
+    texto:'Sua clínica aproveita bem o que chega. O problema é que chega pouco para o tamanho da estrutura que você mantém em pé.'},
+  faltaProcesso:{rotulo:'Chega gente e escapa',
+    texto:'Volume não é o seu problema. As pessoas chegam, e a maior parte se perde no caminho entre o primeiro contato e a assinatura.'},
+  saudavel:{rotulo:'Volume e aproveitamento em pé',
+    texto:'As duas pontas estão razoáveis. O que sobra de dinheiro na mesa vem de estoque parado, e não de um furo estrutural no funil.'},
+  ambos:{rotulo:'Chega pouco e ainda escapa',
+    texto:'As duas coisas ao mesmo tempo: entra pouca gente para o tamanho da clínica, e do pouco que entra a maior parte se perde no caminho.'},
+  semVolume:{rotulo:'Não dá para dizer',
+    texto:'Você não soube dizer quantas pessoas novas procuram a clínica por mês, e sem esse número não é possível saber se o problema é volume ou aproveitamento. É o primeiro dado a levantar, e o mais fácil: basta contar os contatos novos de uma semana.'}
 };
 
 const dinheiro=n=>'R$ '+Math.round(n).toLocaleString('pt-BR');
@@ -535,21 +759,96 @@ function renderResultado(){
   document.getElementById('gargaloTitulo').textContent=g.titulo;
   document.getElementById('gargaloTexto').textContent=g.texto;
 
-  // número principal conta assim que a tela aparece
+  // Três ou mais "não sei" mudam o diagnóstico: aparece o aviso de limite
+  // e o anual some. Admitir o limite do cálculo é o que faz o resto do
+  // relatório ser levado a sério.
+  // Se o dono não se mede, o índice dele seria calculado com referência de
+  // mercado nos buracos. Mostrar nota nessas condições é inventar precisão,
+  // e ainda por cima costuma sair alta, porque a referência é boa.
+  if(r.naoMede){
+    document.getElementById('boxLimite').style.display='';
+    document.getElementById('boxAnual').style.display='none';
+    document.getElementById('boxComparacao').style.display='none';
+    // Sem os dados do funil não existe anual honesto. O destaque passa a ser
+    // o orçamento parado, que é a única coisa que ele soube responder.
+    document.getElementById('leadNumerao').textContent='em orçamento que ficou sem resposta final. É o único número que dá para fechar com o que você respondeu, e por isso é o único que aparece em destaque aqui.';
+  }
+  // O eixo depende de saber quantos contatos entram. Sem isso, não existe.
+  if(!r.temVolume){
+    document.getElementById('boxEixo').style.display='none';
+  }
+  if(r.estimado){
+    document.getElementById('txtV1').textContent='Você não soube dizer quantos orçamentos estão em aberto, então estimamos pelo seu próprio funil: dois meses de avaliações que aconteceram e não fecharam. É o número mais fácil de levantar no seu sistema, e o que mais muda essa conta.';
+  }
+
+  // confronto entre a leitura do dono e o que os números dizem
+  const L=LEITURA[r.leitura];
+  document.getElementById('percepcaoDono').textContent=PERCEPCAO_ROTULO[r.percepcao];
+  document.getElementById('percepcaoNumeros').textContent=L.rotulo;
+  document.getElementById('percepcaoVeredito').textContent=vereditoPercepcao(r,L);
+
+  // o segundo eixo
+  document.getElementById('txtEixo').textContent=L.texto;
+  const rot=document.getElementById('reguaRot');
+  const marca=r.faixaDemanda==='baixa'?0:(r.faixaDemanda==='adequada'?1:2);
+  [...rot.children].forEach((el,i)=>{ if(i===marca) el.innerHTML='<b>'+el.textContent+'</b>'; });
+
+  // as chips do sistema de gestão
+  const box=document.getElementById('chipsSistema');
+  SISTEMAS.forEach(s=>{
+    const b=document.createElement('button');
+    b.className='chip'; b.textContent=s;
+    b.onclick=()=>responderSistema(s);
+    box.appendChild(b);
+  });
+
+  // O destaque é o anual, que é o número de impacto. Quem não se mede não
+  // tem anual confiável, e cai para o orçamento parado.
   const nEl=document.getElementById('numerao');
-  setTimeout(()=>{contar(nEl,r.parado+r.dormindo,1600);nEl.classList.add('pulsa');},450);
+  const destaque = r.naoMede ? r.numeroPrincipal : r.anual;
+  setTimeout(()=>{contar(nEl,destaque,1600);nEl.classList.add('pulsa');},450);
 
   ligarRevelacao(r);
+}
+
+/* A frase que abre a reunião. Quando a leitura do dono bate com os números,
+   confirma. Quando não bate, aponta a divergência sem soar acusatório. */
+function vereditoPercepcao(r,L){
+  const p=r.percepcao;
+  if(p==='indefinido')
+    return 'Você preferiu não chutar, e isso é mais honesto do que a maioria. Seus números apontam para um lugar específico: '+L.rotulo.toLowerCase()+'.';
+  const bate = (p==='demanda' && (r.leitura==='faltaDemanda'||r.leitura==='ambos'))
+            || (p==='conversao' && (r.leitura==='faltaProcesso'||r.leitura==='ambos'));
+  if(bate)
+    return 'Sua leitura bate com os seus números, e isso é raro. Você já sabe onde dói. O que provavelmente falta não é diagnóstico, é o processo para resolver.';
+  if(p==='demanda' && r.leitura==='faltaProcesso')
+    return 'Aqui está a divergência mais importante deste relatório. Você apontou falta de paciente, e os seus números apontam para o outro lado: gente chega, e escapa no caminho. Investir em atrair mais gente antes de tapar esse furo é pagar duas vezes pelo mesmo paciente.';
+  if(p==='conversao' && r.leitura==='faltaDemanda')
+    return 'Você apontou conversão, mas seus números mostram que a clínica aproveita razoavelmente bem o que chega. O aperto está no volume: entra pouca gente para a estrutura que você sustenta.';
+  if(p==='equipe')
+    return 'Você apontou a equipe, e é possível que ela esteja sobrecarregada mesmo. Mas seus números mostram outra coisa antes disso: '+L.texto.charAt(0).toLowerCase()+L.texto.slice(1);
+  if(p==='financeiro')
+    return 'Você apontou o resultado, que é o sintoma. Seus números mostram a origem: '+L.texto.charAt(0).toLowerCase()+L.texto.slice(1);
+  return L.texto;
+}
+
+/* Pergunta 13, respondida com o lead já capturado. */
+function responderSistema(s){
+  respostaSistema=s;
+  document.getElementById('boxPosGate').classList.add('respondido');
+  enviarLead(true);
 }
 
 /* revela cada bloco ao entrar na tela e dispara o número dele */
 function ligarRevelacao(r){
   const disparos=new Map([
-    ['v1',()=>contar(document.getElementById('v1'),r.parado)],
-    ['v2',()=>contar(document.getElementById('v2'),r.perdidoMes)],
-    ['v3',()=>contar(document.getElementById('v3'),r.dormindo)],
+    ['v1',()=>contar(document.getElementById('v1'),r.estoqueOrcamento)],
+    ['v2',()=>contar(document.getElementById('v2'),r.fluxoMensal)],
+    ['v3',()=>contar(document.getElementById('v3'),r.estoqueBase)],
     ['vTotal',()=>contar(document.getElementById('vTotal'),r.anual,1700)],
+    ['vEixo',()=>contar(document.getElementById('vEixo'),r.porCadeira,1200,n=>n.toFixed(0))],
     ['boxComparacao',()=>{
+      // PENDENTE: 52 e 78 são estimativa e precisam sair da base real de clínicas.
       const media=52,top=78;
       contar(document.getElementById('n1'),r.indice,1200,n=>Math.round(n));
       contar(document.getElementById('n2'),media,1200,n=>Math.round(n));
@@ -577,25 +876,50 @@ function ligarRevelacao(r){
 function chamarWhats(){
   const nome=document.getElementById('nome').value.trim();
   const r=resultado;
-  const msg=`Oi! Sou ${nome}. Fiz o Orçamento Parado e deu ${dinheiro(r.parado+r.dormindo)} parados e ${dinheiro(r.perdidoMes)} por mês. Quero destravar minha clínica.`;
+  const msg = r.naoMede
+    ? `Oi! Sou ${nome}. Fiz o Orçamento Parado e deu ${dinheiro(r.numeroPrincipal)} parados em orçamento sem resposta. Não soube responder algumas perguntas do meu funil e quero entender melhor os meus números.`
+    : `Oi! Sou ${nome}. Fiz o Orçamento Parado e deu ${dinheiro(r.anual)} no ano, sendo ${dinheiro(r.numeroPrincipal)} em orçamento parado e ${dinheiro(r.fluxoMensal)} escapando por mês. Quero destravar minha clínica.`;
   window.open(`https://wa.me/${CONFIG.WHATSAPP}?text=${encodeURIComponent(msg)}`,'_blank');
 }
 
 /* ============================================================
    ENVIO DO LEAD
    ============================================================ */
-function enviarLead(){
+let respostaSistema=null;
+
+function enviarLead(atualizacao){
   if(!CONFIG.WEBHOOK)return;
   const r=resultado;
   const dados={
-    origem:CONFIG.ORIGEM,data:new Date().toISOString(),
+    origem:CONFIG.ORIGEM,
+    data:new Date().toISOString(),
+    // segunda chamada, feita quando o lead responde a pergunta do sistema
+    atualizacao: !!atualizacao,
     nome:document.getElementById('nome').value.trim(),
     whatsapp:document.getElementById('zap').value.replace(/\D/g,''),
     respostas:Object.fromEntries(Object.entries(respostas).map(([k,v])=>[k,v.t])),
-    calculo:{parado:Math.round(r.parado),perdido_mes:Math.round(r.perdidoMes),
-      dormindo:Math.round(r.dormindo),anual:Math.round(r.anual),
-      indice:r.indice,gargalo:r.gargalo,orcamentos_estimados:r.estimado},
-    qualifica_intervencao:r.base>=5000,
+    sistema:respostaSistema||'',
+    calculo:{
+      estoque_orcamento:Math.round(r.estoqueOrcamento),
+      estoque_base:Math.round(r.estoqueBase),
+      fluxo_mensal:Math.round(r.fluxoMensal),
+      numero_principal:Math.round(r.numeroPrincipal),
+      estoque_total:Math.round(r.estoqueTotal),
+      anual: r.naoMede ? null : Math.round(r.anual),
+      indice:r.indice,
+      // sem volume declarado, esse número seria calculado em cima do
+      // fallback e iria para a planilha parecendo dado real
+      por_cadeira: r.temVolume ? Number(r.porCadeira.toFixed(1)) : null,
+      faixa_demanda:r.faixaDemanda,
+      leitura:r.leitura,
+      gargalo:r.gargalo,
+      potencial_mes:Math.round(r.potencialMes),
+      orcamentos_estimados:r.estimado,
+      nao_sei:r.naoSei,
+      campos_nao_sei:r.camposNaoSei.join(', '),
+      nao_mede:r.naoMede
+    },
+    saida:r.saida,
     url:window.location.href,
     utm:Object.fromEntries(new URLSearchParams(window.location.search))
   };
