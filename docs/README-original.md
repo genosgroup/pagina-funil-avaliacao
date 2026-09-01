@@ -1,55 +1,65 @@
-# Orçamento Parado · Genos · v2.0
+# Orçamento Parado · Genos
 
-Diagnóstico digital de 12 perguntas que faz a clínica descobrir sozinha onde está o dinheiro. É a porta de entrada do funil AVALIAÇÃO e classifica o lead entre as duas saídas: Tratamento e Intervenção.
+**Versão 3** · agosto de 2026
+
+Diagnóstico digital de 11 perguntas que faz a clínica descobrir sozinha onde está o dinheiro. É a porta de entrada do funil AVALIAÇÃO e classifica o lead entre as duas saídas: Tratamento e Intervenção.
 
 ---
 
-## FAÇA NESTA ORDEM
+## O QUE JÁ ESTÁ PRONTO
 
-A ordem importa. Se subir a página antes de ter a URL do Apps Script, ela vai ao ar sem gravar lead nenhum, e você não percebe: a tela funciona normalmente, o número aparece, e o lead evapora.
+Nada disso precisa ser refeito. Está tudo testado e no ar.
 
-**1. Prepare a planilha** (5 min)
-Renomeie a aba `Leads` para `Leads v1`. Se não fizer isso, as 41 colunas novas entram desalinhadas em cima dos dados antigos.
+- ✅ **Planilha** com as 24 colunas, blocos coloridos, filtros e formato de moeda
+- ✅ **Apps Script publicado** como app da web, com a URL do `/exec` funcionando
+- ✅ **Gravação testada de ponta a ponta**, com um lead real caindo na linha certa
 
-**2. Publique o Apps Script** (10 min)
-Cole o `apps-script-leads.gs`, implante como app da web e **copie a URL que termina em `/exec`**. Passo a passo detalhado na seção "Ligar a planilha de leads".
+---
 
-**3. Teste o endpoint sozinho** (1 min)
-Abra a URL do `/exec` no navegador. Tem que responder `{"ok":true,"msg":"Endpoint do Orçamento Parado v2.0 no ar."}`. Se não responder isso, pare aqui: o resto não vai funcionar.
+## O QUE FALTA · publicar a página
 
-**4. Cole a URL no HTML** (1 min)
-No `site/index.html`, procure `WEBHOOK: ''` e cole a URL entre as aspas. É a linha 3 do bloco `CONFIG`, logo no começo do `<script>`.
+**1. Cole a URL do webhook no HTML**
+No `site/index.html`, procure `WEBHOOK: ''` e cole a URL do `/exec` entre as aspas. É a linha 3 do bloco `CONFIG`, logo no começo do `<script>`. **A Thalita passa essa URL.**
 
-**5. Só agora suba a página**
-Para `clinicas.genosgroup.com.br/orcamento-parado`. Detalhes na seção "Onde subir".
+Sem ela a página funciona na tela, o número aparece, e o lead evapora sem nenhum aviso.
 
-**6. Preencha o formulário inteiro no ar e confira a planilha**
-A linha tem que aparecer com as 41 colunas. Se não aparecer, veja a aba `Erros` da planilha: o script grava lá o que deu errado, com o conteúdo do envio, para o lead não sumir em silêncio.
+**2. Publique em `clinicas.genosgroup.com.br/orcamento-parado`**
+Se for servir por pasta, o caminho é `/orcamento-parado/index.html`, para a URL ficar limpa sem `.html` no fim.
 
-**7. Avise qual ficou sendo a URL final**
+**3. Preencha o formulário inteiro no ar e confira a planilha**
+A linha tem que aparecer na aba `Leads`. Se não aparecer, veja a aba `Erros`: o script grava lá o que deu errado, com o conteúdo do envio, para o lead não sumir em silêncio.
+
+**4. Confirme qual ficou sendo a URL final**
 Ela vai para bio, anúncio e mensagem de prospecção, e os links rastreados são montados em cima dela.
 
-> **Se precisar mexer no HTML depois de subir:** o `CONFIG.WEBHOOK` mora dentro do arquivo. Toda vez que substituir o arquivo no servidor, confira se a URL continua lá.
+> **Ao substituir o arquivo no servidor:** o `CONFIG.WEBHOOK` mora dentro do HTML. Toda vez que trocar o arquivo, confira se a URL continua lá.
 
-> **Se precisar mexer no Apps Script depois de publicar:** salvar não basta. É preciso criar uma **nova implantação**, ou editar a existente e trocar a versão. Senão a URL continua servindo o código antigo, e você vai depurar um problema que já corrigiu.
+> **Não mexa no Apps Script sem necessidade.** Ele já está publicado. Se um dia precisar alterar o código, vá em **Implantar > Gerenciar implantações**, edite a existente e troque a Versão para "Nova versão". Criar uma implantação nova gera uma URL diferente, e a que está dentro do HTML continua sendo a antiga.
 
 ---
 
-## O que mudou da v1 para a v2
+## O que mudou
 
-| | v1 | v2 |
+| | Versão 1 | Versão 3 |
 | --- | --- | --- |
-| Perguntas | 8 | 12, mais 1 depois do gate |
+| Perguntas | 8 | 11, mais 2 depois do gate |
 | Topo do funil | começava nas avaliações | começa nos contatos novos |
-| Ordem | agrupada por tema | sequência de funil, e ela é o diagnóstico |
-| "Não sei dizer" | só em orçamentos | em todas as 4 perguntas do funil |
-| Estoque e fluxo | somados no mesmo número | separados |
-| Índice | conversão, no-show e processo | 3 etapas do funil mais acompanhamento |
+| Ordem | agrupada por tema | porte, depois quem atende, depois o funil |
+| "Não sei dizer" | só em orçamentos | nas 4 perguntas do funil |
+| O número em destaque | anual, com taxas embutidas | mensal, sem taxa nenhuma |
+| Aproveitamento | índice 0 a 100 com pesos inventados | quantos de cada 100 viram paciente |
+| Blocos de apoio | tudo em reais | os frágeis só em pessoas |
 | Segundo eixo | não existia | contatos por cadeira |
-| Classificação de saída | tamanho da base | caixa, via ticket e potencial |
-| Colunas na planilha | 24 | 41 |
+| Classificação de saída | tamanho da base | 3 critérios: cadeiras, ticket e volume |
+| Colunas na planilha | 24 | 24, só respostas e leitura |
 
-**A ordem das perguntas não é negociável.** Volume, agendamento, comparecimento e conversão estão em sequência de propósito: o dono vê o próprio funil encolher enquanto responde, antes de qualquer número calculado aparecer. Reagrupar por tema transforma o diagnóstico em cadastro.
+**A ordem das perguntas.** O funil (agendamento, comparecimento, conversão) segue em sequência, mas agora vem depois de três perguntas sobre quem atende: quem cuida do comercial, quem faz follow-up e em quanto tempo responde.
+
+O efeito muda, e para melhor. O dono primeiro conta que o processo é frágil, e só então responde as taxas. O resultado ruim deixa de ser surpresa e vira consequência do que ele mesmo acabou de descrever.
+
+**A pergunta de orçamentos parados saiu, e não voltou.** Era a que mais exigia consultar o sistema, e mesmo reformulada ela convidaria o dono a se defender: ele acha que faz follow-up, então responderia "limpamos sempre" mesmo tendo pilha parada. É o mesmo vício que fez a pergunta de comparecimento ser invertida.
+
+**O número principal virou mensal.** Era o valor anual, que multiplicava tudo por doze e transformava qualquer conta em número que ninguém acredita.
 
 ---
 
@@ -74,7 +84,7 @@ No topo do `<script>`:
 ```js
 const CONFIG = {
   WEBHOOK: '',
-  WHATSAPP: '5521975613690',
+  WHATSAPP: '5521985237650',
   ORIGEM: 'orcamento-parado'
 };
 ```
@@ -83,135 +93,155 @@ const CONFIG = {
 
 ---
 
-## Ligar a planilha de leads
+## A planilha de leads
 
-**[Funil AVALIAÇÃO] Leads**
+**[Funil AVALIAÇÃO] Leads** · já configurada, referência abaixo
 https://docs.google.com/spreadsheets/d/1THyTEurgi6jYSL110C9FSwK6pse1psTCxnlz_yOyKYQ/edit
 
-> ⚠️ **Atualizando da v1:** o cabeçalho mudou de 24 para 41 colunas. **Renomeie a aba `Leads` para `Leads v1` antes de rodar o script novo**, senão as colunas novas entram desalinhadas em cima dos dados antigos. O script cria a aba nova sozinho.
+**Se um dia precisar recriar a aba do zero** (outra planilha, ou se a estrutura for corrompida): abra **Extensões > Apps Script**, selecione **`prepararPlanilha`** no seletor de função ao lado do botão Executar, e execute.
 
-1. Abra a planilha
-2. Menu **Extensões > Apps Script**
-3. Apague o conteúdo de `Code.gs` e cole o conteúdo de **`apps-script-leads.gs`**
-4. Salve
-5. **Implantar > Nova implantação**
-   - Tipo: **App da Web**
-   - Executar como: **Eu**
-   - Quem pode acessar: **Qualquer pessoa**
-6. Copie a URL gerada (termina em `/exec`)
-7. Cole essa URL no `CONFIG.WEBHOOK` do HTML
+Ela arquiva a aba `Leads` existente com um nome livre (`Leads v3`, `Leads v4`...) preservando os dados, e monta a aba nova formatada. O resultado aparece no **Registro de execução**, abaixo do editor. Rodar duas vezes não estraga: se a aba já estiver no formato certo, ela avisa e não mexe.
 
-Para testar, abra a URL do `/exec` no navegador. Deve responder:
+Para conferir se o endpoint está de pé, abra a URL do `/exec` no navegador. Deve responder:
 
 ```json
-{"ok":true,"msg":"Endpoint do Orçamento Parado v2.0 no ar."}
+{"ok":true,"msg":"Endpoint do Orçamento Parado v3 no ar."}
 ```
 
 > **Nota técnica:** o envio usa `Content-Type: text/plain` de propósito. Com `application/json` o navegador dispara um preflight CORS que o Apps Script não responde, e o lead se perde silenciosamente. Não troque.
 
-> **Dois envios por lead.** O primeiro acontece no gate, com tudo. O segundo acontece se o lead responder a pergunta do sistema de gestão na tela de resultado, e vem com `atualizacao: true`. O script procura a linha do mesmo WhatsApp nas últimas 50 e completa a coluna, em vez de duplicar.
+> **Dois envios por lead.** O primeiro acontece no gate, com tudo. O segundo acontece se o lead responder o sistema de gestão ou o Instagram na tela de resultado, e vem com `atualizacao: true`. O script procura a linha do mesmo WhatsApp nas últimas 50 e completa as colunas, em vez de duplicar.
 
 ---
 
 ## As regras que fazem o cálculo funcionar
 
-### 1. Estoque e fluxo nunca se somam no mesmo número
+### 1. A mesma régua nas três etapas
 
-O que está parado agora se recupera **uma vez**. O que se perde todo mês **volta a se perder**. Somar os dois no número em destaque infla a conta, e é o erro mais comum nesse tipo de calculadora.
+Cada pessoa que se perde vale o que valeria **se tivesse seguido o funil na taxa que a clínica pratica hoje**. Não numa taxa ideal, não em 100%.
 
 ```js
-// ESTOQUE: recuperável uma vez
-estoqueOrcamento = orcamentosAbertos × ticket × 0.15 × mult
-estoqueBase      = base × 0.03 × ticket × 0.10 × mult
+marcam     = contatos   × taxa de agendamento
+avaliacoes = marcam     × taxa de comparecimento
+fecham     = avaliacoes × taxa de conversão
 
-// FLUXO: perde todo mês
-perdaAgendamento = contatos × (1 − tAgend) × 0.10 × tComp × tConv × ticket × mult
-perdaFalta       = (contatos × tAgend) × (1 − tComp) × tConv × ticket × 0.30 × mult
+// quem se perde em cada etapa
+perdeuNoContato = contatos   − marcam        // falou e não marcou
+perdeuNaFalta   = marcam     − avaliacoes    // marcou e não apareceu
+naoFecharam     = avaliacoes × (1 − tConv)   // sentou e não fechou
 
-numeroPrincipal = estoqueOrcamento
-anual           = (fluxoMensal × 12) + estoqueOrcamento + estoqueBase
+// o que cada um valeria seguindo o funil NA TAXA DELE
+vContato = perdeuNoContato × tComp × tConv × ticket
+vFalta   = perdeuNaFalta   × tConv × ticket
+vFechou  = naoFecharam     × ticket
 
-// o que aparece no numerão da tela
-destaque = naoMede ? estoqueOrcamento : anual
+numeroPrincipal = vContato + vFalta + vFechou    ← o numerão, mensal
 ```
 
-**A taxa da base mudou, e o motivo importa.** O documento fixava 0,2% de reativação com meio ticket. Fomos checar o benchmark: reativação de paciente inativo em odontologia fica entre **10% e 20% ao ano**, e campanhas específicas entre 8% e 15%. Ou seja, 0,2% estava duas ordens de grandeza abaixo do mercado.
+**A versão anterior era inconsistente e foi corrigida.** Ela contava 100% de quem não fechou e **zero** de quem não agendou, como se sentar na cadeira fosse a única chance que existe. Resultado: o topo do funil, onde a clínica perde 4x mais gente, sumia da tela. E o topo é justamente onde a Genos mais atua.
 
-Passou para **3% de reativação, com cada pessoa valendo 10% do ticket**. As duas premissas ficam separadas de propósito, porque cada uma responde por uma coisa e cada uma precisa se sustentar sozinha:
+Com a régua igual, o topo volta e a distribuição fica coerente. No perfil médio: 69 pessoas não marcam (41% do valor), 18 faltam (18%), 17 não fecham (41%). Perde-se 4x mais gente no começo, mas cada uma vale menos porque ainda tinha caminho pela frente.
 
-- **3%** continua conservador contra o benchmark, e precisa continuar, porque a pergunta 11 mistura paciente antigo com lead que nunca fechou, e o segundo reativa muito abaixo do primeiro.
-- **10% do ticket** porque quem volta de base parada marca uma consulta ou uma limpeza. Não fecha o tratamento mais caro da clínica de cara.
+**Testado forçando cada etapa ruim isoladamente:** agendamento a 0,20 concentra 87% da perda no topo. No-show a 0,35 concentra 68% no meio. Conversão a 0,20 concentra 87% no fim. O gargalo apontado acompanha.
 
-Cuidado ao mexer: 3% com meio ticket (as duas premissas generosas multiplicadas) dava **R$4 milhões** no cenário extremo, e acima de dois meses de faturamento parado o dono para de acreditar na página inteira.
+### 2. Nada é projetado, nada é multiplicado por doze
 
-### O numerão é o anual
+Antes disso testamos três versões que estouravam, sempre pelo mesmo motivo: as três etapas se multiplicam, então qualquer conta do tipo "quanto você ganharia melhorando" triplica o faturamento da clínica. O cenário médio dava R$3,5 milhões por ano, e uma clínica de duas ou três cadeiras não fatura isso nem caberia nas cadeiras.
 
-Testamos três candidatos para o número em destaque:
+Uma delas também acumulava dois meses de orçamento e aplicava 15% de recuperação, dois parâmetros inventados que ninguém via.
 
-| Candidato | Clínica pequena | Problema |
-| --- | --- | --- |
-| Estoque somado (orçamento + base) | R$8.972 | Com 3%, a base fica de 2 a 9 vezes maior que o orçamento, e a página chamada Orçamento Parado destacaria a base, que é a parte mais frágil da conta |
-| Só o orçamento parado | R$2.991 | Honesto e coerente com o nome, mas fraco demais como abertura |
-| **Anual** | **R$41.127** | Nenhum: engloba tudo, e a tela logo abaixo o decompõe em três |
+Agora não existe premissa escondida, e a tela mostra a conta em pessoas antes de mostrar o valor. **A base parada é a única linha sem valor em reais**, porque não passou pelo funil daquele mês.
 
-Ficou o anual. Logo abaixo do numerão, três blocos mostram de onde ele vem, separando o que está parado (orçamento e base, que se recuperam uma vez) do que escapa todo mês (que volta a escapar). O bloco do somatório fecha explicando a conta.
+### 3. Três ou mais "não sei" mudam o diagnóstico
 
-**Exceção:** quem cai na regra dos três "não sei" não tem anual confiável, então o destaque cai para o orçamento parado, com um texto diferente explicando por quê. É a única coisa que essa pessoa soube responder.
-
-`mult` é a média das perguntas de tempo de resposta e acompanhamento, com teto de 1,00. **Nunca aumenta a estimativa, só reduz:** processo pior deixa a conta mais conservadora, e não o contrário.
-
-### 2. Três ou mais "não sei" mudam o diagnóstico
-
-O gargalo deixa de ser conversão ou agendamento e passa a ser **a clínica não se mede**. Quando isso acontece:
-
-- aparece o bloco de limite no topo do resultado
-- o valor anual **não é exibido**
-- o índice de aproveitamento **não é exibido**, porque seria calculado com referência de mercado nos buracos e sairia alto justamente para quem não sabe nada
+O gargalo deixa de ser conversão ou agendamento e passa a ser **a clínica não se mede**. Quando isso acontece, aparece o bloco de limite no topo e o índice de aproveitamento **não é exibido**, porque seria calculado com referência de mercado nos buracos e sairia alto justamente para quem não sabe nada.
 
 Admitir o limite do próprio cálculo é o que faz o resto do relatório ser levado a sério.
 
-### 3. O índice normaliza pelo teto da escala, não pela referência de mercado
+### 4. Aproveitamento é só a multiplicação das três taxas
 
-**Isto é uma decisão de implementação e diverge do documento de perguntas.** O documento fixa referências de 0,60 para agendamento, 0,88 para comparecimento e 0,60 para conversão.
+De cada 100 pessoas que procuram a clínica, quantas viram paciente:
 
-Normalizar por elas satura: com referência 0,60, uma clínica que faz 0,70 já bate 100 na etapa, e quase toda clínica sai com índice acima de 90. Nos testes, o cenário "funil bom sem nenhum follow-up" tirava **89** e o cenário "clínica organizada" tirava **98**. Isso destrói a comparação com a média (52) e o topo (78) que aparecem na mesma tela: a clínica sempre ficaria acima do topo.
+```js
+taxaTotal = tAgend × tComp × tConv      // 0,40 × 0,60 × 0,40 = 10 em 100
+refTotal  = 0,60  × 0,88  × 0,60        // 32 em 100
+```
 
-A nota passa a ser calculada contra o **teto de cada escala** (0,90 / 0,97 / 0,90). Com isso os mesmos cenários passaram a dar **75** e **98**, e a faixa de resultados foi de 34 a 98 nos oito cenários testados.
+**A versão anterior era um índice de 0 a 100** com pesos de 20/20/35/25 escolhidos por mim, normalizado por "tetos" que eram só a maior opção do quiz, e ainda misturava a pergunta de follow-up, que não é taxa. Ela produzia os números **52 e 78** na tela, que não vinham de dado nenhum: eram invenção.
 
-Pesos: agendamento 20%, comparecimento 20%, conversão 35%, **acompanhamento 25%**.
+Pior, uma clínica exatamente na média de mercado tirava 77 nesse índice, praticamente o mesmo 78 que estava rotulado como "as que organizaram o comercial". A escala vendia a média como excelência.
 
-O acompanhamento entra no índice de propósito, mesmo já sendo usado no `mult`. Sem ele, uma clínica que converte bem e não tem ninguém indo atrás de quem não fechou recebe nota alta **enquanto a mesma tela mostra o estoque parado dela**. A leitura se contradiria. No teste, duas clínicas com funil idêntico e apenas o follow-up diferente ficaram separadas por 10 pontos.
+Agora a comparação na tela é entre dois números calculados: o dele e a referência de mercado que já está documentada em `REF`. **Nenhum número inventado sobrou na página.**
 
-### 4. O segundo eixo evita o diagnóstico errado
+Uma clínica "boa" (7 em 10 marcam, 8,5 comparecem, 7 fecham) aproveita 42 em 100. A média do mercado é 32. O perfil típico que nos procura fica em 10.
+
+### 5. O gargalo compara só as três etapas do funil
+
+Em pessoas por mês, não em reais: em reais o ticket domina tudo e o gargalo sai sempre igual.
+
+**A base não entra nessa disputa.** Ela é estoque acumulado de anos e sempre ganharia de qualquer etapa mensal. Nos testes era o gargalo em 5 de 5 cenários, o que não diz nada. Ela só é apontada quando as três etapas já estão acima da referência, ou seja, quando não sobrou nada melhor para consertar.
+
+### 6. O segundo eixo evita o diagnóstico errado
 
 Contatos por cadeira. Abaixo de 12 é volume baixo, de 12 a 25 é adequado, acima de 25 é alto. Cruzado com o índice, produz quatro leituras: falta demanda, chega e escapa, saudável, ou os dois problemas.
 
-Quando a leitura é **falta demanda**, o gargalo vira `demanda`. Sem isso, uma clínica que agenda 9 em 10 e converte 9 em 10 recebia "seu gargalo é agendamento", só porque essa etapa era a maior em reais. Era tecnicamente correto e comercialmente absurdo.
+Quando a leitura é **falta demanda**, o gargalo vira `demanda`. Sem isso, uma clínica que agenda 9 em 10 e converte 9 em 10 recebia "seu gargalo é agendamento" só porque essa etapa era a maior em números absolutos.
 
-Se o dono não soube dizer o volume de contatos, **o eixo inteiro não aparece** e o campo vai vazio para a planilha, em vez de mostrar um número calculado em cima do fallback.
+Se o dono não soube dizer o volume de contatos, **o eixo inteiro não aparece**.
 
-### 5. Classificação de saída
+### 7. Classificação de saída
 
-Critério é caixa, decidido em 26/08 (ver Log de Decisões da Oferta).
+**Perfil de TRATAMENTO, definido em 27/08. Os três critérios precisam bater:**
 
-```
-potencialMes = contatos × tAgend × tComp × tConv × ticket
+| Critério | Mínimo |
+| --- | --- |
+| Cadeiras em funcionamento | 2 ou mais |
+| Ticket médio | R$3 mil ou mais |
+| Contatos novos por mês | 81 ou mais |
 
-ticket ≤ 2.000                       → INTERVENÇÃO
-ticket ≤ 5.500 e potencial < 40.000  → INTERVENÇÃO
-ticket ≤ 5.500 e potencial ≥ 40.000  → TRATAMENTO
-ticket > 5.500                       → TRATAMENTO
-```
+Faltando qualquer um, o lead vai para **INTERVENÇÃO**. A coluna `Falta para Tratamento` na planilha diz qual critério faltou, para o comercial entender a classificação sem reler as respostas.
 
-O corte de R$40 mil existe porque o Tratamento custa R$6.900 por mês. Abaixo disso a Genos vira fatia grande demais do faturamento da clínica, que é o perfil Fôlego de Caixa, maior causa isolada de churn.
+**Quem não soube dizer o volume cai em Intervenção**, porque o critério não pode ser verificado. É proposital: quem não sabe quantas pessoas procuram a clínica dificilmente tem a estrutura que o Tratamento pressupõe. Mas a coluna mostra `volume` como o que faltou, então dá para revisar caso a caso.
 
 ---
+
+## A planilha
+
+**Ela guarda o que o lead respondeu, mais a leitura que sai dessas respostas.** Os valores em reais ficam só na tela do lead: eles existem para convencer quem preencheu, não para o comercial filtrar.
+
+**BLOCO 1 · Quem é** (para quem ligar, e por qual porta)
+Data · Nome · WhatsApp · Instagram · **SAÍDA**
+
+**BLOCO 2 · A leitura** (como abrir a conversa)
+Maior gargalo · Diagnóstico
+
+**BLOCO 3 · As respostas** (o que ele disse, palavra por palavra)
+Uma coluna por pergunta, na ordem do formulário, mais o sistema de gestão.
+
+**BLOCO 4 · De onde veio** (para o relatório de canal)
+Canal · Formato · Campanha · Variação · URL
+
+As quatro primeiras vêm direto do link: `utm_source`, `utm_medium`, `utm_campaign` e `utm_content`, nessa ordem. São exatamente as que o `gerador-de-links.html` monta, então o que você define lá é o que chega aqui.
+
+> **A UTM se perde se o lead voltar depois.** Se ele clica no link com parâmetros, sai, e volta digitando o endereço direto, chega sem origem nenhuma. Dá para guardar a UTM da primeira visita, mas vale medir antes se isso acontece muito.
+
+> **Não existem colunas de CRM.** Quando o fluxo para o Kommo for montado, acrescente as que ele precisar **no fim** do `CABECALHO` e na mesma posição dentro do `appendRow`.
+
+### As três colunas que não são resposta direta
+
+| Coluna | O que é |
+| --- | --- |
+| **SAÍDA** | TRATAMENTO ou INTERVENÇÃO, pelos três critérios de perfil. Aparece em laranja quando é Tratamento |
+| **Maior gargalo** | Em qual etapa ele perde mais, em texto: "Fala e não marca", "Marca e não vem", "Orçamento sem resposta", "Base dormindo" |
+| **Diagnóstico** | O cruzamento de volume com aproveitamento: "Falta gente chegando", "Chega gente e escapa", "Volume e processo em pé", "Chega pouco e ainda escapa" |
+
+> ⚠️ **Não apague nem reordene colunas na mão.** O script grava por posição, não por nome: tirar uma coluna desloca todas as seguintes, e os leads passam a entrar deslocados sem nenhum aviso. Se quiser esconder alguma, use **Ocultar coluna**, que é reversível e não afeta a gravação.
 
 ## Checagem antes de publicar
 
 - [ ] `CONFIG.WEBHOOK` preenchido com a URL do `/exec`
 - [ ] Aba `Leads` da v1 renomeada antes de rodar o script novo
-- [ ] Teste completo preenchido, e a linha apareceu na planilha com as 41 colunas
+- [ ] Teste completo preenchido, e a linha apareceu na planilha com as 24 colunas
 - [ ] Teste com três "não sei", conferindo que o anual e o índice somem
 - [ ] Pergunta do sistema de gestão respondida, conferindo que **completou a linha em vez de criar outra**
 - [ ] Botão final abre o WhatsApp com a mensagem já escrita
@@ -232,8 +262,7 @@ O corte de R$40 mil existe porque o Tratamento custa R$6.900 por mês. Abaixo di
 
 ## Pendências conhecidas
 
-1. **Os números 52 e 78 do Índice são chute.** Precisam sair da base real de clínicas. É a única parte da tela que não se sustenta em dado próprio. Marcado com comentário no código.
-2. **A pergunta 11 mistura dois públicos com comportamento muito diferente.** Ela pede "pacientes antigos e interessados que nunca fecharam, tudo somado", e essas duas coisas reativam em ritmos incomparáveis: paciente que já pagou volta a 10% ou 20% ao ano, e lead frio que nunca fechou volta a uma fração disso. Enquanto estiverem somados, a taxa usada é sempre um meio-termo insatisfatório para os dois. **Separar em duas perguntas é a melhoria mais valiosa para uma v2.1**, e daria dois blocos distintos no relatório em vez de um número morno.
+2. **A pergunta da base mistura dois públicos com comportamento muito diferente.** Ela pede "pacientes antigos e interessados que nunca fecharam, tudo somado", e essas duas coisas reativam em ritmos incomparáveis: paciente que já pagou volta a 10% ou 20% ao ano, e lead frio que nunca fechou volta a uma fração disso. Enquanto estiverem somados, a taxa usada é sempre um meio-termo insatisfatório para os dois. **Separar em duas perguntas é a melhoria mais valiosa para a próxima versão**, e daria dois blocos distintos no relatório em vez de um número morno.
 3. **A régua de pós-conversão não existe.** Hoje o lead cai na planilha e depende de alguém olhar. O previsto é mensagem automática em 2 minutos e contato humano em até 1 hora.
 4. **A Saída 2 ainda não tem destino próprio.** Por decisão de 26/08, todos vão para o mesmo WhatsApp por enquanto, e a separação vive na coluna `SAÍDA` da planilha. Quando a página da Intervenção existir, trocar o botão.
 5. **`ID Kommo` e `Status sincronização`** já existem como colunas vazias, prontas para quando o fluxo para o CRM for montado.

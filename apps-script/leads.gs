@@ -1,52 +1,136 @@
 /**
- * GENOS · Orçamento Parado · v2.0
+ * GENOS · Orçamento Parado · versão 3
  * Recebe os leads do formulário e grava na planilha.
  *
- * COMO INSTALAR
- * 1. Abra a planilha [Funil AVALIAÇÃO] Leads
- * 2. Menu Extensões > Apps Script
- * 3. Apague o conteúdo do arquivo Code.gs e cole este código inteiro
- * 4. Salve (ícone de disquete)
- * 5. Clique em Implantar > Nova implantação
- *    - Tipo: App da Web
- *    - Executar como: Eu
- *    - Quem pode acessar: Qualquer pessoa
- * 6. Copie a URL gerada (termina em /exec)
- * 7. Cole essa URL no CONFIG.WEBHOOK do arquivo HTML
+ * =====================================================================
+ * JÁ INSTALADO E PUBLICADO. Não precisa implantar de novo.
+ * =====================================================================
  *
- * IMPORTANTE: toda vez que alterar este código, é preciso criar uma NOVA
- * implantação (ou editar a existente e trocar a versão), senão a URL
- * continua servindo o código antigo.
+ * Este script já está no ar na planilha [Funil AVALIAÇÃO] Leads, e a
+ * URL do app da web já está funcionando. Se você só colou uma versão
+ * nova deste arquivo: salve e rode prepararPlanilha. Só isso.
  *
- * ATENÇÃO AO ATUALIZAR DA v1: o cabeçalho mudou. Renomeie a aba antiga
- * para "Leads v1" antes de rodar, senão as colunas novas entram
- * desalinhadas em cima dos dados velhos.
+ * NÃO clique em Implantar sem necessidade. Criar uma implantação nova
+ * gera uma URL diferente, e a URL antiga continua sendo a que está
+ * dentro do HTML. Isso quebra a gravação de leads sem dar nenhum aviso.
+ *
+ * ---------------------------------------------------------------------
+ * SE UM DIA PRECISAR INSTALAR DO ZERO, em outra planilha:
+ *   1. Abra a planilha
+ *   2. Menu Extensões > Apps Script
+ *   3. Apague o Code.gs e cole este código inteiro
+ *   4. Salve
+ *   5. Selecione prepararPlanilha no seletor de função e clique Executar
+ *   6. Implantar > Nova implantação
+ *        Tipo: App da Web · Executar como: Eu · Acesso: Qualquer pessoa
+ *   7. Copie a URL (termina em /exec) e cole no CONFIG.WEBHOOK do HTML
+ *
+ * SE ALTERAR ESTE CÓDIGO no futuro: salvar não basta para o endpoint.
+ * Vá em Implantar > Gerenciar implantações, edite a existente e troque
+ * a Versão para "Nova versão". Assim a URL continua a mesma.
  */
 
 var ABA = 'Leads';
 
-// A planilha nasce em horário do Pacífico por padrão, e a coluna Data e hora
-// sai 4 horas atrasada em relação ao Brasil. Garantimos o fuso no código para
-// não depender de ninguém lembrar de configurar.
+/**
+ * A coluna "Data" é gravada no fuso da PLANILHA, não no do script. Planilha
+ * nova do Google nasce em horário do Pacífico e o lead chega 4 horas atrasado
+ * sem ninguém perceber, porque a hora existe, só está errada.
+ */
 var FUSO = 'America/Sao_Paulo';
 
+/**
+ * A planilha guarda O QUE O LEAD RESPONDEU, mais a leitura que sai dessas
+ * respostas. Os valores em reais ficam só na tela do lead: eles servem para
+ * ele se convencer, não para o comercial filtrar.
+ *
+ * BLOCO 1 · QUEM É       → para quem ligar, e por qual porta
+ * BLOCO 2 · A LEITURA    → como abrir a conversa
+ * BLOCO 3 · AS RESPOSTAS → o que ele disse, palavra por palavra
+ * BLOCO 4 · DE ONDE VEIO → para o relatório de canal
+ *
+ * Não existem colunas de ID de CRM aqui. Quando o fluxo para o Kommo for
+ * montado, acrescente as que ele precisar no fim desta lista E na mesma
+ * posição dentro do appendRow, porque a gravação é por posição.
+ */
 var CABECALHO = [
-  'Data e hora','Nome','WhatsApp',
-  // classificação
-  'SAÍDA','Gargalo','Índice','Leitura','Faixa de demanda',
-  // dinheiro
-  'Número principal','Estoque total','Orçamento parado','Base dormindo','Escapa por mês','Anual','Potencial/mês',
-  // qualidade do dado
-  'Não sei (qtd)','Quais não sei','Não se mede','Orçamentos estimados',
-  // respostas, na ordem do formulário
-  'Percepção','Cadeiras','Ticket','Contatos/mês','Tempo de resposta',
-  'Agendamento','Comparecimento','Conversão','Orçamentos abertos',
-  'Quem acompanha','Base de contatos','Quem cuida do comercial','Sistema de gestão',
-  // contexto
-  'Contatos por cadeira','Origem','UTM Source','UTM Medium','UTM Campaign','UTM Content','URL',
-  // operação
-  'ID Kommo','Status sincronização'
+  // BLOCO 1 · quem é
+  'Data', 'Nome', 'WhatsApp', 'Instagram', 'SAÍDA',
+
+  // BLOCO 2 · a leitura
+  'Maior gargalo', 'Diagnóstico',
+
+  // BLOCO 3 · as respostas, na ordem do formulário
+  'Acha que o problema é', 'Cadeiras', 'Ticket', 'Contatos/mês',
+  'Quem cuida do comercial', 'Quem faz follow-up', 'Tempo de resposta',
+  'Agendam', 'Comparecem', 'Fecham', 'Base de contatos', 'Sistema',
+
+  // BLOCO 4 · de onde veio
+  'Canal', 'Formato', 'Campanha', 'Variação', 'URL'
 ];
+
+/**
+ * ============================================================
+ * RODE ESTA FUNÇÃO UMA VEZ, ANTES DE QUALQUER COISA.
+ * ============================================================
+ *
+ * No editor do Apps Script: escolha "prepararPlanilha" na lista de
+ * funções, no topo, e clique em Executar. Na primeira vez o Google
+ * pede autorização, é normal, é a sua própria conta acessando a sua
+ * própria planilha.
+ *
+ * O que ela faz:
+ *   1. Arquiva a aba "Leads" antiga com um nome livre ("Leads v2",
+ *      "Leads v3"...), preservando tudo que já estava lá
+ *   2. Cria a aba "Leads" nova com as 24 colunas, blocos coloridos,
+ *      cabeçalho congelado, larguras, filtro e formato de moeda
+ *   3. Escreve o resultado no Registro de execução, que aparece
+ *      logo abaixo do editor quando a função termina
+ *
+ * Rodar de novo não estraga nada: se a aba já estiver no formato novo,
+ * a função avisa e não mexe.
+ *
+ * NÃO use SpreadsheetApp.getUi() aqui. Ele só funciona quando o script
+ * é chamado a partir da planilha, e lança erro quando a função é
+ * executada pelo botão do editor, que é justamente como ela é usada.
+ */
+function prepararPlanilha() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var antiga = ss.getSheetByName(ABA);
+  var msg = [];
+
+  if (antiga) {
+    // Compara o cabeçalho INTEIRO, coluna por coluna.
+    // Conferir só duas células não basta: já aconteceu de o cabeçalho mudar
+    // de 35 para 39 colunas mantendo "Data" e "SAÍDA" no lugar, e a função
+    // concluir que estava tudo certo quando não estava.
+    var largura = Math.max(antiga.getLastColumn(), CABECALHO.length);
+    var cab = antiga.getRange(1, 1, 1, largura).getValues()[0];
+    var jaAtual = antiga.getLastColumn() === CABECALHO.length &&
+      CABECALHO.every(function (titulo, i) { return String(cab[i]) === titulo; });
+
+    if (jaAtual) {
+      Logger.log('A aba "Leads" já está no formato atual. Nada foi alterado.');
+      return 'A aba "Leads" já está no formato atual. Nada foi alterado.';
+    }
+
+    // Acha um nome livre, para não sobrescrever um arquivamento anterior
+    var nome = 'Leads v1', n = 1;
+    while (ss.getSheetByName(nome)) { n++; nome = 'Leads v' + n; }
+    antiga.setName(nome);
+    msg.push('OK: a aba antiga virou "' + nome + '", com os dados preservados.');
+  } else {
+    msg.push('Não havia aba "Leads" anterior.');
+  }
+
+  pegarAba(); // cria a nova, já formatada
+  msg.push('OK: a aba "Leads" nova foi criada com ' + CABECALHO.length + ' colunas.');
+  msg.push('Pode apagar as abas antigas quando quiser.');
+
+  var texto = msg.join('\n');
+  Logger.log(texto);
+  return texto;
+}
 
 function doPost(e) {
   try {
@@ -56,65 +140,45 @@ function doPost(e) {
     var u = d.utm || {};
     var aba = pegarAba();
 
-    var linha = [
+    // A segunda chamada só traz Instagram e sistema. Completa a linha
+    // existente em vez de duplicar o lead.
+    if (d.atualizacao) {
+      if (completarLinha(aba, d.whatsapp, d.instagram, d.sistema)) {
+        return responder({ok: true, msg: 'linha completada'});
+      }
+      // Se não achou (o primeiro envio falhou), grava a linha inteira.
+    }
+
+    aba.appendRow([
       new Date(),
       d.nome || '',
       d.whatsapp || '',
+      d.instagram || '',
+      d.saida === 'tratamento' ? 'TRATAMENTO' : 'INTERVENÇÃO',
 
-      traduzirSaida(d.saida),
       traduzirGargalo(c.gargalo),
-      c.indice || '',
-      traduzirLeitura(c.leitura),
-      c.faixa_demanda || '',
-
-      c.numero_principal || 0,
-      c.estoque_total || 0,
-      c.estoque_orcamento || 0,
-      c.estoque_base || 0,
-      c.fluxo_mensal || 0,
-      c.anual === null || c.anual === undefined ? 'NÃO ESTIMADO' : c.anual,
-      c.potencial_mes || 0,
-
-      c.nao_sei === undefined ? '' : c.nao_sei,
-      c.campos_nao_sei || '',
-      c.nao_mede ? 'SIM' : 'NÃO',
-      c.orcamentos_estimados ? 'SIM' : 'NÃO',
+      traduzirDiagnostico(c.diagnostico),
 
       r.percepcao || '',
       r.cadeiras || '',
       r.ticket || '',
       r.contatos || '',
+      r.estrutura || '',
+      r.acompanha || '',
       r.resposta || '',
       r.agendamento || '',
       r.comparecimento || '',
       r.conversao || '',
-      r.orcamentos || '',
-      r.acompanha || '',
       r.base || '',
-      r.estrutura || '',
       d.sistema || '',
 
-      c.por_cadeira === undefined ? '' : c.por_cadeira,
-      d.origem || '',
       u.utm_source || '',
       u.utm_medium || '',
       u.utm_campaign || '',
       u.utm_content || '',
-      d.url || '',
+      d.url || ''
+    ]);
 
-      '', ''
-    ];
-
-    // A segunda chamada só traz o sistema de gestão. Em vez de criar uma
-    // linha duplicada, procuramos a linha do mesmo WhatsApp e completamos.
-    if (d.atualizacao) {
-      if (completarSistema(aba, d.whatsapp, d.sistema)) {
-        return responder({ok: true, msg: 'sistema atualizado'});
-      }
-      // Se não achou a linha (envio anterior falhou), grava a linha inteira.
-    }
-
-    aba.appendRow(linha);
     return responder({ok: true});
 
   } catch (err) {
@@ -129,7 +193,20 @@ function doPost(e) {
 }
 
 function doGet() {
-  return responder({ok: true, msg: 'Endpoint do Orçamento Parado v2.0 no ar.'});
+  return responder({ok: true, msg: 'Endpoint do Orçamento Parado v3 no ar.'});
+}
+
+/**
+ * Deixa a planilha em horário de Brasília. Se a conta não tiver permissão para
+ * mudar o fuso pelo código, apenas avisa no log: perder o lead por causa do
+ * relógio seria pior do que gravá-lo com a hora torta.
+ */
+function garantirFuso(ss) {
+  try {
+    if (ss.getSpreadsheetTimeZone() !== FUSO) { ss.setSpreadsheetTimeZone(FUSO); }
+  } catch (err) {
+    console.warn('Não foi possível ajustar o fuso da planilha: ' + err);
+  }
 }
 
 function pegarAba() {
@@ -139,37 +216,57 @@ function pegarAba() {
   if (!aba) {
     aba = ss.insertSheet(ABA);
     aba.appendRow(CABECALHO);
-    aba.getRange(1, 1, 1, CABECALHO.length).setFontWeight('bold');
+    var h = aba.getRange(1, 1, 1, CABECALHO.length);
+    h.setFontWeight('bold').setVerticalAlignment('middle');
     aba.setFrozenRows(1);
     aba.setFrozenColumns(3);
+    aba.setRowHeight(1, 38);
+
+    // Cor por bloco, para bater o olho e saber onde está
+    pintar(aba, 1,  5,  '#FDF3EC'); // quem é
+    pintar(aba, 6,  2,  '#F5F2ED'); // a leitura
+    pintar(aba, 8,  12, '#FFFFFF'); // respostas
+    pintar(aba, 20, 5,  '#F5F2ED'); // de onde veio
+
+    aba.getRange(2, 1, 5000, 1).setNumberFormat('dd/mm/yyyy HH:mm');
+
+    // Largura por coluna, senão tudo fica ilegível
+    var larguras = [140,170,130,180,150,
+                    200,210,
+                    220,90,200,130,240,230,180,110,130,110,160,160,
+                    110,110,170,130,320];
+    for (var i = 0; i < larguras.length; i++) aba.setColumnWidth(i + 1, larguras[i]);
+
+    // Filtro no cabeçalho, para o comercial filtrar por SAÍDA
+    aba.getRange(1, 1, aba.getMaxRows(), CABECALHO.length).createFilter();
+
+    // TRATAMENTO em laranja, para saltar aos olhos na coluna E
+    var regra = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('TRATAMENTO')
+      .setBold(true).setFontColor('#C4501B')
+      .setRanges([aba.getRange(2, 5, 5000, 1)])  // coluna SAÍDA
+      .build();
+    aba.setConditionalFormatRules([regra]);
   }
   return aba;
 }
 
-/**
- * A coluna Data e hora é gravada no fuso da planilha, não no do script. Se a
- * planilha estiver em outro fuso, o horário do lead sai errado e ninguém
- * percebe até comparar com o relógio. Barato conferir a cada envio.
- */
-function garantirFuso(ss) {
-  try {
-    if (ss.getSpreadsheetTimeZone() !== FUSO) {
-      ss.setSpreadsheetTimeZone(FUSO);
-    }
-  } catch (err) {
-    // Sem permissão para trocar o fuso: segue gravando, mas registra o aviso.
-    console.warn('Não foi possível ajustar o fuso da planilha: ' + err);
-  }
+function pintar(aba, col, qtd, cor) {
+  aba.getRange(1, col, 1, qtd)
+     .setBackground(cor)
+     .setWrap(true)
+     .setVerticalAlignment('middle');
 }
 
 /**
  * Procura de trás para frente a linha mais recente do mesmo WhatsApp e
- * preenche a coluna do sistema de gestão. Devolve true se conseguiu.
+ * preenche Instagram e sistema. Devolve true se conseguiu.
  */
-function completarSistema(aba, whatsapp, sistema) {
-  if (!whatsapp || !sistema) return false;
-  var col = CABECALHO.indexOf('Sistema de gestão') + 1;
-  var colZap = CABECALHO.indexOf('WhatsApp') + 1;
+function completarLinha(aba, whatsapp, instagram, sistema) {
+  if (!whatsapp) return false;
+  var colZap   = CABECALHO.indexOf('WhatsApp') + 1;
+  var colInsta = CABECALHO.indexOf('Instagram') + 1;
+  var colSist  = CABECALHO.indexOf('Sistema') + 1;
   var n = aba.getLastRow();
   if (n < 2) return false;
 
@@ -177,38 +274,34 @@ function completarSistema(aba, whatsapp, sistema) {
   var valores = aba.getRange(limite, colZap, n - limite + 1, 1).getValues();
   for (var i = valores.length - 1; i >= 0; i--) {
     if (String(valores[i][0]) === String(whatsapp)) {
-      aba.getRange(limite + i, col).setValue(sistema);
+      var linha = limite + i;
+      if (instagram) aba.getRange(linha, colInsta).setValue(instagram);
+      if (sistema)   aba.getRange(linha, colSist).setValue(sistema);
       return true;
     }
   }
   return false;
 }
 
-function traduzirSaida(chave) {
-  var mapa = {
-    tratamento:  'TRATAMENTO · reunião',
-    intervencao: 'INTERVENÇÃO · sem reunião'
-  };
-  return mapa[chave] || chave || '';
-}
-
 function traduzirGargalo(chave) {
   var mapa = {
-    medicao:     'A clínica não se mede',
-    agendamento: 'Fala com a clínica e não marca',
-    falta:       'Marca e não comparece',
-    parado:      'Orçamento sem resposta final',
+    medicao:     'Não se mede',
+    demanda:     'Chega pouca gente',
+    agendamento: 'Fala e não marca',
+    falta:       'Marca e não vem',
+    parado:      'Orçamento sem resposta',
     base:        'Base dormindo'
   };
   return mapa[chave] || chave || '';
 }
 
-function traduzirLeitura(chave) {
+function traduzirDiagnostico(chave) {
   var mapa = {
     faltaDemanda:  'Falta gente chegando',
     faltaProcesso: 'Chega gente e escapa',
-    saudavel:      'Volume e aproveitamento em pé',
-    ambos:         'Chega pouco e ainda escapa'
+    saudavel:      'Volume e processo em pé',
+    ambos:         'Chega pouco e ainda escapa',
+    semVolume:     'Não soube o volume'
   };
   return mapa[chave] || chave || '';
 }
