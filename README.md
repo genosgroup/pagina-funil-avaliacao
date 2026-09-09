@@ -211,10 +211,29 @@ funciona — a URL do fluxo é informativa, não é filtro, e o GA4 aceita subdo
 mesmo fluxo. A consequência é que **os dados da página entram misturados com os do
 site principal**.
 
-Para isolar a página nos relatórios, filtre por `Nome do host` igual a
-`clinicas.genosgroup.com.br`, ou por `Caminho da página` começando com `/avaliacao`.
-Os oito eventos abaixo são exclusivos desta página, então qualquer relatório montado
-em cima deles já vem isolado sem precisar de filtro.
+Para separar, a página se marca sozinha. O `gtag('config', ...)` manda um
+**grupo de conteúdo**:
+
+```js
+gtag('config', CONFIG.GA_ID, {content_group: 'Avaliação · Orçamento Parado'});
+```
+
+`content_group` é dimensão **nativa** do GA4: aparece nos relatórios sem precisar
+registrar dimensão personalizada e sem tocar em nada no painel.
+
+Três formas de ver a página isolada, da mais rápida para a mais permanente:
+
+1. **Comparação** (o botão *Adicionar comparação*, no topo de qualquer relatório):
+   `Grupo de conteúdo` **exatamente igual a** `Avaliação · Orçamento Parado`. Vale para
+   o relatório inteiro e é o caminho de menos cliques.
+2. **Filtro por host ou caminho:** `Nome do host` = `clinicas.genosgroup.com.br`, ou
+   `Caminho da página` começando com `/avaliacao`. Serve quando quiser conferir sem
+   depender da marcação.
+3. **Nenhum filtro:** os oito eventos abaixo só existem nesta página. Qualquer
+   relatório montado em cima deles já nasce isolado.
+
+Fluxo separado só faria sentido para separar acesso ou cobrança, e o custo é perder a
+jornada de quem vê a página e depois navega para o site principal.
 
 ### Os eventos
 

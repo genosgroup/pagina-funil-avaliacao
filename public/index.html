@@ -586,7 +586,11 @@ if(CONFIG.GA_ID){
   g.src='https://www.googletagmanager.com/gtag/js?id='+encodeURIComponent(CONFIG.GA_ID);
   document.head.appendChild(g);
   gtag('js',new Date());
-  gtag('config',CONFIG.GA_ID);
+  // O fluxo é de genosgroup.com.br e esta página mora num subdomínio, então os
+  // dados dela caem junto com os do site inteiro. content_group é dimensão
+  // nativa do GA4: marca a página na origem e permite filtrar e comparar sem
+  // criar fluxo separado e sem registrar dimensão personalizada.
+  gtag('config',CONFIG.GA_ID,{content_group:'Avaliação · Orçamento Parado'});
 }
 
 /* Ponto único de saída de evento. Com o Analytics desligado, ou com o script
