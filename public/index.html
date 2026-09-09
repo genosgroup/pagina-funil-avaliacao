@@ -348,11 +348,11 @@ details.formula[open] summary{color:var(--a-texto)}
       <div class="stagger">
         <div class="kicker">Último passo <b>·</b> falta só isso</div>
         <h2>Seu número já está <span class="grad">calculado.</span></h2>
-        <p class="ajuda">Só precisamos saber para quem ele é.</p>
+        <p class="ajuda">Só precisamos saber de quem ele é. O Instagram é para olharmos a sua operação antes de conversar, e não chegarmos perguntando o óbvio.</p>
         <div class="campo">
-          <label for="nome">Seu nome</label>
-          <input type="text" id="nome" placeholder="Como podemos te chamar" autocomplete="name">
-          <div class="erro" id="erroNome">Preencha seu nome</div>
+          <label for="insta">Instagram da clínica</label>
+          <input type="text" id="insta" placeholder="@suaclinica" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="off">
+          <div class="erro" id="erroInsta">Preencha o @ do Instagram da clínica</div>
         </div>
         <div class="campo">
           <label for="zap">WhatsApp</label>
@@ -380,7 +380,7 @@ details.formula[open] summary{color:var(--a-texto)}
 
       <div class="stagger">
         <div class="res-topo">
-          <div class="kicker">Seu resultado, <span id="nomeKicker"></span></div>
+          <div class="kicker">Seu resultado, <span id="idKicker"></span></div>
           <div class="numerao grad" id="numerao">R$ 0</div>
           <p class="lead" style="margin-top:0" id="leadNumerao">todo mês, em gente que procurou a sua clínica e não virou paciente. Chegaram no WhatsApp, no direct, no telefone, e se perderam em algum ponto do caminho. A conta é feita com os seus próprios números.</p>
         </div>
@@ -512,21 +512,11 @@ details.formula[open] summary{color:var(--a-texto)}
       </div>
 
       <div class="posgate rev" id="boxPosGate">
-        <div class="tag">Duas últimas, e são rápidas</div>
+        <div class="tag">Última, e é rápida</div>
         <h3>Qual sistema de gestão a clínica usa?</h3>
         <p class="sub">Para prepararmos o cálculo com os seus números reais.</p>
         <div class="chips" id="chipsSistema"></div>
         <p class="obrigado">Anotado.</p>
-      </div>
-
-      <div class="posgate rev" id="boxInsta">
-        <h3 style="margin-top:0">E qual o Instagram da clínica?</h3>
-        <p class="sub">Para a gente olhar a sua operação antes de conversar, e não chegar perguntando o óbvio.</p>
-        <div style="display:flex;gap:9px;align-items:flex-start">
-          <input type="text" id="insta" placeholder="@suaclinica" autocapitalize="none" autocorrect="off" style="flex:1;min-width:0;font-family:inherit;font-size:16px;padding:14px 16px;border:1.5px solid var(--linha);border-radius:12px;background:#fff;color:var(--tinta)">
-          <button class="btn btn-cheio" style="padding:14px 22px;font-size:15px" onclick="responderInsta()">Enviar</button>
-        </div>
-        <p class="obrigado">Perfeito. Já vamos dar uma olhada.</p>
       </div>
 
       <div class="cta rev">
@@ -880,12 +870,27 @@ function contar(el,alvo,dur=1400,formato=dinheiro){
 /* ============================================================
    GATE E RESULTADO
    ============================================================ */
+/* Aceita "@clinica", "clinica", "instagram.com/clinica" e a URL inteira, com
+   ou sem barra no fim, e devolve sempre "@clinica". Devolve '' quando não
+   sobra nada aproveitável, que é o que o gate usa para travar o botão.
+   Ser tolerante na entrada e rígido no que grava evita que a planilha receba
+   o mesmo perfil escrito de cinco jeitos diferentes. */
+function lerInstagram(){
+  const v=document.getElementById('insta').value.trim()
+    .replace(/^https?:\/\//i,'')
+    .replace(/^(www\.)?instagram\.com\//i,'')
+    .replace(/^@+/,'')
+    .replace(/[/?#].*$/,'')
+    .trim();
+  return /^[A-Za-z0-9._]{2,30}$/.test(v) ? '@'+v : '';
+}
+
 function validar(){
-  const nome=document.getElementById('nome').value.trim();
+  const insta=lerInstagram();
   const zap=document.getElementById('zap').value.replace(/\D/g,'');
-  document.getElementById('erroNome').classList.toggle('on',nome.length<2);
+  document.getElementById('erroInsta').classList.toggle('on',!insta);
   document.getElementById('erroZap').classList.toggle('on',zap.length<10);
-  return nome.length>=2 && zap.length>=10;
+  return !!insta && zap.length>=10;
 }
 function revelar(){
   if(!validar())return;
@@ -905,8 +910,7 @@ function revelar(){
 
 function renderResultado(){
   const r=resultado;
-  const nome=document.getElementById('nome').value.trim().split(' ')[0];
-  document.getElementById('nomeKicker').textContent=nome;
+  document.getElementById('idKicker').textContent=lerInstagram();
 
   const g=GARGALOS[r.gargalo];
   document.getElementById('gargaloTitulo').textContent=g.titulo;
@@ -998,13 +1002,6 @@ function responderSistema(s){
   document.getElementById('boxPosGate').classList.add('respondido');
   enviarLead(true);
 }
-function responderInsta(){
-  const v=document.getElementById('insta').value.trim().replace(/^@+/,'').replace(/^https?:\/\/(www\.)?instagram\.com\//i,'').replace(/\/.*$/,'');
-  if(v.length<2)return;
-  respostaInsta='@'+v;
-  document.getElementById('boxInsta').classList.add('respondido');
-  enviarLead(true);
-}
 
 /* revela cada bloco ao entrar na tela e dispara o número dele */
 function ligarRevelacao(r){
@@ -1050,19 +1047,19 @@ function ligarRevelacao(r){
 }
 
 function chamarWhats(){
-  const nome=document.getElementById('nome').value.trim();
+  const insta=lerInstagram();
   const r=resultado;
   const ETAPA={agendamento:'não chegam nem a marcar',falta:'marcam e não aparecem',parado:'sentam na cadeira e não fecham',demanda:'chega pouca gente para o tamanho da clínica',base:'estão paradas na base',medicao:'nem sei medir direito'};
   const msg = r.naoMede
-    ? `Oi! Sou ${nome}. Fiz o Orçamento Parado e deu ${dinheiro(r.numeroPrincipal)} por mês passando pela clínica sem virar paciente. Não soube responder algumas perguntas do meu funil e quero entender melhor os meus números.`
-    : `Oi! Sou ${nome}. Fiz o Orçamento Parado: ${dinheiro(r.numeroPrincipal)} por mês passam pela clínica e não viram paciente, e o maior buraco é a parte em que ${ETAPA[r.gargalo]||'o funil trava'}. Quero destravar minha clínica.`;
+    ? `Oi! Sou da ${insta}. Fiz o Orçamento Parado e deu ${dinheiro(r.numeroPrincipal)} por mês passando pela clínica sem virar paciente. Não soube responder algumas perguntas do meu funil e quero entender melhor os meus números.`
+    : `Oi! Sou da ${insta}. Fiz o Orçamento Parado: ${dinheiro(r.numeroPrincipal)} por mês passam pela clínica e não viram paciente, e o maior buraco é a parte em que ${ETAPA[r.gargalo]||'o funil trava'}. Quero destravar minha clínica.`;
   window.open(`https://wa.me/${CONFIG.WHATSAPP}?text=${encodeURIComponent(msg)}`,'_blank');
 }
 
 /* ============================================================
    ENVIO DO LEAD
    ============================================================ */
-let respostaSistema=null, respostaInsta=null;
+let respostaSistema=null;
 
 function enviarLead(atualizacao){
   if(!CONFIG.WEBHOOK)return;
@@ -1072,9 +1069,8 @@ function enviarLead(atualizacao){
     data:new Date().toISOString(),
     // segunda chamada, feita quando o lead responde algo depois do gate
     atualizacao: !!atualizacao,
-    nome:document.getElementById('nome').value.trim(),
     whatsapp:document.getElementById('zap').value.replace(/\D/g,''),
-    instagram:respostaInsta||'',
+    instagram:lerInstagram(),
     sistema:respostaSistema||'',
     respostas:Object.fromEntries(Object.entries(respostas).map(([k,v])=>[k,v.t])),
     calculo:{
@@ -1131,7 +1127,7 @@ document.getElementById('zap').addEventListener('input',e=>{
   e.target.value=v;
 });
 document.getElementById('zap').addEventListener('keydown',e=>{if(e.key==='Enter')revelar()});
-document.getElementById('nome').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('zap').focus()});
+document.getElementById('insta').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('zap').focus()});
 </script>
 </body>
 </html>

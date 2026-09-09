@@ -142,16 +142,45 @@ armazenado traduzido.
 
 ---
 
+## O gate pede @ do Instagram e WhatsApp
+
+Não pede nome. A decisão é de 09/09: o @ identifica a clínica e ainda deixa olhar a
+operação antes da conversa, coisa que um primeiro nome não faz. Trocar em vez de somar
+mantém o gate em dois campos, que é o que menos atrapalha a conversão no ponto exato
+em que a pessoa decide se continua.
+
+**Os dois campos travam o botão.** Sem @ válido ou sem WhatsApp, "Ver meu número" não
+avança. Foi uma escolha consciente: o @ vale mais preenchido do que a fração de leads
+que desiste por causa dele. Se um dia isso se mostrar caro, a trava do @ sai de
+`validar()` sozinha, sem tocar em mais nada.
+
+**`lerInstagram()` é tolerante na entrada e rígido na saída.** Aceita `@clinica`,
+`clinica`, `instagram.com/clinica` e a URL inteira com `?igshid=...`, e sempre grava
+`@clinica`. Sem isso a planilha receberia o mesmo perfil escrito de cinco jeitos e
+nenhum filtro funcionaria.
+
+**A coluna `Nome` da planilha continua existindo e passa a ficar vazia.** É de
+propósito: removê-la obrigaria a migrar a planilha de novo, e ela não atrapalha nada
+parada ali. As linhas antigas seguem com o nome que já tinham. Se um dia a coluna for
+removida, tire-a do `CABECALHO` **e** do `appendRow`, na mesma posição.
+
+O @ também substituiu o nome em dois lugares de tela: o rótulo do resultado
+("Seu resultado, @clinica") e a mensagem pronta do WhatsApp ("Oi! Sou da @clinica...").
+Na mensagem a perda é pequena, porque o WhatsApp já mostra o nome do perfil de quem
+escreve — e saber a clínica ajuda mais do que saber o primeiro nome.
+
+---
+
 ## Três detalhes técnicos que não devem ser mexidos
 
 **1. `Content-Type: text/plain` é de propósito.** Com `application/json`, o navegador
 dispara um preflight CORS que o Google Apps Script não responde, e o lead se perde
 em silêncio. Se parecer errado, é intencional.
 
-**2. São até três envios por lead.** O primeiro acontece no gate, com tudo. Os outros
-acontecem se o lead responder as duas perguntas da tela de resultado (sistema de
-gestão e Instagram), e vêm com `atualizacao: true`. O script procura a linha do mesmo
-WhatsApp nas últimas 50 e completa as colunas, em vez de duplicar.
+**2. São até dois envios por lead.** O primeiro acontece no gate, com tudo, o
+Instagram incluído. O segundo acontece se o lead responder a pergunta do sistema de
+gestão na tela de resultado, e vem com `atualizacao: true`. O script procura a linha
+do mesmo WhatsApp nas últimas 50 e completa a coluna, em vez de duplicar.
 
 **3. A gravação na planilha é por posição.** `CABECALHO` e o `appendRow` do
 `doPost` são duas listas paralelas. Mexeu em uma, mexa na outra, no mesmo índice.
@@ -173,7 +202,7 @@ que já normaliza acento, maiúscula e espaço.
 
 | | v2 | v3 |
 | --- | --- | --- |
-| Perguntas | 12, mais 1 depois do gate | 11, mais 2 depois do gate |
+| Perguntas | 12, mais 1 depois do gate | 11, mais 1 depois do gate |
 | Orçamentos parados | era uma pergunta | saiu, e não volta |
 | Ordem | funil inteiro em sequência | porte, depois quem atende, depois o funil |
 | Número em destaque | anual | **mensal** |
@@ -230,7 +259,9 @@ uma resposta, leva o lead de volta àquela pergunta em vez de estourar no cálcu
 - [ ] Fluxo inteiro preenchido, e a linha apareceu na planilha com as 24 colunas
 - [ ] Fluxo preenchido **com cliques repetidos**, conferindo que nenhuma pergunta é pulada
 - [ ] Teste com três "não sei", conferindo que o gargalo vira "Não se mede" e o aproveitamento some
-- [ ] As duas perguntas pós-gate respondidas, conferindo que **completaram a linha em vez de criar outra**
+- [ ] A pergunta do sistema, pós-gate, respondida, conferindo que **completou a linha em vez de criar outra**
+- [ ] Gate testado vazio, conferindo que ele **não deixa passar** sem o @ e sem o WhatsApp
+- [ ] Gate testado com `instagram.com/clinica`, conferindo que a planilha grava `@clinica`
 - [ ] Botão final abre o WhatsApp com a mensagem já escrita
 - [ ] Testado no celular, que é onde o dentista vai responder
 
