@@ -7,9 +7,9 @@ Tratamento e Intervenção.
 **URL no ar:** `https://clinicas.genosgroup.com.br/avaliacao`
 **Hospedagem:** Cloudflare Workers (assets estáticos), com deploy automático a partir deste repositório.
 
-> O material original pede `/orcamento-parado` como caminho. A rota que ficou de pé
-> é `/avaliacao`, decidida depois. Quem for montar link de anúncio ou bio usa esta,
-> não a do documento.
+> **A URL é `/avaliacao`.** O `docs/README-original.md` e a tarefa do ClickUp pedem
+> `/orcamento-parado`: é da versão antiga e não vale mais. Confirmado pelo Genos em
+> 09/09/2026. Quem for montar link de anúncio, bio ou prospecção usa `/avaliacao`.
 
 ---
 

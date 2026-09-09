@@ -1,5 +1,12 @@
 # Orçamento Parado · Genos
 
+> **Nota do repositório, 09/09/2026.** Este arquivo é o README que veio no
+> `funil-avaliacao-v3.zip`, preservado como veio. Dois pontos dele estão
+> desatualizados: a URL de destino é **`/avaliacao`**, não `/orcamento-parado`, e a
+> planilha **não tem** as colunas `ID Kommo` e `Status sincronização`. O `README.md`
+> na raiz é a fonte atual.
+
+
 **Versão 3** · agosto de 2026
 
 Diagnóstico digital de 11 perguntas que faz a clínica descobrir sozinha onde está o dinheiro. É a porta de entrada do funil AVALIAÇÃO e classifica o lead entre as duas saídas: Tratamento e Intervenção.
