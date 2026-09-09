@@ -195,16 +195,65 @@ custa um commit e trinta segundos, e fica versionado junto com os testes.
 ao código, ou várias tags entrando e saindo por campanha. Aí o custo de pedir deploy a
 cada tag supera o peso do contêiner.
 
+### Um pixel por marca, nunca por landing page
+
+Todas as LPs da Genos entram no **mesmo pixel**. Pixel por página fragmenta o
+aprendizado do algoritmo e, pior, parte os públicos: retargeting de quem abandonou no
+meio e lookalike de quem converteu passam a existir em pedaços pequenos demais para
+funcionar.
+
 ### Os eventos do Pixel
 
 Espelhar os do GA4, usando os **nomes padrão do Meta**, senão não dá para otimizar
 campanha por eles:
 
-| Momento | Evento do Meta |
-| --- | --- |
-| carregou | `PageView` |
-| passou no formulário | `Lead` |
-| clicou no WhatsApp | `Contact` |
+| Momento | Evento do Meta | Evento equivalente no GA4 |
+| --- | --- | --- |
+| carregou | `PageView` | `page_view` |
+| passou no formulário | `Lead` | `generate_lead` |
+| clicou no WhatsApp | `Contact` | `whatsapp_clicado` |
+
+### Correspondência avançada
+
+Manda o telefone do lead junto com o evento, o que melhora bastante atribuição e
+qualidade de público. O `fbevents.js` normaliza e aplica SHA-256 **no navegador**: o
+número em claro não sai da página.
+
+Dois detalhes que fazem a diferença entre funcionar e não funcionar:
+
+```js
+// 1. O telefone precisa do código do país. Sem o 55, a Meta não casa o contato.
+fbq('init', PIXEL_ID, {ph: '55' + telefoneSoDigitos});
+// 2. E precisa vir ANTES do evento, senão o Lead sai sem o contato.
+fbq('track', 'Lead');
+```
+
+Reinicializar o pixel com o dado do usuário no meio do fluxo é o padrão da Meta para
+quando o contato só existe depois de um formulário.
+
+> **É decisão de negócio, não técnica.** É dado pessoal saindo da página para um
+> terceiro, ainda que hasheado. Só ligue com a política de privacidade cobrindo isso.
+> Nesta página está ligado, por decisão do Genos em 09/09/2026.
+
+### Verificar o domínio no Meta Business
+
+*Configurações do negócio › Segurança da marca › Domínios*, *por DNS*. Sem isso a
+atribuição em tráfego iOS fica capada, e iPhone é boa parte do público de clínica.
+
+Verifique por **DNS e não por meta-tag**: DNS vale para o domínio inteiro e todos os
+subdomínios, então cobre qualquer LP futura sem mexer em código de novo.
+
+### Priorizar os eventos (AEM)
+
+Depois do domínio verificado, em *Gerenciador de Eventos*, ordene os eventos do domínio
+por prioridade. A Meta só considera **8 por domínio** em tráfego iOS, e em ordem:
+
+1. `Lead` — é o que a campanha otimiza, então vem primeiro
+2. `Contact`
+3. `PageView`
+
+**Só dá para priorizar evento que já existe.** Se a lista vier vazia, é porque o pixel
+ainda não disparou nenhum: suba o pixel, faça um preenchimento de teste, e volte.
 
 ### O que de fato recupera sinal: a API de Conversões
 
@@ -219,6 +268,37 @@ quando o volume justificar.
 
 > **Antes de mandar telefone ou e-mail para o Meta**, mesmo hasheado, decida se a
 > política de privacidade cobre isso. É LGPD, não detalhe técnico.
+
+---
+
+### A convenção de UTM ← isto vale mais que a ferramenta
+
+Nenhum relatório de canal sobrevive a UTM inconsistente. Se um anúncio chega como
+`utm_source=instagram`, outro como `ig` e outro como `meta`, o mesmo canal vira três
+linhas e nenhuma soma bate.
+
+A convenção da Genos:
+
+| Parâmetro | Valor | Por quê |
+| --- | --- | --- |
+| `utm_source` | `{{site_source_name}}` | parâmetro dinâmico da Meta; devolve `fb`, `ig`, `msg`, `an` sozinho, sem ninguém digitar |
+| `utm_medium` | `paid_social` | constante, sempre |
+| `utm_campaign` | nome da campanha | |
+| `utm_content` | a variação do criativo | é o que permite comparar criativo |
+
+O `{{site_source_name}}` existe justamente para isso: garante um valor constante por
+plataforma de publisher sem depender de memória. Para links montados à mão, use
+`ferramentas/gerador-de-links.html`, que normaliza acento, maiúscula e espaço.
+
+### Importar o custo da Meta para dentro do GA4
+
+*Administrador › Conexões com a Meta › Criar fonte de dados*. Traz custo, cliques e
+impressões, que é o que permite ver **custo por lead por campanha dentro do GA4** — sem
+isso o GA4 mostra o lead e não mostra quanto ele custou.
+
+Depende inteiramente da convenção acima: a própria tela avisa que exige um valor
+constante de `utm_source` e `utm_medium` por plataforma de publisher. Sem disciplina de
+UTM, o custo cola na campanha errada, o que é pior do que não ter custo nenhum.
 
 ---
 
@@ -268,8 +348,13 @@ Se usar, a canônica da seção 1 continua obrigatória.
 - [ ] Moeda e fuso corretos (Real, São Paulo)
 
 **No Meta, se houver tráfego pago**
-- [ ] Pixel com `PageView`, `Lead` e `Contact`
+- [ ] Pixel da marca (não da LP) com `PageView`, `Lead` e `Contact`
 - [ ] Decisão registrada sobre correspondência avançada e LGPD
+- [ ] Telefone com DDI, e o `init` com o contato **antes** do evento `Lead`
+- [ ] Domínio verificado por DNS
+- [ ] Eventos priorizados, com `Lead` em primeiro
+- [ ] Convenção de UTM combinada com quem sobe as campanhas
+- [ ] **Funil completo com o `fbevents.js` bloqueado**
 
 **Uma vez por domínio**
 - [ ] Search Console como propriedade de **domínio**

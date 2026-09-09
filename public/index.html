@@ -588,7 +588,11 @@ const CONFIG = {
   // ID de medição do Google Analytics 4, no formato G-XXXXXXXXXX.
   // Vazio desliga o Analytics inteiro: sem ele a página não faz nenhuma
   // requisição para fora, que é como ela nasceu e como ela abre offline.
-  GA_ID: 'G-X2G6KW4TNY'
+  GA_ID: 'G-X2G6KW4TNY',
+  // Pixel da Meta. Mesma regra do GA_ID: vazio desliga por completo.
+  // É o pixel único da Genos, compartilhado com os outros sites de propósito:
+  // pixel por landing page fragmenta o aprendizado e mata retargeting e lookalike.
+  META_PIXEL: '624880005754303'
 };
 
 /* ============================================================
@@ -621,6 +625,38 @@ if(CONFIG.GA_ID){
    pode quebrar por causa de métrica: foi assim que um lead já se perdeu aqui. */
 function evento(nome,dados){
   try{ if(CONFIG.GA_ID) gtag('event',nome,dados||{}); }catch(e){}
+}
+
+/* ============================================================
+   PIXEL DA META
+   ============================================================ */
+if(CONFIG.META_PIXEL){
+  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+  n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
+  (window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init',CONFIG.META_PIXEL);
+  fbq('track','PageView');
+}
+
+/* Mesma disciplina do evento() do GA: se o pixel estiver desligado, ou se o
+   fbevents.js for barrado por bloqueador de anúncio, isto vira no-op. */
+function metaEvento(nome,dados){
+  try{ if(CONFIG.META_PIXEL && window.fbq) fbq('track',nome,dados||{}); }catch(e){}
+}
+
+/* CORRESPONDÊNCIA AVANÇADA. Reinicializa o pixel com o telefone antes de mandar
+   o Lead, que é o padrão da Meta para quando o dado só existe no meio do fluxo.
+   O fbevents.js normaliza e aplica SHA-256 no navegador: o número em claro não
+   sai daqui. Precisa do código do país, senão a Meta não casa o contato. */
+function metaIdentificar(){
+  try{
+    if(!CONFIG.META_PIXEL || !window.fbq) return;
+    const zap=document.getElementById('zap').value.replace(/\D/g,'');
+    if(zap.length<10) return;
+    fbq('init',CONFIG.META_PIXEL,{ph:'55'+zap});
+  }catch(e){}
 }
 
 /* ============================================================
@@ -968,6 +1004,8 @@ function revelar(){
   // de conversão sem configuração extra. O segundo evento é o nosso, com o
   // recorte que o padrão não carrega.
   evento('generate_lead');
+  metaIdentificar();   // antes do Lead, senão o evento vai sem o contato
+  metaEvento('Lead');
   evento('lead_capturado',{saida:resultado.saida,gargalo:resultado.gargalo,diagnostico:resultado.leitura});
   mostrarTela('telaCarregando');
   document.getElementById('bar').style.width='100%';
@@ -1125,6 +1163,7 @@ function chamarWhats(){
     ? `Oi! Sou da ${insta}. Fiz o Orçamento Parado e deu ${dinheiro(r.numeroPrincipal)} por mês passando pela clínica sem virar paciente. Não soube responder algumas perguntas do meu funil e quero entender melhor os meus números.`
     : `Oi! Sou da ${insta}. Fiz o Orçamento Parado: ${dinheiro(r.numeroPrincipal)} por mês passam pela clínica e não viram paciente, e o maior buraco é a parte em que ${ETAPA[r.gargalo]||'o funil trava'}. Quero destravar minha clínica.`;
   evento('whatsapp_clicado',{saida:r.saida,gargalo:r.gargalo});
+  metaEvento('Contact');
   window.open(`https://wa.me/${CONFIG.WHATSAPP}?text=${encodeURIComponent(msg)}`,'_blank');
 }
 
