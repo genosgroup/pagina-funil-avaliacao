@@ -274,8 +274,17 @@ details.formula[open] summary{color:var(--a-texto)}
 
 @media(max-width:640px){
   .trio{grid-template-columns:1fr;gap:8px}
-  .trio-item{display:flex;align-items:center;gap:12px;text-align:left;padding:15px 17px}
-  .trio-item .n{margin-bottom:0;font-size:18px;flex-shrink:0;min-width:38px}
+  /* Vira uma linha só: número à esquerda, texto à direita. O flex-direction
+     precisa ser dito aqui. Sem ele o card herda o "column" da regra de cima,
+     que é a de desktop, e no celular os três viram blocos altos e centrados. */
+  .trio-item{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:12px;text-align:left;padding:15px 17px}
+  /* 54px é a largura de "2 min", o mais largo dos três, com folga para a
+     fonte do sistema variar entre aparelhos. Fixar isso alinha o começo dos
+     três textos; com os 38px de antes cada um começava num ponto. */
+  .trio-item .n{margin-bottom:0;font-size:18px;flex-shrink:0;min-width:54px}
+  /* O teto de 16ch é do card estreito do desktop. Aqui sobra largura, e ele
+     só serviria para quebrar "clínicas na comparação" em duas linhas. */
+  .trio-item .t{max-width:none}
 }
 @media(max-width:560px){
   .palco{padding:52px 18px 40px}
@@ -522,7 +531,7 @@ details.formula[open] summary{color:var(--a-texto)}
         <h3 style="margin-top:0">E qual o Instagram da clínica?</h3>
         <p class="sub">Para a gente olhar a sua operação antes de conversar, e não chegar perguntando o óbvio.</p>
         <div style="display:flex;gap:9px;align-items:flex-start">
-          <input type="text" id="insta" placeholder="@suaclinica" autocapitalize="none" autocorrect="off" style="flex:1;font-family:inherit;font-size:16px;padding:14px 16px;border:1.5px solid var(--linha);border-radius:12px;background:#fff;color:var(--tinta)">
+          <input type="text" id="insta" placeholder="@suaclinica" autocapitalize="none" autocorrect="off" style="flex:1;min-width:0;font-family:inherit;font-size:16px;padding:14px 16px;border:1.5px solid var(--linha);border-radius:12px;background:#fff;color:var(--tinta)">
           <button class="btn btn-cheio" style="padding:14px 22px;font-size:15px" onclick="responderInsta()">Enviar</button>
         </div>
         <p class="obrigado">Perfeito. Já vamos dar uma olhada.</p>
