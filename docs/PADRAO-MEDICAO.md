@@ -106,6 +106,16 @@ Para esta LP: `ordem`, `pergunta`, `resposta`, `saida`, `gargalo`, `diagnostico`
 > fica invisível. Pior: **não é retroativo** — só passa a aparecer a partir do registro.
 > Registrar no dia um custa dois minutos; descobrir isso em três meses custa três meses.
 
+**O parâmetro é a única parte que não pode errar.** O nome e a descrição da dimensão
+são rótulo de relatório e aceitam acento; o parâmetro tem que bater letra por letra com
+o que a página manda. O erro clássico em português é digitar o certo: cadastrar `saída`
+e `diagnóstico` quando a página envia `saida` e `diagnostico`. O GA aceita sem
+reclamar — para ele é só texto — e a dimensão fica existindo e sempre vazia, que é pior
+do que não existir, porque parece que o dado não está chegando.
+
+Se acontecer, **abra a dimensão e corrija o parâmetro**: o campo é editável depois de
+criada. Não precisa arquivar e recriar.
+
 Teto de 50 dimensões de escopo evento. Não registre o que não vai olhar.
 
 ### 3.2 Marcar os principais eventos (conversões)
