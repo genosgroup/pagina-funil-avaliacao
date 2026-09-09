@@ -74,10 +74,12 @@ h2{font-size:clamp(24px,4.2vw,40px);line-height:1.14;font-weight:800;letter-spac
 .small{color:var(--tinta-3);font-size:clamp(12px,1.1vw,13.5px);line-height:1.6}
 
 /* ===== ABERTURA · trio ===== */
-.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:32px}
-.trio-item{border:1px solid var(--linha);border-radius:14px;padding:20px 16px;background:#fff;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:flex-start}
-.trio-item .n{font-size:clamp(20px,2.2vw,25px);font-weight:800;letter-spacing:-.02em;color:var(--a-texto);line-height:1;margin-bottom:9px;white-space:nowrap}
-.trio-item .t{font-size:clamp(12px,1.2vw,13px);color:var(--tinta-2);line-height:1.35;font-weight:500;max-width:16ch}
+/* Um card só, deitado: número à esquerda, texto à direita, em qualquer
+   largura. Em pé ele virava uma caixa estreita e alta com o texto quebrado. */
+.trio{display:grid;grid-template-columns:max-content;gap:10px;margin-top:32px}
+.trio-item{border:1px solid var(--linha);border-radius:14px;padding:16px 20px;background:#fff;text-align:left;display:flex;flex-direction:row;align-items:center;gap:12px}
+.trio-item .n{font-size:clamp(20px,2.2vw,25px);font-weight:800;letter-spacing:-.02em;color:var(--a-texto);line-height:1;white-space:nowrap;flex-shrink:0}
+.trio-item .t{font-size:clamp(12px,1.2vw,13px);color:var(--tinta-2);line-height:1.35;font-weight:500}
 
 /* ===== PERGUNTA ===== */
 .ajuda{font-size:clamp(14px,1.4vw,15.5px);color:var(--tinta-3);margin-top:13px;margin-bottom:28px;line-height:1.55}
@@ -273,18 +275,10 @@ details.formula[open] summary{color:var(--a-texto)}
 .rodape{text-align:center;padding:26px 24px 32px;font-size:11px;color:var(--tinta-3);letter-spacing:.22em;text-transform:uppercase;position:relative;z-index:1;border-top:1px solid var(--linha);font-weight:800}
 
 @media(max-width:640px){
+  /* No celular o card ocupa a largura toda, em vez de encolher no canto. */
   .trio{grid-template-columns:1fr;gap:8px}
-  /* Vira uma linha só: número à esquerda, texto à direita. O flex-direction
-     precisa ser dito aqui. Sem ele o card herda o "column" da regra de cima,
-     que é a de desktop, e no celular os três viram blocos altos e centrados. */
-  .trio-item{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:12px;text-align:left;padding:15px 17px}
-  /* 54px é a largura de "2 min", o mais largo dos três, com folga para a
-     fonte do sistema variar entre aparelhos. Fixar isso alinha o começo dos
-     três textos; com os 38px de antes cada um começava num ponto. */
-  .trio-item .n{margin-bottom:0;font-size:18px;flex-shrink:0;min-width:54px}
-  /* O teto de 16ch é do card estreito do desktop. Aqui sobra largura, e ele
-     só serviria para quebrar "clínicas na comparação" em duas linhas. */
-  .trio-item .t{max-width:none}
+  .trio-item{padding:15px 17px}
+  .trio-item .n{font-size:18px}
 }
 @media(max-width:560px){
   .palco{padding:52px 18px 40px}
@@ -332,9 +326,7 @@ details.formula[open] summary{color:var(--a-texto)}
         <h1>Quanto a sua clínica<br>tem <span class="grad">parado agora?</span></h1>
         <p class="lead">Orçamento aprovado que ninguém retomou. Avaliação que ouviu o valor, pediu pra pensar e sumiu. Tratamento que parou no meio. Quase nenhum dono de clínica sabe somar isso.</p>
         <div class="trio">
-          <div class="trio-item"><div class="n">11</div><div class="t">perguntas rápidas</div></div>
           <div class="trio-item"><div class="n">2 min</div><div class="t">e o número aparece</div></div>
-          <div class="trio-item"><div class="n">40</div><div class="t">clínicas na comparação</div></div>
         </div>
         <div class="acoes"><button class="btn btn-cheio btn-largo" onclick="iniciar()">Fazer a conta da minha clínica</button></div>
       </div>
