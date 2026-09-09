@@ -10,6 +10,14 @@
 <meta name="description" content="Descubra em 2 minutos quanto a sua clínica tem parado entre orçamento aberto, avaliação que não fecha e paciente que sumiu.">
 <meta property="og:title" content="Quanto a sua clínica tem em orçamento parado?">
 <meta property="og:description" content="11 perguntas. 2 minutos. O número que quase nenhum dono de clínica sabe responder.">
+<meta property="og:url" content="https://clinicas.genosgroup.com.br/avaliacao">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta name="twitter:card" content="summary_large_image">
+<!-- O Worker roda com not_found_handling em single-page-application, então
+     QUALQUER caminho devolve esta página. Sem a canônica, um link de anúncio
+     truncado viraria uma URL indexável distinta, com o mesmo conteúdo. -->
+<link rel="canonical" href="https://clinicas.genosgroup.com.br/avaliacao">
 <meta name="theme-color" content="#FDFCFA">
 <style>
 :root{
@@ -590,7 +598,14 @@ if(CONFIG.GA_ID){
   // dados dela caem junto com os do site inteiro. content_group é dimensão
   // nativa do GA4: marca a página na origem e permite filtrar e comparar sem
   // criar fluxo separado e sem registrar dimensão personalizada.
-  gtag('config',CONFIG.GA_ID,{content_group:'Avaliação · Orçamento Parado'});
+  // Mesma razão da canônica: qualquer caminho serve esta página, então /avaliacao,
+  // /avaliacao/, /AVALIACAO e um link de anúncio truncado virariam quatro páginas
+  // diferentes no relatório. Normaliza o caminho e PRESERVA a query string, senão
+  // as UTMs se perdem e a atribuição de campanha vai junto.
+  gtag('config',CONFIG.GA_ID,{
+    content_group:'Avaliação · Orçamento Parado',
+    page_location:location.origin+'/avaliacao'+location.search
+  });
 }
 
 /* Ponto único de saída de evento. Com o Analytics desligado, ou com o script

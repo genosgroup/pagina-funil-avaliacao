@@ -22,6 +22,7 @@ Tratamento e Intervenção.
 | `apps-script/leads.gs` | Código do Google Apps Script que grava os leads na planilha (24 colunas). |
 | `ferramentas/gerador-de-links.html` | Ferramenta interna para montar links com UTM sem errar a grafia. **Não publicar junto com a página.** |
 | `docs/README-original.md` | README que veio no `funil-avaliacao-v3.zip`, preservado. Traz o racional completo do cálculo. |
+| `docs/PADRAO-MEDICAO.md` | O padrão de medição para LPs da Genos e de clientes: página, GA4, Meta e Search Console, com a checagem de subida. Nasceu desta página e vale para as próximas. |
 | `j.png` | Marca da Genos. É a origem do favicon, que está embutido no HTML em base64 para a página seguir sendo um arquivo único. |
 
 ---
@@ -203,6 +204,11 @@ Onde achar o ID de novo, se precisar: *Administrador › Coleta e modificação 
 Fluxos de dados › (o fluxo da web)*. É o campo "ID de medição", que o GA às vezes
 mostra traduzido como "ID DA MÉTRICA". Não confundir com o ID da propriedade, que é
 só numérico, nem com um ID do Tag Manager, que começa com `GTM-`.
+
+> O que precisa ficar configurado **no painel do GA4** — dimensões personalizadas,
+> principais eventos, retenção e filtro de tráfego interno — está em
+> [`docs/PADRAO-MEDICAO.md`](docs/PADRAO-MEDICAO.md), seção 3. Nada disso dá para
+> fazer por código, e sem isso metade do que a página manda não aparece no relatório.
 
 ### A página divide o fluxo com o site principal
 
