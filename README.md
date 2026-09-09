@@ -22,7 +22,7 @@ Tratamento e Intervenção.
 | `apps-script/leads.gs` | Código do Google Apps Script que grava os leads na planilha (24 colunas). |
 | `ferramentas/gerador-de-links.html` | Ferramenta interna para montar links com UTM sem errar a grafia. **Não publicar junto com a página.** |
 | `docs/README-original.md` | README que veio no `funil-avaliacao-v3.zip`, preservado. Traz o racional completo do cálculo. |
-| `docs/PADRAO-MEDICAO.md` | O padrão de medição para LPs da Genos e de clientes: página, GA4, Meta e Search Console, com a checagem de subida. Nasceu desta página e vale para as próximas. |
+| `docs/PADRAO-MEDICAO.md` | **O padrão de medição para LPs da Genos e de clientes.** Roteiro em ordem de execução, mais o porquê de cada decisão. Nasceu desta página e vale para as próximas. Leia antes de ativar qualquer LP nova. |
 | `j.png` | Marca da Genos. É a origem do favicon, que está embutido no HTML em base64 para a página seguir sendo um arquivo único. |
 
 ---
