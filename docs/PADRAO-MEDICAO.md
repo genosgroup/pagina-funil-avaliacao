@@ -13,10 +13,25 @@ A ordem importa: cada bloco depende do anterior.
 | --- | --- |
 | `<title>` e `<meta name="description">` | Título é o que aparece no relatório do GA e na aba. Sem ele, "Documento sem título". |
 | `og:title`, `og:description`, `og:url`, `og:type`, `og:locale` | É o card que aparece quando o link é colado no WhatsApp, no direct e no anúncio. |
-| `og:image` (1200×630) | **Sem ela o link é compartilhado sem imagem.** Numa LP que vai para anúncio e bio, isso derruba clique. |
+| `og:image` (1200×630) | **Sem ela o link é compartilhado sem imagem.** Numa LP que vai para anúncio e bio, isso derruba clique. Ver a nota abaixo. |
 | `twitter:card` | Alguns apps leem esta em vez das `og:`. |
 | `<link rel="canonical">` | Ver o bloco do SPA, abaixo. |
 | ID de medição do GA4 numa constante só | Uma linha para ligar, uma linha para desligar, um lugar para procurar. |
+
+### A `og:image` é a única exceção ao arquivo único
+
+`og:image` **não aceita caminho relativo nem data URI**: precisa de URL absoluta, num
+arquivo à parte servido pelo mesmo domínio. É por isso que o favicon pode viver embutido
+em base64 e ela não.
+
+Gerar a imagem a partir do HTML da própria LP, com os mesmos tokens de cor e a mesma
+tipografia, sai mais rápido do que pedir arte e garante que o card não pareça de outro
+produto. Nesta página é `public/og.png`, montada com a chamada, o subtítulo, a marca e
+a URL.
+
+Declare também `og:image:width`, `og:image:height` e `og:image:alt`: sem as dimensões,
+alguns clientes de mensagem baixam a imagem antes de decidir o layout do card, e o
+card pisca ou aparece cortado.
 
 ### A armadilha do `single-page-application`
 
