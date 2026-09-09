@@ -271,6 +271,13 @@ O que **de fato** vale checar nas Configurações do conjunto de dados:
 
 ### O que de fato recupera sinal: a API de Conversões
 
+**Quando fazer:** não na subida da LP. O gatilho é começar a ver *muito lead ruim* nas
+campanhas — é exatamente esse o problema que a CAPI de CRM resolve, mandando de volta o
+que aconteceu depois do formulário (qualificou, agendou, fechou) para a campanha
+otimizar por paciente e não por preenchimento. Antes de existir volume, a Meta não tem
+como aprender com esses eventos, e a integração vira complexidade sem retorno.
+
+
 O Pixel roda no navegador e é bloqueado por iOS, por bloqueador de anúncio e por
 navegador com proteção de rastreamento. **A CAPI manda o evento do servidor**, e é o
 que recupera o sinal perdido.
@@ -300,8 +307,36 @@ A convenção da Genos:
 | `utm_campaign` | nome da campanha | |
 | `utm_content` | a variação do criativo | é o que permite comparar criativo |
 
-O `{{site_source_name}}` existe justamente para isso: garante um valor constante por
-plataforma de publisher sem depender de memória. Para links montados à mão, use
+#### Como aplicar, sem depender de ninguém lembrar
+
+No Gerenciador de Anúncios, **no nível do anúncio** (não da campanha), seção
+*Rastreamento* → campo **"Parâmetros de URL do site"**. Cole sempre isto:
+
+```
+utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_content={{ad.name}}
+```
+
+Os `{{...}}` são parâmetros dinâmicos da Meta: preenchem sozinhos, com o valor real.
+**Ninguém digita nada, então ninguém erra.** É por isso que esta convenção funciona e
+uma planilha de "combinados de UTM" não.
+
+O link de destino fica limpo, só `https://.../avaliacao`. UTM no campo do link **e** no
+de parâmetros duplica os dois.
+
+#### A metade que quase todo mundo esquece: o nome da campanha
+
+Como `{{campaign.name}}` traz o nome real, **o nome da campanha vira o dado do
+relatório**. "Campanha Avaliação – Set/26" chega ao GA4 como
+`Campanha%20Avalia%C3%A7%C3%A3o%20%E2%80%93%20Set%2F26`.
+
+Então a convenção de nomes é parte da convenção de UTM, não um detalhe estético:
+
+- sem acento, sem espaço (use hífen), sem barra, e-comercial ou travessão
+- exemplo: `avaliacao-orcamento-parado-set26`, criativo `criativo-dor-a`
+
+#### Links que não são de anúncio
+
+Bio, prospecção, WhatsApp: não há parâmetro dinâmico e alguém digita. Use
 `ferramentas/gerador-de-links.html`, que normaliza acento, maiúscula e espaço.
 
 ### Importar o custo da Meta para dentro do GA4
