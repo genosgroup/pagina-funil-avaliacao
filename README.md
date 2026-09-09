@@ -189,13 +189,32 @@ do mesmo WhatsApp nas últimas 50 e completa a coluna, em vez de duplicar.
 
 ## Google Analytics
 
-`CONFIG.GA_ID` no `public/index.html` recebe o ID de medição do GA4, no formato
-`G-XXXXXXXXXX`. **Enquanto estiver vazio o Analytics fica desligado por completo** —
-a página não carrega nada de fora e continua abrindo offline, como ela nasceu.
+Ligado, em `CONFIG.GA_ID` no `public/index.html`:
 
-Onde achar o ID: no GA4, em *Administrador › Fluxos de dados › (o fluxo da web)*.
-É o "ID de medição", no canto superior direito. Não confundir com o ID da
-propriedade, que é só numérico, nem com um ID do Tag Manager, que começa com `GTM-`.
+```js
+GA_ID: 'G-X2G6KW4TNY'
+```
+
+É o fluxo de web `genosgroup.com.br`, da propriedade `445075916`. **Deixar esse campo
+vazio desliga o Analytics por completo** — a página volta a não carregar nada de fora
+e a abrir offline, como ela nasceu.
+
+Onde achar o ID de novo, se precisar: *Administrador › Coleta e modificação de dados ›
+Fluxos de dados › (o fluxo da web)*. É o campo "ID de medição", que o GA às vezes
+mostra traduzido como "ID DA MÉTRICA". Não confundir com o ID da propriedade, que é
+só numérico, nem com um ID do Tag Manager, que começa com `GTM-`.
+
+### A página divide o fluxo com o site principal
+
+O fluxo é de `genosgroup.com.br` e a página vive em `clinicas.genosgroup.com.br`. Isso
+funciona — a URL do fluxo é informativa, não é filtro, e o GA4 aceita subdomínio no
+mesmo fluxo. A consequência é que **os dados da página entram misturados com os do
+site principal**.
+
+Para isolar a página nos relatórios, filtre por `Nome do host` igual a
+`clinicas.genosgroup.com.br`, ou por `Caminho da página` começando com `/avaliacao`.
+Os oito eventos abaixo são exclusivos desta página, então qualquer relatório montado
+em cima deles já vem isolado sem precisar de filtro.
 
 ### Os eventos
 
