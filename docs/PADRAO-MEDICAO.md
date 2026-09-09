@@ -243,17 +243,31 @@ atribuição em tráfego iOS fica capada, e iPhone é boa parte do público de c
 Verifique por **DNS e não por meta-tag**: DNS vale para o domínio inteiro e todos os
 subdomínios, então cobre qualquer LP futura sem mexer em código de novo.
 
-### Priorizar os eventos (AEM)
+### Priorizar os eventos (AEM) — pode não existir mais, e tudo bem
 
-Depois do domínio verificado, em *Gerenciador de Eventos*, ordene os eventos do domínio
-por prioridade. A Meta só considera **8 por domínio** em tráfego iOS, e em ordem:
+A ideia: a Meta só considera **8 eventos por domínio** em tráfego iOS, em ordem de
+prioridade, e `Lead` tem que ser o primeiro porque é o que a campanha otimiza.
 
-1. `Lead` — é o que a campanha otimiza, então vem primeiro
-2. `Contact`
-3. `PageView`
+**Na conta da Genos, em 09/09/2026, essa tela não existe.** Procuramos na aba
+Configurações do conjunto de dados e no menu do Gerenciador de Eventos: não há seção de
+mensuração de eventos agregados. A Meta vem migrando essa priorização para automática.
 
-**Só dá para priorizar evento que já existe.** Se a lista vier vazia, é porque o pixel
-ainda não disparou nenhum: suba o pixel, faça um preenchimento de teste, e volte.
+Então a regra é: **procure uma vez, e se não achar, siga em frente.** `Lead` e `Contact`
+são eventos padrão e a Meta os prioriza sozinha. Isto não bloqueia campanha nem
+atribuição. Não vale gastar meia hora caçando a tela em cada cliente.
+
+Se existir na conta, a ordem é `Lead`, `Contact`, `PageView`, e só dá para priorizar
+evento que já disparou pelo menos uma vez.
+
+### Conferir no lugar do AEM
+
+O que **de fato** vale checar nas Configurações do conjunto de dados:
+
+- **Eventos automáticos** e **Rastrear eventos sem código**: deixe **desativados**.
+  Ligados, a IA da Meta cria eventos a partir de texto de botão, e eles poluem a lista
+  de conversões com coisa que ninguém definiu nem documentou.
+- **Correspondência automática de site**: deixe **ativada**. Ela convive com a
+  correspondência manual do código, que é a mais confiável por usar o dado digitado.
 
 ### O que de fato recupera sinal: a API de Conversões
 
