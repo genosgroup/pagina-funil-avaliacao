@@ -272,11 +272,22 @@ details.formula[open] summary{color:var(--a-texto)}
 .posgate.respondido .obrigado{display:block}
 .posgate input:focus{outline:none;border-color:var(--a1);box-shadow:0 0 0 4px rgba(232,114,47,.1)}
 
+/* ===== ABERTURA CENTRADA =====
+   Só esta tela. Nas outras o texto é longo e denso, e parágrafo corrido
+   centralizado cansa de ler; aqui é chamada curta, onde centrar equilibra. */
+#telaAbertura{text-align:center}
+#telaAbertura .lead{margin-left:auto;margin-right:auto}
+/* O card abraça o próprio conteúdo e fica centrado sob o parágrafo. Por dentro
+   o número e o texto seguem à esquerda, senão a linha deles briga com o resto. */
+#telaAbertura .trio{justify-content:center}
+#telaAbertura .acoes{justify-content:center}
+/* Sem teto, o botão esticava nos 660px da coluna e virava uma barra grossa ao
+   lado de um card pequeno. Abaixo de 380px o 100% assume e ele ocupa a largura. */
+#telaAbertura .acoes .btn-largo{width:100%;max-width:380px}
+
 .rodape{text-align:center;padding:26px 24px 32px;font-size:11px;color:var(--tinta-3);letter-spacing:.22em;text-transform:uppercase;position:relative;z-index:1;border-top:1px solid var(--linha);font-weight:800}
 
 @media(max-width:640px){
-  /* No celular o card ocupa a largura toda, em vez de encolher no canto. */
-  .trio{grid-template-columns:1fr;gap:8px}
   .trio-item{padding:15px 17px}
   .trio-item .n{font-size:18px}
 }
@@ -557,8 +568,33 @@ const CONFIG = {
   // Ver README. Vazio = o lead não é gravado em lugar nenhum.
   WEBHOOK: 'https://script.google.com/macros/s/AKfycbzlM08Rcl0xgt222dy4jS_3TyEGQH1wtkSXk2IDGel3ck-69GEocxUq4xbPMz3lekhr/exec',
   WHATSAPP: '5521985237650',
-  ORIGEM: 'orcamento-parado'
+  ORIGEM: 'orcamento-parado',
+  // ID de medição do Google Analytics 4, no formato G-XXXXXXXXXX.
+  // Vazio desliga o Analytics inteiro: sem ele a página não faz nenhuma
+  // requisição para fora, que é como ela nasceu e como ela abre offline.
+  GA_ID: ''
 };
+
+/* ============================================================
+   GOOGLE ANALYTICS
+   ============================================================ */
+window.dataLayer=window.dataLayer||[];
+function gtag(){dataLayer.push(arguments);}
+if(CONFIG.GA_ID){
+  const g=document.createElement('script');
+  g.async=true;
+  g.src='https://www.googletagmanager.com/gtag/js?id='+encodeURIComponent(CONFIG.GA_ID);
+  document.head.appendChild(g);
+  gtag('js',new Date());
+  gtag('config',CONFIG.GA_ID);
+}
+
+/* Ponto único de saída de evento. Com o Analytics desligado, ou com o script
+   do Google barrado por bloqueador de anúncio, isto vira no-op. Nenhuma tela
+   pode quebrar por causa de métrica: foi assim que um lead já se perdeu aqui. */
+function evento(nome,dados){
+  try{ if(CONFIG.GA_ID) gtag('event',nome,dados||{}); }catch(e){}
+}
 
 /* ============================================================
    PERGUNTAS
@@ -631,7 +667,7 @@ function mostrarTela(id){
   el.classList.add('ativa');
   window.scrollTo({top:0,behavior:'instant'});
 }
-function iniciar(){atual=0;renderPergunta();mostrarTela('telaPergunta');}
+function iniciar(){evento('diagnostico_iniciado');atual=0;renderPergunta();mostrarTela('telaPergunta');}
 function progresso(){document.getElementById('bar').style.width=((atual/(PERGUNTAS.length+1))*100)+'%';}
 
 function renderPergunta(){
@@ -654,12 +690,14 @@ function escolher(id,i,v,t){
   if(avancando)return;
   avancando=true;
   respostas[id]={i,v,t};
+  // A ordem é o que interessa: é ela que mostra em qual pergunta as pessoas param.
+  evento('pergunta_respondida',{pergunta:id,ordem:PERGUNTAS.findIndex(q=>q.id===id)+1,resposta:t});
   document.querySelectorAll('#opcoes .opcao').forEach((el,idx)=>el.classList.toggle('marcada',idx===i));
   setTimeout(()=>{avancando=false;avancar();},240);
 }
 function avancar(){
   if(atual<PERGUNTAS.length-1){atual++;renderPergunta();}
-  else{document.getElementById('bar').style.width='92%';mostrarTela('telaGate');}
+  else{evento('gate_visto');document.getElementById('bar').style.width='92%';mostrarTela('telaGate');}
 }
 function voltar(){if(avancando)return;if(atual>0){atual--;renderPergunta();}}
 function voltarDoGate(){atual=PERGUNTAS.length-1;renderPergunta();mostrarTela('telaPergunta');}
@@ -899,13 +937,18 @@ function revelar(){
   const faltando=PERGUNTAS.findIndex(q=>respostas[q.id]===undefined);
   if(faltando>=0){atual=faltando;renderPergunta();mostrarTela('telaPergunta');return;}
   resultado=calcular();
+  // generate_lead é o nome padrão do GA4 para isto, então entra nos relatórios
+  // de conversão sem configuração extra. O segundo evento é o nosso, com o
+  // recorte que o padrão não carrega.
+  evento('generate_lead');
+  evento('lead_capturado',{saida:resultado.saida,gargalo:resultado.gargalo,diagnostico:resultado.leitura});
   mostrarTela('telaCarregando');
   document.getElementById('bar').style.width='100%';
   const frases=['Cruzando suas respostas','Comparando com clínicas reais','Montando o seu número'];
   let i=0;
   const t=setInterval(()=>{i++;if(i<frases.length)document.getElementById('textoCarregando').textContent=frases[i];},850);
   enviarLead();
-  setTimeout(()=>{clearInterval(t);renderResultado();mostrarTela('telaResultado');},2600);
+  setTimeout(()=>{clearInterval(t);renderResultado();mostrarTela('telaResultado');evento('resultado_visto');},2600);
 }
 
 function renderResultado(){
@@ -998,6 +1041,7 @@ function vereditoPercepcao(r,L){
 
 /* Perguntas pós-gate, respondidas com o lead já capturado. */
 function responderSistema(s){
+  evento('sistema_respondido',{sistema:s});
   respostaSistema=s;
   document.getElementById('boxPosGate').classList.add('respondido');
   enviarLead(true);
@@ -1053,6 +1097,7 @@ function chamarWhats(){
   const msg = r.naoMede
     ? `Oi! Sou da ${insta}. Fiz o Orçamento Parado e deu ${dinheiro(r.numeroPrincipal)} por mês passando pela clínica sem virar paciente. Não soube responder algumas perguntas do meu funil e quero entender melhor os meus números.`
     : `Oi! Sou da ${insta}. Fiz o Orçamento Parado: ${dinheiro(r.numeroPrincipal)} por mês passam pela clínica e não viram paciente, e o maior buraco é a parte em que ${ETAPA[r.gargalo]||'o funil trava'}. Quero destravar minha clínica.`;
+  evento('whatsapp_clicado',{saida:r.saida,gargalo:r.gargalo});
   window.open(`https://wa.me/${CONFIG.WHATSAPP}?text=${encodeURIComponent(msg)}`,'_blank');
 }
 

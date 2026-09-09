@@ -187,6 +187,52 @@ do mesmo WhatsApp nas últimas 50 e completa a coluna, em vez de duplicar.
 
 ---
 
+## Google Analytics
+
+`CONFIG.GA_ID` no `public/index.html` recebe o ID de medição do GA4, no formato
+`G-XXXXXXXXXX`. **Enquanto estiver vazio o Analytics fica desligado por completo** —
+a página não carrega nada de fora e continua abrindo offline, como ela nasceu.
+
+Onde achar o ID: no GA4, em *Administrador › Fluxos de dados › (o fluxo da web)*.
+É o "ID de medição", no canto superior direito. Não confundir com o ID da
+propriedade, que é só numérico, nem com um ID do Tag Manager, que começa com `GTM-`.
+
+### Os eventos
+
+Os oito cobrem o funil inteiro, na ordem em que acontecem:
+
+| Evento | Quando dispara | O que leva junto |
+| --- | --- | --- |
+| `diagnostico_iniciado` | clicou em "Fazer a conta da minha clínica" | — |
+| `pergunta_respondida` | a cada resposta, 11 por lead completo | `pergunta`, `ordem`, `resposta` |
+| `gate_visto` | terminou as 11 e chegou no gate | — |
+| `generate_lead` | passou do gate, com @ e WhatsApp válidos | — |
+| `lead_capturado` | idem, no mesmo instante | `saida`, `gargalo`, `diagnostico` |
+| `resultado_visto` | o número apareceu na tela | — |
+| `sistema_respondido` | respondeu a pergunta pós-gate | `sistema` |
+| `whatsapp_clicado` | clicou no botão final | `saida`, `gargalo` |
+
+`generate_lead` é nome padrão do GA4, então entra nos relatórios de conversão sem
+configuração extra. `lead_capturado` dispara junto e carrega o recorte que o padrão
+não leva.
+
+**O `ordem` do `pergunta_respondida` é o que vale mais aqui.** É ele que responde em
+qual das 11 perguntas as pessoas desistem, que é a única forma de saber se o
+formulário está longo demais sem ficar no chute.
+
+### Duas coisas a saber
+
+**Métrica não pode quebrar tela.** Todo disparo passa por `evento()`, que engole
+qualquer erro. Com o Analytics desligado, ou com o script do Google barrado por
+bloqueador de anúncio, vira no-op. Isso é de propósito: esta página já perdeu lead
+por um erro de JavaScript que ninguém viu.
+
+**O Analytics é a única coisa externa na página.** Sem `GA_ID` ela segue sendo um
+arquivo único sem dependência nenhuma. Com ele, passa a carregar o `gtag.js` do
+Google — e é bom saber disso antes de prometer que a página funciona offline.
+
+---
+
 ## UTMs
 
 São capturados automaticamente da query string e vão para a planilha, nas colunas
