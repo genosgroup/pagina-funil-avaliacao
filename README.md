@@ -143,6 +143,44 @@ armazenado traduzido.
 
 ---
 
+## A bifurcação na entrada
+
+A primeira tela não diz "clínica". A primeira pergunta é **"Que tipo de negócio você
+tem?"**, e ela decide o caminho:
+
+| Resposta | Para onde vai |
+| --- | --- |
+| Clínica de saúde ou estética | as 11 perguntas de sempre, resultado completo, lead na aba `Leads` |
+| Outro tipo de negócio | captura de `@` e WhatsApp, guia em PDF, registro na aba `Outros negócios` |
+
+**Por que o filtro fica aqui e não na entrada.** No tráfego pago se filtra na porta,
+porque cada impressão é paga. No orgânico é o contrário: a impressão é de graça e quem
+clica sem perfil não custa nada. Os reels falam com dono de negócio em geral de
+propósito, porque é disso que depende o alcance — então o filtro desce para o ponto mais
+tardio possível, que é aqui dentro.
+
+E o vocabulário de clínica, que é o que torna o diagnóstico convincente, continua
+inteiro. Ele só aparece **depois** que a pessoa se identificou, nunca antes.
+
+**O braço "outro" não é lead.** Não dispara `generate_lead` nem o `Lead` da Meta, e não
+entra na aba `Leads`. Contar como lead sujaria a taxa de conversão e faria a campanha
+otimizar por quem não queremos. Ele serve para uma coisa só: medir quanto do orgânico
+chega fora do perfil.
+
+**A tela de tipo fica fora do array `PERGUNTAS`**, de propósito. Assim o fluxo de clínica
+não muda em nada e o contador segue honesto em "01 de 11".
+
+### O guia
+
+`CONFIG.GUIA` aponta para `public/guia-vendas-perdidas-whatsapp.pdf`, servido pelo
+próprio Worker. **Não use link do Drive:** pede permissão, abre visualizador em vez de
+baixar, e quebra quando alguém mexe na pasta.
+
+Com `CONFIG.GUIA` vazio o botão de download não aparece e a tela promete o envio por
+WhatsApp — em vez de oferecer um arquivo que daria 404.
+
+---
+
 ## O gate pede @ do Instagram e WhatsApp
 
 Não pede nome. A decisão é de 09/09: o @ identifica a clínica e ainda deixa olhar a
@@ -183,7 +221,11 @@ Instagram incluído. O segundo acontece se o lead responder a pergunta do sistem
 gestão na tela de resultado, e vem com `atualizacao: true`. O script procura a linha
 do mesmo WhatsApp nas últimas 50 e completa a coluna, em vez de duplicar.
 
-**3. A gravação na planilha é por posição.** `CABECALHO` e o `appendRow` do
+**3. A aba `Outros negócios` é independente.** O `doPost` desvia para ela **antes** de
+tocar em qualquer coisa do fluxo de clínica, e ela se cria sozinha na primeira gravação.
+Se um dia a aba `Leads` mudar de formato, esta não é afetada.
+
+**4. A gravação na planilha é por posição.** `CABECALHO` e o `appendRow` do
 `doPost` são duas listas paralelas. Mexeu em uma, mexa na outra, no mesmo índice.
 
 ---

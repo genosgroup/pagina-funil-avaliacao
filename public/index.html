@@ -350,12 +350,62 @@ details.formula[open] summary{color:var(--a-texto)}
     <section class="tela ativa" id="telaAbertura">
       <div class="stagger">
         <div class="kicker">Orçamento Parado <b>·</b> 2 minutos</div>
-        <h1>Quanto a sua clínica<br>tem <span class="grad">parado agora?</span></h1>
-        <p class="lead">Orçamento aprovado que ninguém retomou. Avaliação que ouviu o valor, pediu pra pensar e sumiu. Tratamento que parou no meio. Quase nenhum dono de clínica sabe somar isso.</p>
+        <h1>Descubra quanto dinheiro está <span class="grad">parado no seu negócio.</span></h1>
+        <p class="lead">Proposta que ninguém retomou. Cliente que ouviu o valor, pediu pra pensar e sumiu. Venda que parou no meio. Quase ninguém para pra somar isso.</p>
         <div class="trio">
           <div class="trio-item"><div class="n">2 min</div><div class="t">e o número aparece</div></div>
         </div>
-        <div class="acoes"><button class="btn btn-cheio btn-largo" onclick="iniciar()">Fazer a conta da minha clínica</button></div>
+        <div class="acoes"><button class="btn btn-cheio btn-largo" onclick="iniciar()">Fazer a conta do meu negócio</button></div>
+      </div>
+    </section>
+
+    <!-- TIPO DE NEGÓCIO · a bifurcação -->
+    <!-- Fica FORA do array PERGUNTAS de propósito: o fluxo de clínica não muda,
+         e o contador continua honesto em "01 de 11". -->
+    <section class="tela" id="telaTipo">
+      <div class="stagger">
+        <div class="kicker">Antes de começar</div>
+        <h2>Que tipo de negócio você tem?</h2>
+        <p class="ajuda">A conta muda conforme o seu negócio. Leva um toque.</p>
+        <div class="opcoes">
+          <button class="opcao" onclick="responderTipo('clinica')"><span class="letra">A</span><span>Clínica de saúde ou estética</span></button>
+          <button class="opcao" onclick="responderTipo('outro')"><span class="letra">B</span><span>Outro tipo de negócio</span></button>
+        </div>
+        <div class="acoes"><button class="btn btn-fantasma" onclick="mostrarTela('telaAbertura')">Voltar</button></div>
+      </div>
+    </section>
+
+    <!-- OUTRO NEGÓCIO · captura -->
+    <section class="tela" id="telaOutro">
+      <div class="stagger">
+        <div class="kicker">Feito para você também</div>
+        <h2>O diagnóstico completo é de <span class="grad">clínica.</span></h2>
+        <p class="ajuda">Mas o buraco é o mesmo em qualquer negócio: gente que chamou no WhatsApp, conversou e não fechou. Preparamos um guia com o passo a passo para recuperar essas vendas no seu.</p>
+        <div class="campo">
+          <label for="instaOutro">Instagram do negócio</label>
+          <input type="text" id="instaOutro" placeholder="@seunegocio" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="off">
+          <div class="erro" id="erroInstaOutro">Preencha o @ do Instagram</div>
+        </div>
+        <div class="campo">
+          <label for="zapOutro">WhatsApp</label>
+          <input type="tel" id="zapOutro" placeholder="(00) 00000-0000" autocomplete="tel" inputmode="numeric">
+          <div class="erro" id="erroZapOutro">Preencha um WhatsApp válido</div>
+        </div>
+        <div class="acoes">
+          <button class="btn btn-fantasma" onclick="mostrarTela('telaTipo')">Voltar</button>
+          <button class="btn btn-cheio" onclick="liberarGuia()">Quero o guia</button>
+        </div>
+        <p class="small" style="margin-top:16px">Usamos seu contato só para enviar o material. Sem lista, sem disparo em massa.</p>
+      </div>
+    </section>
+
+    <!-- OUTRO NEGÓCIO · entrega -->
+    <section class="tela" id="telaGuia">
+      <div class="stagger">
+        <div class="kicker">Pronto</div>
+        <h2>Seu guia está <span class="grad">liberado.</span></h2>
+        <p class="ajuda" id="textoGuia"><b>Recupere vendas perdidas do seu WhatsApp.</b> São 8 páginas com o mesmo raciocínio que a gente usa com clínica, escrito para qualquer negócio que vende conversando.</p>
+        <div class="acoes" id="acoesGuia"></div>
       </div>
     </section>
 
@@ -592,7 +642,12 @@ const CONFIG = {
   // Pixel da Meta. Mesma regra do GA_ID: vazio desliga por completo.
   // É o pixel único da Genos, compartilhado com os outros sites de propósito:
   // pixel por landing page fragmenta o aprendizado e mata retargeting e lookalike.
-  META_PIXEL: '624880005754303'
+  META_PIXEL: '624880005754303',
+  // Guia entregue a quem NÃO é clínica. Hospedado no próprio Worker, e não no
+  // Drive: link de Drive pede permissão, abre visualizador e quebra quando
+  // alguém mexe na pasta. Vazio esconde o botão, em vez de prometer um arquivo
+  // que ainda não existe e entregar um 404.
+  GUIA: '/guia-vendas-perdidas-whatsapp.pdf'
 };
 
 /* ============================================================
@@ -730,7 +785,56 @@ function mostrarTela(id){
   el.classList.add('ativa');
   window.scrollTo({top:0,behavior:'instant'});
 }
-function iniciar(){evento('diagnostico_iniciado');atual=0;renderPergunta();mostrarTela('telaPergunta');}
+function iniciar(){evento('diagnostico_iniciado');mostrarTela('telaTipo');}
+
+/* A BIFURCAÇÃO. No tráfego pago o filtro fica na entrada, porque cada impressão
+   é paga. No orgânico é o contrário: a impressão é de graça e quem clica sem
+   perfil não custa nada, então o filtro desce para o ponto mais tardio possível.
+   É aqui. E o vocabulário de clínica, que é o que torna o diagnóstico
+   convincente, só aparece depois que a pessoa se identificou. */
+function responderTipo(tipo){
+  evento('tipo_negocio',{tipo});
+  if(tipo==='clinica'){ atual=0; renderPergunta(); mostrarTela('telaPergunta'); return; }
+  mostrarTela('telaOutro');
+}
+
+function validarOutro(){
+  const insta=lerInstagram('instaOutro');
+  const zap=document.getElementById('zapOutro').value.replace(/\D/g,'');
+  document.getElementById('erroInstaOutro').classList.toggle('on',!insta);
+  document.getElementById('erroZapOutro').classList.toggle('on',zap.length<10);
+  return !!insta && zap.length>=10;
+}
+
+function liberarGuia(){
+  if(!validarOutro())return;
+  enviarOutro();
+  // Sem generate_lead e sem Lead da Meta, de propósito: este braço não entra no
+  // funil comercial. Contar como lead sujaria a conversão e faria a campanha
+  // otimizar por quem a gente não quer.
+  evento('guia_solicitado');
+  const acoes=document.getElementById('acoesGuia');
+  acoes.innerHTML = CONFIG.GUIA
+    ? `<a class="btn btn-cheio btn-largo" href="${CONFIG.GUIA}" download="Genos - Recupere vendas perdidas do seu WhatsApp.pdf" onclick="evento('guia_baixado')">Baixar o guia em PDF</a>`
+    : '';
+  if(!CONFIG.GUIA)
+    document.getElementById('textoGuia').textContent='Recebemos seu contato. O guia chega no seu WhatsApp em instantes.';
+  mostrarTela('telaGuia');
+}
+
+function enviarOutro(){
+  if(!CONFIG.WEBHOOK)return;
+  const dados={
+    origem:CONFIG.ORIGEM,
+    tipo:'outro',
+    data:new Date().toISOString(),
+    instagram:lerInstagram('instaOutro'),
+    whatsapp:document.getElementById('zapOutro').value.replace(/\D/g,''),
+    url:window.location.href,
+    utm:Object.fromEntries(new URLSearchParams(window.location.search))
+  };
+  fetch(CONFIG.WEBHOOK,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(dados)}).catch(()=>{});
+}
 function progresso(){document.getElementById('bar').style.width=((atual/(PERGUNTAS.length+1))*100)+'%';}
 
 function renderPergunta(){
@@ -976,8 +1080,10 @@ function contar(el,alvo,dur=1400,formato=dinheiro){
    sobra nada aproveitável, que é o que o gate usa para travar o botão.
    Ser tolerante na entrada e rígido no que grava evita que a planilha receba
    o mesmo perfil escrito de cinco jeitos diferentes. */
-function lerInstagram(){
-  const v=document.getElementById('insta').value.trim()
+function lerInstagram(id){
+  const el=document.getElementById(id||'insta');
+  if(!el) return '';
+  const v=el.value.trim()
     .replace(/^https?:\/\//i,'')
     .replace(/^(www\.)?instagram\.com\//i,'')
     .replace(/^@+/,'')
@@ -1239,6 +1345,8 @@ document.getElementById('zap').addEventListener('input',e=>{
 });
 document.getElementById('zap').addEventListener('keydown',e=>{if(e.key==='Enter')revelar()});
 document.getElementById('insta').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('zap').focus()});
+document.getElementById('instaOutro').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('zapOutro').focus()});
+document.getElementById('zapOutro').addEventListener('keydown',e=>{if(e.key==='Enter')liberarGuia()});
 </script>
 </body>
 </html>

@@ -33,6 +33,16 @@
 var ABA = 'Leads';
 
 /**
+ * Quem chegou pelo link da bio e NÃO é clínica. Vive numa aba própria de
+ * propósito: não é lead comercial, não entra no funil, e misturar na aba Leads
+ * sujaria a taxa de conversão e faria a campanha otimizar por quem não queremos.
+ * Serve para uma coisa só: saber quanto do orgânico chega fora do perfil.
+ */
+var ABA_OUTROS = 'Outros negócios';
+var CABECALHO_OUTROS = ['Data', 'Instagram', 'WhatsApp',
+                        'Canal', 'Formato', 'Campanha', 'Variação', 'URL'];
+
+/**
  * A coluna "Data" é gravada no fuso da PLANILHA, não no do script. Planilha
  * nova do Google nasce em horário do Pacífico e o lead chega 4 horas atrasado
  * sem ninguém perceber, porque a hora existe, só está errada.
@@ -135,6 +145,11 @@ function prepararPlanilha() {
 function doPost(e) {
   try {
     var d = JSON.parse(e.postData.contents);
+
+    // Desvio do braço "outro tipo de negócio". Sai daqui antes de tocar em
+    // qualquer coisa do fluxo de clínica, que segue exatamente como estava.
+    if (d.tipo === 'outro') { return gravarOutro(d); }
+
     var c = d.calculo || {};
     var r = d.respostas || {};
     var u = d.utm || {};
@@ -193,7 +208,7 @@ function doPost(e) {
 }
 
 function doGet() {
-  return responder({ok: true, msg: 'Endpoint do Orçamento Parado v3 no ar.'});
+  return responder({ok: true, msg: 'Endpoint do Orçamento Parado v3.1 no ar.'});
 }
 
 /**
@@ -207,6 +222,38 @@ function garantirFuso(ss) {
   } catch (err) {
     console.warn('Não foi possível ajustar o fuso da planilha: ' + err);
   }
+}
+
+/**
+ * Grava na aba de outros negócios, criando-a na primeira vez. Independente do
+ * pegarAba(): se um dia a aba Leads mudar de formato, esta não é afetada.
+ */
+function gravarOutro(d) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  garantirFuso(ss);
+  var aba = ss.getSheetByName(ABA_OUTROS);
+  if (!aba) {
+    aba = ss.insertSheet(ABA_OUTROS);
+    aba.appendRow(CABECALHO_OUTROS);
+    aba.getRange(1, 1, 1, CABECALHO_OUTROS.length)
+       .setFontWeight('bold').setBackground('#F5F2ED').setVerticalAlignment('middle');
+    aba.setFrozenRows(1);
+    aba.getRange(2, 1, 5000, 1).setNumberFormat('dd/mm/yyyy HH:mm');
+    var larg = [140, 190, 140, 110, 110, 170, 130, 320];
+    for (var i = 0; i < larg.length; i++) aba.setColumnWidth(i + 1, larg[i]);
+  }
+  var u = d.utm || {};
+  aba.appendRow([
+    new Date(),
+    d.instagram || '',
+    d.whatsapp || '',
+    u.utm_source || '',
+    u.utm_medium || '',
+    u.utm_campaign || '',
+    u.utm_content || '',
+    d.url || ''
+  ]);
+  return responder({ok: true, msg: 'outro negócio registrado'});
 }
 
 function pegarAba() {
