@@ -11,9 +11,10 @@ Tratamento e Intervenção.
 > O `clinicas.` saiu porque a ferramenta agora atende clínica E não-clínica; o
 > posicionamento de clínica continua no conteúdo e na venda, não na URL.
 >
-> `clinicas.genosgroup.com.br/avaliacao` continua respondendo, para não quebrar link já
-> divulgado, mas a canônica aponta para o novo. O `docs/README-original.md` e a tarefa do
-> ClickUp pedem `/orcamento-parado`: é da versão antiga e não vale mais.
+> `clinicas.genosgroup.com.br/avaliacao` **saiu do ar em 01/10/2026**, por decisão do
+> Genos: a rota foi removida no painel, sem redirect, porque o link antigo já não
+> circulava em lugar nenhum. O `docs/README-original.md` e a tarefa do ClickUp pedem
+> `/orcamento-parado`: é da versão antiga e não vale mais.
 
 ---
 
@@ -38,7 +39,7 @@ cai na planilha. Esta seção existe para quem precisar refazer o caminho.
 
 - `CONFIG.WEBHOOK` **está preenchido** no `public/index.html` com a URL do `/exec`.
 - A aba `Leads` já está com as 24 colunas da v3.
-- O Worker `funil-avaliacao` está implantado, com a rota `clinicas.genosgroup.com.br/avaliacao*`.
+- O Worker `funil-avaliacao` está implantado, com a rota `genosgroup.com.br/avaliacao*`.
 
 > Toda vez que substituir o `public/index.html` por uma versão nova vinda do Drive,
 > confira estas quatro coisas, que moram dentro do próprio HTML e se perdem na troca:
@@ -91,8 +92,9 @@ A rota fica no painel (**Worker › Settings › Domains & Routes**), não no
 Rota em uso:
 
 ```
-genosgroup.com.br/avaliacao*          ← o endereço oficial
-clinicas.genosgroup.com.br/avaliacao*  ← mantida, para links já divulgados
+genosgroup.com.br/avaliacao*   ← o endereço oficial, e o único
+
+A rota clinicas.genosgroup.com.br/avaliacao* foi removida em 01/10/2026.
 ```
 
 ### Todo arquivo servido tem que começar com `avaliacao`
@@ -305,10 +307,9 @@ só numérico, nem com um ID do Tag Manager, que começa com `GTM-`.
 
 ### A página divide o fluxo com o site principal
 
-O fluxo é de `genosgroup.com.br` e a página vive em `clinicas.genosgroup.com.br`. Isso
-funciona — a URL do fluxo é informativa, não é filtro, e o GA4 aceita subdomínio no
-mesmo fluxo. A consequência é que **os dados da página entram misturados com os do
-site principal**.
+O fluxo é de `genosgroup.com.br` e a página vive em `genosgroup.com.br/avaliacao`, no
+mesmo domínio. A consequência é que **os dados da página entram misturados com os do
+site principal** — agora nem o nome do host os separa, já que é o mesmo.
 
 Para separar, a página se marca sozinha. O `gtag('config', ...)` manda um
 **grupo de conteúdo**:
@@ -325,9 +326,9 @@ Três formas de ver a página isolada, da mais rápida para a mais permanente:
 1. **Comparação** (o botão *Adicionar comparação*, no topo de qualquer relatório):
    `Grupo de conteúdo` **exatamente igual a** `Avaliação · Orçamento Parado`. Vale para
    o relatório inteiro e é o caminho de menos cliques.
-2. **Filtro por host ou caminho:** `Nome do host` = `clinicas.genosgroup.com.br`, ou
-   `Caminho da página` começando com `/avaliacao`. Serve quando quiser conferir sem
-   depender da marcação.
+2. **Filtro por caminho:** `Caminho da página` começando com `/avaliacao`. Serve quando
+   quiser conferir sem depender da marcação. Filtrar por `Nome do host` não serve mais
+   para isolar: desde que a página mudou para o apex, o host é o mesmo do site todo.
 3. **Nenhum filtro:** os oito eventos abaixo só existem nesta página. Qualquer
    relatório montado em cima deles já nasce isolado.
 
