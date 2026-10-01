@@ -28,6 +28,7 @@ quando alguém precisar decidir diferente.
 - [ ] `og:title`, `og:description`, `og:url`, `og:type`, `og:locale`, `twitter:card`
 - [ ] **`og:image` de 1200×630**, com `og:image:width`, `height` e `alt` (§1.1)
 - [ ] `<link rel="canonical">` apontando para a URL final (§1.2)
+- [ ] Todo arquivo servido (og:image, PDF, fontes) **dentro do prefixo da rota** (§1.3)
 - [ ] IDs numa constante única no topo: `GA_ID`, `META_PIXEL`. Vazio = desligado
 - [ ] `page_location` normalizado, **preservando `location.search`** (§1.2)
 - [ ] `content_group` com o nome da LP (§2.5)
@@ -35,7 +36,7 @@ quando alguém precisar decidir diferente.
 - [ ] **Número do passo** no evento de cada pergunta (§2)
 - [ ] Pixel com `PageView`, `Lead` e `Contact` (§4.3)
 - [ ] Correspondência avançada: telefone **com DDI**, e o `init` **antes** do `track` (§4.4)
-- [ ] Todo disparo dentro de `try/catch` (§1.3)
+- [ ] Todo disparo dentro de `try/catch` (§1.4)
 
 ## Fase 2 · No GA4, ANTES de subir
 
@@ -134,7 +135,21 @@ gtag('config', GA_ID, {
 **O `location.search` não é opcional.** Sem ele a query string some, as UTMs vão junto,
 e a atribuição de campanha inteira se apaga.
 
-### §1.3 Métrica não pode quebrar tela
+### §1.3 Arquivo que a página serve tem que caber na rota
+
+Quando o Worker é publicado numa **rota de caminho** (`dominio.com/alguma-coisa*`) e não
+num domínio inteiro, a rota casa por **prefixo**. Qualquer arquivo fora dele — a
+`og:image`, um PDF, uma fonte — não chega ao Worker: cai no site que atende o resto do
+domínio e dá 404.
+
+Nomeie os arquivos com o mesmo prefixo da rota: `/avaliacao-og.png`, nunca `/og.png`.
+
+**E teste a rota, não o sistema de arquivos.** Servir o diretório direto no teste prova
+que o arquivo existe, não que ele é alcançável no ar. Nesta página isso escondeu uma
+`og:image` quebrada por três semanas: o teste passava e o card de compartilhamento vinha
+sem imagem. O servidor de teste precisa devolver 404 fora do prefixo, como a rota faz.
+
+### §1.4 Métrica não pode quebrar tela
 
 Todo disparo passa por uma função única que engole erro:
 
