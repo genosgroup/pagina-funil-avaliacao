@@ -77,88 +77,27 @@ O manual está em **https://github.com/genosgroup/padroes**, no arquivo
 `medicao-lp.md`. O README de lá é o índice. No lugar antigo ficou um aviso
 apontando para cá — não edite a cópia velha, senão as duas divergem.
 
-### 2. A skill `medicao-genos`  ·  resolve o problema de raiz
+### Tudo feito em 01/10/2026
 
-O `AGENTS.md` faz a Claude seguir o padrão **dentro de um repositório que já
-existe**. Ele não viaja: LP nova nasce em repositório novo, sem `AGENTS.md`
-nenhum.
-
-Uma skill fica na conta da Claude, não no repositório — então vale para
-qualquer LP, nova ou velha, sem ninguém lembrar de pedir. É o mesmo lugar das
-skills que vocês já usam (`deck-genos`, `kommo-genos`).
-
-**Cole na conversa nova:**
-
-> Escreva o conteúdo de uma skill `medicao-genos`, no padrão das outras skills
-> da Genos, a partir do manual que está no repositório `genosgroup/padroes`.
-> Ela precisa disparar sempre que eu pedir uma landing page nova, e garantir
-> GA4, Pixel, grupo de conteúdo e evento de conversão em código.
-
-A Claude escreve o texto; você cria a skill no painel.
-
-### 3. `Lead` vira `Contact` no clique de WhatsApp do `clinicas.`  ·  15 min
-
-Hoje o clique no WhatsApp dispara eventos diferentes dependendo da página:
-
-| Página | Dispara |
+| | |
 | --- | --- |
-| `clinicas.` | `Lead` |
-| `/avaliacao` | `Contact` |
+| Manual movido para `genosgroup/padroes` | feito |
+| Manual virou checklist de 4 frentes (medição, SEO, performance, conteúdo) | feito |
+| `template-lp/` para repositório novo | feito |
+| Texto da skill `medicao-genos` | escrito, **falta você criar no painel** |
+| `clinicas.`: `lang="en"` → `pt-BR`, `Lead` → `Contact`, robots, sitemap | **falta mergear** |
+| `robots.txt` e `sitemap.xml` do apex | **falta mergear** |
 
-É o **mesmo Pixel** recebendo as duas coisas. Na prática `Lead` passa a
-significar duas coisas no mesmo histórico: num lugar é formulário preenchido
-com telefone, no outro é só um clique. A Meta aprende a buscar quem clica, não
-quem converte.
+Links:
 
-A correção derruba o histórico do evento `Lead` daquela LP. **Como não há
-campanha ativa hoje, o custo é zero** — daqui a um mês não é.
+- Checklist: https://github.com/genosgroup/padroes/blob/main/checklist-lp.md
+- Template: https://github.com/genosgroup/padroes/tree/main/template-lp
+- Skill: https://github.com/genosgroup/padroes/blob/main/skill-medicao-genos.md
 
-**Cole na conversa nova:**
+## O que ainda falta
 
-> No repositório `genosgroup/lp-genos-exclusivo-clinicas`, arquivo
-> `src/routes/index.tsx`, troque o `fbq("track", "Lead")` do clique de WhatsApp
-> por `fbq("track", "Contact")`, para ficar igual à `/avaliacao`. `Lead` deve
-> ficar reservado para quem entregou contato.
-
-### 4. O lugar único de rastreio  ·  quando quiser
-
-Fica uma planilha de três abas, porque as três mudam em ritmos diferentes:
-
-1. **Páginas** — o inventário acima. Responde "esta página está medida?".
-   Página nova entra aqui antes do primeiro anúncio.
-2. **Convenção** — vocabulário **fechado** de `utm_source` e `utm_medium`.
-   `instagram`, nunca `ig` nem `insta`. É o que impede o GA4 de criar três
-   canais que não somam.
-3. **Links gerados** — histórico: data, campanha, página, URL completa.
-
-E o gerador de UTM com **lista suspensa** alimentada pela aba 2, publicado numa
-URL que abre do celular. O de hoje
-(`pagina-funil-avaliacao/ferramentas/gerador-de-links.html`) tem campo de texto
-livre e **não está no ar** — fica fora da pasta `public/`, então o Worker não
-o serve.
-
-> **Correção de formato, importante:** UTM não é propriedade da página, é
-> propriedade do anúncio. A mesma `/avaliacao` vai ter dezenas de UTMs. Por
-> isso a convenção e o histórico são abas separadas do inventário, e não
-> colunas dele.
-
----
-
-## Três coisas que vale não reaprender
-
-**A unidade de cobertura é o deploy, não o domínio.** O GA4 não varre site: ele
-só recebe o que cada página manda. O `genosgroup.com.br` é servido por quatro
-Workers de quatro repositórios. Pôr a tag no layout de um não cobre os outros
-três. A pergunta certa não é "o domínio está medido?", é "quantos deploys
-servem este domínio, e cada um tem a tag?".
-
-**Anúncio de Meta sem UTM é anúncio invisível.** A Meta carimba `fbclid`, mas o
-GA4 não usa `fbclid` para atribuição — só o `gclid` do Google. Sem UTM, o
-tráfego pago da Meta cai misturado com o orgânico ou em "Direct", e não dá para
-calcular retorno. Como as campanhas são majoritariamente Meta, UTM não é
-refinamento: é o que faz a medição existir.
-
-**O Tag Assistant nunca mostra o Pixel da Meta.** É ferramenta do Google.
-Ausência ali não é evidência de ausência na página — esse engano custou uma
-investigação inteira. Para Pixel, use o Meta Pixel Helper ou o Gerenciador de
-Eventos.
+1. **Mergear os dois PRs** (links na conversa, ou em Branches de cada repositório).
+2. **Criar a skill** `medicao-genos` no painel de Skills do claude.ai, colando o
+   texto do arquivo acima.
+3. **Rodar a Parte 4 do checklist** numa LP, para calibrar: é a primeira vez que a
+   lista é usada de verdade.
