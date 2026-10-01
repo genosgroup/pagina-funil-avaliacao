@@ -4,12 +4,16 @@ Diagnóstico de 11 perguntas que faz a clínica descobrir sozinha onde está o d
 É a porta de entrada do funil AVALIAÇÃO e classifica o lead entre as duas saídas:
 Tratamento e Intervenção.
 
-**URL no ar:** `https://clinicas.genosgroup.com.br/avaliacao`
+**URL no ar:** `https://genosgroup.com.br/avaliacao`
 **Hospedagem:** Cloudflare Workers (assets estáticos), com deploy automático a partir deste repositório.
 
-> **A URL é `/avaliacao`.** O `docs/README-original.md` e a tarefa do ClickUp pedem
-> `/orcamento-parado`: é da versão antiga e não vale mais. Confirmado pelo Genos em
-> 09/09/2026. Quem for montar link de anúncio, bio ou prospecção usa `/avaliacao`.
+> **O endereço é `genosgroup.com.br/avaliacao`,** confirmado pelo Genos em 01/10/2026.
+> O `clinicas.` saiu porque a ferramenta agora atende clínica E não-clínica; o
+> posicionamento de clínica continua no conteúdo e na venda, não na URL.
+>
+> `clinicas.genosgroup.com.br/avaliacao` continua respondendo, para não quebrar link já
+> divulgado, mas a canônica aponta para o novo. O `docs/README-original.md` e a tarefa do
+> ClickUp pedem `/orcamento-parado`: é da versão antiga e não vale mais.
 
 ---
 
@@ -87,7 +91,8 @@ A rota fica no painel (**Worker › Settings › Domains & Routes**), não no
 Rota em uso:
 
 ```
-clinicas.genosgroup.com.br/avaliacao*
+genosgroup.com.br/avaliacao*          ← o endereço oficial
+clinicas.genosgroup.com.br/avaliacao*  ← mantida, para links já divulgados
 ```
 
 **O asterisco não é enfeite.** A rota casa contra a URL inteira, query string
