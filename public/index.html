@@ -783,8 +783,8 @@ const PERGUNTAS_GERAL = [
   {id:'g_vazamento',texto:'Dessas conversas, quantas somem e você não retoma?',ajuda:'Pediu pra pensar, parou de responder, e ninguém puxou de volta.',
    opcoes:[{t:'Quase todas',v:.80},{t:'Mais ou menos metade',v:.50},{t:'Poucas',v:.25},{t:'Quase nenhuma',v:.10}]},
   {id:'g_ticket',texto:'Quanto vale, em média, uma venda sua?',ajuda:'O valor médio de um negócio fechado.',
-   opcoes:[{t:'Até R$ 200',v:150},{t:'R$ 200 a R$ 1.000',v:600},{t:'R$ 1.000 a R$ 5.000',v:3000},{t:'Mais de R$ 5.000',v:8000}]},
-  {id:'g_base',texto:'Quanto contato que nunca fechou já tá parado na sua base?',ajuda:'Gente que um dia falou com você e ficou pra trás.',
+   opcoes:[{t:'Até R$ 300',v:200},{t:'R$ 300 a R$ 500',v:400},{t:'R$ 500 a R$ 1.000',v:750},{t:'R$ 1.000 a R$ 3.000',v:2000},{t:'Mais de R$ 3.000',v:4500}]},
+  {id:'g_base',texto:'Quantos contatos que nunca fecharam você tem na base?',ajuda:'Gente que um dia falou com você e ficou pra trás.',
    opcoes:[{t:'Menos de 500',v:300},{t:'500 a 2.000',v:1250},{t:'2.000 a 10.000',v:6000},{t:'Mais de 10.000',v:12000}]}
 ];
 
@@ -946,7 +946,7 @@ function avancar(){
     // Mesmo gate para os dois fluxos: a copy da spec é idêntica à que já estava.
     // Só o rótulo muda, porque "Instagram da clínica" não serve para uma padaria.
     const geral = modo==='geral';
-    document.querySelector('label[for="insta"]').textContent = geral?'Instagram do negócio':'Instagram da clínica';
+    document.querySelector('label[for="insta"]').textContent = geral?'Instagram profissional':'Instagram da clínica';
     document.getElementById('insta').placeholder = geral?'@seunegocio':'@suaclinica';
     document.getElementById('erroInsta').textContent = geral?'Preencha o @ do Instagram':'Preencha o @ do Instagram da clínica';
     mostrarTela('telaGate');
