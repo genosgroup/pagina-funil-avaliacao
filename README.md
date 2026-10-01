@@ -166,8 +166,8 @@ tem?"**, e ela decide o caminho:
 
 | Resposta | Para onde vai |
 | --- | --- |
-| Clínica de saúde ou estética | as 11 perguntas de sempre, resultado completo, lead na aba `Leads` |
-| Outro tipo de negócio | **calculadora geral de 5 perguntas**, número próprio, guia em PDF depois, registro na aba `Outros negócios` |
+| Clínica ou estética | as 11 perguntas de sempre, resultado completo, lead na aba `Leads` |
+| Serviço ou comércio | **calculadora geral de 5 perguntas**, número próprio, guia em PDF depois, registro na aba `Outros negócios` |
 
 **Os dois caminhos entregam número.** A tela 1 promete "o número aparece" para todo
 mundo; se só a clínica chegasse num número, a promessa quebraria no meio. Por isso o
