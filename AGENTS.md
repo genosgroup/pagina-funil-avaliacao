@@ -2,7 +2,7 @@
 
 ## Medição: leia antes de criar ou mexer em LP
 
-O padrão completo está em **[genosgroup/padroes → medicao-lp.md](https://github.com/genosgroup/padroes/blob/main/medicao-lp.md)**.
+O padrão completo está em **[genosgroup/padroes → checklist-lp.md](https://github.com/genosgroup/padroes/blob/main/checklist-lp.md)**.
 O que nunca pode ser decidido de novo caso a caso:
 
 - **GA4 `G-X2G6KW4TNY` e Pixel `624880005754303`**, os mesmos em toda LP da Genos.
@@ -22,8 +22,13 @@ O que nunca pode ser decidido de novo caso a caso:
   provavelmente veio de migração de WordPress — e antes de remover, procure a conversão
   dentro dela. (§1.6)
 
-O kit para copiar numa LP nova está no §1.7 do manual. O inventário de todas as
-páginas no ar e como conferir cada uma está na Parte 3 dele.
+Além da medição, o checklist cobre **SEO técnico** (§7), **performance** (§8) e
+**conteúdo** (§9). Dois itens que o padrão antigo não pegava e que valem para toda LP
+nova: `<html lang="pt-BR">` — boilerplate nasce com `en` e ninguém repara — e
+`robots.txt` com `sitemap.xml`.
+
+O kit para copiar numa LP nova está no §1.7. O inventário das páginas no ar está na
+Parte 3, e **a lista que se roda antes do primeiro anúncio está na Parte 4.**
 
 ## Arquivos servidos
 
