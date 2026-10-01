@@ -398,9 +398,9 @@ details.formula[open] summary{color:var(--a-texto)}
 
         <div class="bloco">
           <div class="tag">E ainda tem, fora do mês</div>
-          <div class="cifra" id="gBase">R$ 0</div>
-          <div class="unid" style="font-size:13px;color:var(--tinta-3);font-weight:600;margin:-4px 0 14px">parados na sua base de contatos antigos</div>
-          <p>Gente que um dia falou com você e ficou para trás. Não passou pelo seu mês, por isso aparece separado: é estoque acumulado, e volta num ritmo bem mais lento que o contato quente.</p>
+          <div class="cifra" id="gBase">0 contatos</div>
+          <div class="unid" style="font-size:13px;color:var(--tinta-3);font-weight:600;margin:-4px 0 14px">parados na sua base, sem ninguém retomar</div>
+          <p>Gente que um dia falou com você e ficou para trás. Não entra no número de cima porque não passou pelo seu mês: é estoque acumulado, e volta num ritmo bem mais lento que o contato quente.</p>
         </div>
 
         <div class="cta">
@@ -413,7 +413,7 @@ details.formula[open] summary{color:var(--a-texto)}
           <summary>Como essa conta é feita</summary>
           <div class="formula-corpo">
             <p><b>Só contamos o que já aconteceu.</b> De cada 10 que te chamam, você disse quantas fecham. As outras não fecharam. Dessas, você disse quantas somem sem ninguém retomar.</p>
-            <p><b>E contamos devagar de propósito.</b> De quem some, assumimos que <b>2 em cada 10</b> voltariam com um follow-up ativo, não todas. Da base antiga, <b>2 em cada 100</b>. São taxas conservadoras: o número serve para você conferir na mão, não para impressionar.</p>
+            <p><b>E contamos devagar de propósito.</b> De quem some, assumimos que <b>2 em cada 10</b> voltariam com um follow-up ativo, não todas. É taxa conservadora: o número serve para você conferir na mão, não para impressionar. A base antiga não entra nessa conta — ela aparece só como quantidade, porque recupera em ritmo próprio.</p>
             <p><b>O valor é o seu.</b> Cada venda recuperada vale o ticket médio que você informou, nem mais nem menos. E arredondamos para baixo.</p>
           </div>
         </details>
@@ -885,7 +885,11 @@ function faixaDe(v){
 function renderResultadoGeral(){
   const r=resultado;
   document.getElementById('gNumero').textContent=dinheiroRedondo(r.paradoMes);
-  document.getElementById('gBase').textContent=dinheiroRedondo(r.paradoBase);
+  // Gente, não dinheiro. O valor recuperável da base continua sendo calculado
+  // e vai para a planilha em parado_base, mas mostrá-lo aqui tirava o palco do
+  // número principal: a base é dez a vinte vezes maior em reais, e o olho lê o
+  // maior primeiro. O número do mês é o que dói e o que a reunião resolve.
+  document.getElementById('gBase').textContent=r.base.toLocaleString('pt-BR')+' contatos';
   document.getElementById('gAcoes').innerHTML = CONFIG.GUIA
     ? `<a class="btn btn-cheio btn-largo" href="${CONFIG.GUIA}" target="_blank" rel="noopener" onclick="evento('guia_baixado',{calculadora:'geral'})">Quero recuperar esse dinheiro</a>`
     : '';
