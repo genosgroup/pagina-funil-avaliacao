@@ -47,7 +47,7 @@ var CABECALHO_OUTROS = [
   'Data', 'Instagram', 'WhatsApp',
   'Parado/mês', 'Parado na base', 'Faixa',
   'Contatos/mês', 'Fecham', 'Somem sem retomar', 'Ticket', 'Base de contatos',
-  'Origem', 'Canal', 'Formato', 'Campanha', 'Variação', 'URL'
+  'Origem', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'URL'
 ];
 
 /**
@@ -71,6 +71,11 @@ var FUSO = 'America/Sao_Paulo';
  * montado, acrescente as que ele precisar no fim desta lista E na mesma
  * posição dentro do appendRow, porque a gravação é por posição.
  */
+/* As quatro colunas de origem usam o nome do parâmetro, não um nome traduzido.
+   Com "Formato" no lugar de utm_medium, chegou um lead com utm_medium=set.26:
+   um mês no campo que define o tipo de canal, que o GA4 joga em Não atribuído.
+   O nome da coluna convidou ao erro. Com o nome do parâmetro, quem monta o
+   anúncio vê a mesma palavra no Gerenciador, na planilha de UTMs e aqui. */
 var CABECALHO = [
   // BLOCO 1 · quem é
   'Data', 'Nome', 'WhatsApp', 'Instagram', 'SAÍDA',
@@ -84,7 +89,7 @@ var CABECALHO = [
   'Agendam', 'Comparecem', 'Fecham', 'Base de contatos', 'Sistema',
 
   // BLOCO 4 · de onde veio
-  'Canal', 'Formato', 'Campanha', 'Variação', 'URL'
+  'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'URL'
 ];
 
 /**
