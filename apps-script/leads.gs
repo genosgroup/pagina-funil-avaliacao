@@ -30,7 +30,11 @@
  * a Versão para "Nova versão". Assim a URL continua a mesma.
  */
 
-var ABA = 'Leads';
+/* Tem que bater EXATAMENTE com o nome da aba na planilha. Se alguém renomear
+   a aba e não mexer aqui, o script não dá erro: ele cria uma aba nova com este
+   nome e passa a escrever nela, deixando a antiga órfã. Aconteceu quando a aba
+   'Leads' virou 'Clínicas' para ficar simétrica com 'Outros negócios'. */
+var ABA = 'Clínicas';
 
 /**
  * Quem chegou pelo link da bio e NÃO é clínica. Vive numa aba própria de
