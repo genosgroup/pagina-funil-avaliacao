@@ -21,6 +21,8 @@ quando alguém precisar decidir diferente.
 - [ ] **Qual pixel da Meta.** Sempre o pixel da marca. Nunca um por LP. (§4.2)
 - [ ] **Correspondência avançada, sim ou não.** É dado pessoal indo para um terceiro.
       Decisão de negócio, e precisa estar na política de privacidade. (§4.4)
+- [ ] **Esta LP é um deploy novo?** Se sim, ela precisa das tags no código dela,
+      mesmo que já exista tag em outra página do mesmo domínio. (§1.5)
 
 ## Fase 1 · Na página
 
@@ -82,10 +84,14 @@ até clicar no botão final.
 
 ---
 
-## As cinco armadilhas que já custaram caro
+## As armadilhas que já custaram caro
 
 | Armadilha | Como ela aparece |
 | --- | --- |
+| **Confiar no domínio** | A tag está no site, a LP nova está no mesmo domínio, e mesmo assim não é medida. Cobertura é por deploy, não por domínio. (§1.5) |
+| **Tag herdada de migração** | O site sai do WordPress com as tags do Site Kit coladas no código novo. Elas apontam para propriedades de terceiro e ninguém percebe, porque não parece erro: parece pouco tráfego. (§1.6) |
+| **Conversão que morava no GTM** | Remover um contêiner de terceiro apaga junto o evento de Lead, sem quebrar nada na tela. As campanhas só param de receber sinal. (§1.6) |
+| **Evento com nome inventado** | `lead_enviado` em vez de `generate_lead` vira evento solto que nenhuma campanha consegue usar para otimizar. (§2) |
 | **Parâmetro com acento** | Você cadastra `saída`, a página manda `saida`. O GA aceita calado e a dimensão fica existindo e sempre vazia. Pior que não existir. |
 | **Filtro em "Teste"** | Fica lá parecendo configurado e não filtra nada. Todo teste interno vira lead e a conversão mente. |
 | **Coleção não publicada** | Search Console vinculado, relatórios invisíveis. |
@@ -164,6 +170,105 @@ Com a tag desligada, ou barrada por bloqueador de anúncio, vira no-op.
 **Não é zelo teórico.** Esta página já perdeu lead em produção por um erro de JavaScript
 que ninguém viu, porque o envio tinha um `.catch(()=>{})` mudo. Teste a LP com as tags
 bloqueadas antes de subir: o funil tem que completar.
+
+### §1.5 A unidade de cobertura é o deploy, não o domínio
+
+Esta é a armadilha mais cara do documento, porque é contra-intuitiva e porque não dá
+nenhum sinal de erro.
+
+**Não existe configuração, em lugar nenhum, que faça o GA4 cobrir um domínio inteiro.**
+O GA4 não visita, não varre, não descobre páginas. Ele só recebe o que cada página
+manda. Página sem tag é página que não existe no relatório — pode estar no seu domínio,
+no seu servidor e no seu menu, e mesmo assim ser invisível.
+
+O que cobre "todas as páginas, inclusive as futuras" é a tag estar no **template
+compartilhado** de um app: o layout raiz do Next.js, o `__root` do TanStack, o header
+global do WordPress. Aí toda rota nova daquele app nasce medida.
+
+Mas o template é compartilhado **dentro de um deploy**. Em 01/10/2026 o
+`genosgroup.com.br` era servido por quatro Workers diferentes, de quatro repositórios
+diferentes — `/`, `/avaliacao`, `/ebook` e `/receitaoculta`. Eles só dividem o endereço.
+Pôr a tag no layout do site principal cobriu as rotas daquele app e **nenhuma** das
+outras três. A `/receitaoculta` ficou meses no ar sem GA4 e sem Pixel, com um quiz que
+chamava `fbq("track","Lead")` para um Pixel que nunca era carregado.
+
+> **A pergunta certa não é "o domínio está medido?". É "quantos deploys servem este
+> domínio, e cada um tem a tag?"**
+
+Toda LP nova que ganha um repositório próprio precisa das tags no código dela, mesmo
+que o domínio já esteja "coberto".
+
+### §1.6 Tag herdada de migração
+
+Site que sai de WordPress costuma carregar junto as tags que os plugins injetavam
+(Site Kit, PixelYourSite, Meta for WordPress). Quem migra copia o `<head>` inteiro para
+não quebrar nada, e as tags vêm no pacote.
+
+O problema é que essas tags apontam para **propriedades de terceiro** — da agência, do
+fornecedor antigo, de quem montou o site. No `genosgroup.com.br` eram duas propriedades
+do GA4 que não apareciam em conta nenhuma da empresa, mais um contêiner do GTM
+inacessível.
+
+Isso não infla número: cada propriedade conta a visita uma vez só. O estrago é
+**fragmentação** — e é por isso que passa despercebido. Não parece erro, parece pouco
+tráfego.
+
+**Antes de remover um contêiner de terceiro, procure a conversão dentro dele.** Varra o
+repositório por `fbq('track'`, `gtag('event'` e `dataLayer.push`. Se não houver nenhum,
+a conversão estava no contêiner, e removê-lo apaga o evento de Lead em silêncio: nada
+quebra na tela, as campanhas só param de receber sinal e passam a otimizar no escuro.
+Aconteceu em duas das três páginas da Genos. A remoção, nesses casos, não é subtração:
+é mudar a conversão de casa.
+
+### §1.7 O kit mínimo de uma LP nova
+
+Copiar, trocar o `CONTENT_GROUP`, e está medida. Em Next.js, num componente montado no
+layout raiz:
+
+```jsx
+const GA_ID = "G-X2G6KW4TNY";          // propriedade única da Genos
+const META_PIXEL_ID = "624880005754303"; // pixel único da marca
+const CONTENT_GROUP = "LP · <nome>";     // só isto muda por LP
+
+// no <head>, via <Script strategy="afterInteractive">
+// 1. https://www.googletagmanager.com/gtag/js?id=${GA_ID}
+// 2. gtag('config', GA_ID, {content_group: CONTENT_GROUP})
+// 3. snippet do Pixel + fbq('init', META_PIXEL_ID) + fbq('track','PageView')
+```
+
+E a conversão, em `src/lib/conversao.ts`, chamada **depois** da resposta de sucesso da
+API e **antes** de qualquer redirect:
+
+```ts
+export function registrarLead(origem: string) {
+  try { window.gtag?.("event", "generate_lead", { origem }); } catch {}
+  try { window.fbq?.("track", "Lead", { content_name: origem }); } catch {}
+}
+```
+
+Três detalhes que separam funcionar de não funcionar:
+
+- **Depois do sucesso, nunca no submit.** Envio que falhou validação ou webhook não é
+  lead; contá-lo infla a conversão e estraga a otimização.
+- **Antes do redirect.** Evento disparado depois de `window.location.href` não chega a
+  sair — a página já foi embora.
+- **`Lead` e `generate_lead`, não nome próprio.** São os nomes padrão das plataformas, e
+  só eles contam como conversão otimizável.
+
+### §1.8 Numa pergunta de triagem, exemplo exclui e categoria inclui
+
+Vale para qualquer bifurcação de funil. Listar exemplos parece generoso, mas funciona
+como um teste que a pessoa roda contra si mesma: quem não se acha na lista hesita, e
+hesitação na primeira tela é lead perdido no lugar mais caro.
+
+E o problema não tem fundo. A bifurcação da `/avaliacao` começou em "Clínica, consultório
+ou estética"; incluir nutricionista e endocrinologista faria psicólogo e fisioterapeuta
+perguntarem o mesmo. Enumerar só muda quem fica de fora.
+
+A saída é a categoria guarda-chuva: **"Saúde ou estética"**. Mais curta, mais abrangente,
+e ninguém precisa ser nomeado para se reconhecer. O lado "todo o resto" da bifurcação
+precisa ser exaustivo de verdade — tirar "comércio" para mirar só serviço deixaria quem
+tem loja sem nenhum botão para clicar.
 
 ## §2. Os eventos
 
@@ -359,3 +464,44 @@ primeiros e falha no décimo. A **Analytics Admin API** cria propriedade e fluxo
 as dimensões, marca os principais eventos e ajusta retenção, moeda e fuso — por comando.
 
 O ganho maior não é tempo: é que ninguém mais digita nome de parâmetro na mão.
+
+---
+---
+
+# PARTE 3 · O QUE EXISTE HOJE
+
+Mantenha esta tabela viva. Ela responde a única pergunta que importa antes de rodar
+tráfego: **esta página está medida?** Linha nova entra aqui antes do primeiro anúncio.
+
+Situação em 01/10/2026:
+
+| Página | Repositório | GA4 | Pixel | Grupo de conteúdo |
+| --- | --- | :---: | :---: | --- |
+| `genosgroup.com.br/` | `lp-genos-principal` | ✅ | ✅ | Site · Genos Group |
+| `genosgroup.com.br/avaliacao` | `pagina-funil-avaliacao` | ✅ | ✅ | Avaliação · Orçamento Parado |
+| `genosgroup.com.br/ebook` | `lp-genos-ebook` | ✅ | ✅ | LP · Ebook |
+| `genosgroup.com.br/receitaoculta` | `lp-form-receita-oculta-clinicas` | ✅ | ✅ | LP · Receita Oculta |
+| `clinicas.genosgroup.com.br` | `lp-genos-exclusivo-clinicas` | ✅ | ✅ | LP · Exclusivo Clínicas |
+
+**São cinco deploys separados.** Cada um carrega as próprias tags — ver §1.5.
+
+IDs em uso, os mesmos em todas:
+
+- GA4: `G-X2G6KW4TNY` (conta Genos Group, 445075916, dados desde junho/24)
+- Pixel: `624880005754303`
+- GTM: `GTM-M8L8DL58`, contêiner da Genos, instalado só no site principal e **vazio**.
+  Se for usar: **não recrie GA4 nem Pixel dentro dele.** Os dois já estão nas páginas, e
+  duplicar conta cada visita duas vezes na mesma propriedade — erro que não dá sinal, só
+  infla o relatório.
+
+## Como conferir uma página
+
+| O que conferir | Ferramenta |
+| --- | --- |
+| Tags do Google (GA4, GTM) | Tag Assistant, em aba anônima |
+| Pixel da Meta | **Meta Pixel Helper** ou Gerenciador de Eventos → Testar eventos |
+| Se o evento chegou | GA4 → Relatórios → Tempo real, com um lead de teste real |
+
+> O Tag Assistant é ferramenta do Google e **nunca** mostra o Pixel da Meta. Ausência
+> ali não é evidência de ausência na página — esse engano já custou uma investigação
+> inteira neste projeto.
