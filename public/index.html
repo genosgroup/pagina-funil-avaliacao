@@ -14,16 +14,20 @@
 <!-- Card de prévia no WhatsApp, no direct e no anúncio. Precisa de URL absoluta:
      og:image não aceita caminho relativo nem data URI, então esta é a única
      imagem da página que mora num arquivo à parte, servida pelo mesmo Worker. -->
-<meta property="og:image" content="https://genosgroup.com.br/og.png">
+<meta property="og:image" content="https://genosgroup.com.br/avaliacao-og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Quanto dinheiro está parado no seu negócio? Diagnóstico de 2 minutos.">
-<meta name="twitter:image" content="https://genosgroup.com.br/og.png">
+<meta name="twitter:image" content="https://genosgroup.com.br/avaliacao-og.png">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="pt_BR">
 <meta name="twitter:card" content="summary_large_image">
-<!-- O Worker roda com not_found_handling em single-page-application, então
-     QUALQUER caminho devolve esta página. Sem a canônica, um link de anúncio
+<!-- TODO ARQUIVO SERVIDO POR ESTA PÁGINA PRECISA COMEÇAR COM "avaliacao".
+     A rota do Worker é genosgroup.com.br/avaliacao*, que casa por PREFIXO: um
+     arquivo em /og.png nunca chega aqui, cai no site principal e dá 404. Por
+     isso a imagem de prévia e o guia se chamam avaliacao-*.
+     O Worker roda com not_found_handling em single-page-application, então
+     QUALQUER caminho sob o prefixo devolve esta página. Sem a canônica, um link de anúncio
      truncado viraria uma URL indexável distinta, com o mesmo conteúdo. -->
 <link rel="canonical" href="https://genosgroup.com.br/avaliacao">
 <meta name="theme-color" content="#FDFCFA">
@@ -651,7 +655,7 @@ const CONFIG = {
   // Drive: link de Drive pede permissão, abre visualizador e quebra quando
   // alguém mexe na pasta. Vazio esconde o botão, em vez de prometer um arquivo
   // que ainda não existe e entregar um 404.
-  GUIA: '/guia-vendas-perdidas-whatsapp.pdf'
+  GUIA: '/avaliacao-guia-vendas-perdidas-whatsapp.pdf'
 };
 
 /* ============================================================

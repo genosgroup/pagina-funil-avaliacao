@@ -95,6 +95,17 @@ genosgroup.com.br/avaliacao*          ← o endereço oficial
 clinicas.genosgroup.com.br/avaliacao*  ← mantida, para links já divulgados
 ```
 
+### Todo arquivo servido tem que começar com `avaliacao`
+
+A rota casa por **prefixo**. Um arquivo em `/og.png` nunca chega a este Worker: cai no
+site principal e dá 404. Por isso a imagem de prévia e o guia se chamam
+`avaliacao-og.png` e `avaliacao-guia-*.pdf`.
+
+Isso esteve quebrado por três semanas sem ninguém ver, porque o teste servia o
+`public/` direto e provava que o arquivo **existe** — não que ele é **alcançável pela
+rota**. Hoje o servidor de teste simula a rota e devolve 404 fora do prefixo, então o
+erro volta a aparecer onde deve.
+
 **O asterisco não é enfeite.** A rota casa contra a URL inteira, query string
 incluída, então `/avaliacao` sem asterisco deixaria de fora exatamente os links de
 anúncio, que sempre chegam com `?utm_source=...`.
