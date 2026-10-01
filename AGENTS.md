@@ -2,8 +2,8 @@
 
 ## Medição: leia antes de criar ou mexer em LP
 
-O padrão completo está em [`docs/PADRAO-MEDICAO.md`](docs/PADRAO-MEDICAO.md). O que
-nunca pode ser decidido de novo caso a caso:
+O padrão completo está em **[genosgroup/padroes → medicao-lp.md](https://github.com/genosgroup/padroes/blob/main/medicao-lp.md)**.
+O que nunca pode ser decidido de novo caso a caso:
 
 - **GA4 `G-X2G6KW4TNY` e Pixel `624880005754303`**, os mesmos em toda LP da Genos.
   Propriedade por LP parte o funil em pedaços que não somam; Pixel por LP fragmenta o
@@ -22,8 +22,8 @@ nunca pode ser decidido de novo caso a caso:
   provavelmente veio de migração de WordPress — e antes de remover, procure a conversão
   dentro dela. (§1.6)
 
-O kit para copiar numa LP nova está em §1.7. O inventário de todas as páginas no ar e
-como conferir cada uma está na Parte 3.
+O kit para copiar numa LP nova está no §1.7 do manual. O inventário de todas as
+páginas no ar e como conferir cada uma está na Parte 3 dele.
 
 ## Arquivos servidos
 

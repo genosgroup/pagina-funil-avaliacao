@@ -71,20 +71,11 @@ relatório.
 
 ## O que falta, em ordem
 
-### 1. Mudar o manual de endereço  ·  conversa nova, 10 min
+### ~~1. Mudar o manual de endereço~~ · FEITO em 01/10/2026
 
-O manual de medição (507 linhas) está em `pagina-funil-avaliacao/docs/PADRAO-MEDICAO.md`.
-Ele não é da calculadora, é da Genos — por isso ninguém lembra onde está.
-
-**Cole na conversa nova:**
-
-> Mova o manual de `genosgroup/pagina-funil-avaliacao`, arquivo
-> `docs/PADRAO-MEDICAO.md`, para o repositório `genosgroup/padroes`, como
-> `README.md` dele. No lugar antigo, deixe um arquivo de uma linha apontando
-> para o novo endereço. Depois atualize o `AGENTS.md` do
-> `pagina-funil-avaliacao` para linkar o novo local.
-
-Como `README.md`, ele abre sozinho na home do repositório.
+O manual está em **https://github.com/genosgroup/padroes**, no arquivo
+`medicao-lp.md`. O README de lá é o índice. No lugar antigo ficou um aviso
+apontando para cá — não edite a cópia velha, senão as duas divergem.
 
 ### 2. A skill `medicao-genos`  ·  resolve o problema de raiz
 
