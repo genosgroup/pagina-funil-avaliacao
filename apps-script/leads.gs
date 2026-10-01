@@ -39,8 +39,12 @@ var ABA = 'Leads';
  * Serve para uma coisa só: saber quanto do orgânico chega fora do perfil.
  */
 var ABA_OUTROS = 'Outros negócios';
-var CABECALHO_OUTROS = ['Data', 'Instagram', 'WhatsApp',
-                        'Canal', 'Formato', 'Campanha', 'Variação', 'URL'];
+var CABECALHO_OUTROS = [
+  'Data', 'Instagram', 'WhatsApp',
+  'Parado/mês', 'Parado na base', 'Faixa',
+  'Contatos/mês', 'Fecham', 'Somem sem retomar', 'Ticket', 'Base de contatos',
+  'Origem', 'Canal', 'Formato', 'Campanha', 'Variação', 'URL'
+];
 
 /**
  * A coluna "Data" é gravada no fuso da PLANILHA, não no do script. Planilha
@@ -208,7 +212,7 @@ function doPost(e) {
 }
 
 function doGet() {
-  return responder({ok: true, msg: 'Endpoint do Orçamento Parado v3.1 no ar.'});
+  return responder({ok: true, msg: 'Endpoint do Orçamento Parado v3.2 no ar.'});
 }
 
 /**
@@ -232,6 +236,17 @@ function gravarOutro(d) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   garantirFuso(ss);
   var aba = ss.getSheetByName(ABA_OUTROS);
+
+  // A aba nasceu com 8 colunas e agora tem 17. Se a antiga ainda estiver lá, a
+  // gravação entraria desalinhada e em silêncio — então arquiva e recria, em
+  // vez de escrever errado. Mesma proteção do prepararPlanilha.
+  if (aba && aba.getLastColumn() !== CABECALHO_OUTROS.length) {
+    var n = 1, nome = 'Outros negócios v1';
+    while (ss.getSheetByName(nome)) { n++; nome = 'Outros negócios v' + n; }
+    aba.setName(nome);
+    aba = null;
+  }
+
   if (!aba) {
     aba = ss.insertSheet(ABA_OUTROS);
     aba.appendRow(CABECALHO_OUTROS);
@@ -239,14 +254,35 @@ function gravarOutro(d) {
        .setFontWeight('bold').setBackground('#F5F2ED').setVerticalAlignment('middle');
     aba.setFrozenRows(1);
     aba.getRange(2, 1, 5000, 1).setNumberFormat('dd/mm/yyyy HH:mm');
-    var larg = [140, 190, 140, 110, 110, 170, 130, 320];
+    var larg = [140, 190, 140,
+                130, 140, 100,
+                120, 150, 170, 120, 150,
+                140, 110, 110, 170, 130, 320];
     for (var i = 0; i < larg.length; i++) aba.setColumnWidth(i + 1, larg[i]);
+    aba.getRange(2, 4, 5000, 2).setNumberFormat('R$ #,##0');
   }
+
   var u = d.utm || {};
+  var c = d.calculo || {};
+  var r = d.respostas || {};
   aba.appendRow([
     new Date(),
     d.instagram || '',
     d.whatsapp || '',
+
+    c.parado_mes || 0,
+    c.parado_base || 0,
+    c.faixa || '',
+
+    r.g_contatos || '',
+    r.g_fecho || '',
+    r.g_vazamento || '',
+    r.g_ticket || '',
+    r.g_base || '',
+
+    // O ?origem=reel-DDMM dos links da bio. Vive na query como qualquer UTM,
+    // mas tem coluna própria porque é o parâmetro que a equipe de fato usa.
+    u.origem || '',
     u.utm_source || '',
     u.utm_medium || '',
     u.utm_campaign || '',

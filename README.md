@@ -151,7 +151,12 @@ tem?"**, e ela decide o caminho:
 | Resposta | Para onde vai |
 | --- | --- |
 | Clínica de saúde ou estética | as 11 perguntas de sempre, resultado completo, lead na aba `Leads` |
-| Outro tipo de negócio | captura de `@` e WhatsApp, guia em PDF, registro na aba `Outros negócios` |
+| Outro tipo de negócio | **calculadora geral de 5 perguntas**, número próprio, guia em PDF depois, registro na aba `Outros negócios` |
+
+**Os dois caminhos entregam número.** A tela 1 promete "o número aparece" para todo
+mundo; se só a clínica chegasse num número, a promessa quebraria no meio. Por isso o
+guia deixou de ser o destino do não-clínica e virou **segundo contato**, oferecido
+depois do número.
 
 **Por que o filtro fica aqui e não na entrada.** No tráfego pago se filtra na porta,
 porque cada impressão é paga. No orgânico é o contrário: a impressão é de graça e quem
@@ -169,6 +174,36 @@ chega fora do perfil.
 
 **A tela de tipo fica fora do array `PERGUNTAS`**, de propósito. Assim o fluxo de clínica
 não muda em nada e o contador segue honesto em "01 de 11".
+
+### A calculadora geral
+
+Cinco perguntas, mesma maquinaria de tela do fluxo de clínica — `renderPergunta`,
+`escolher` e `avancar` são as mesmas funções, com `FLUXO` apontando para outro array.
+Duplicar a maquinaria teria criado duas coisas para manter e uma para esquecer.
+
+O gate também é o mesmo: a copy é idêntica, só o rótulo troca para "Instagram do
+negócio", porque "Instagram da clínica" não serve para uma padaria.
+
+```
+nao_fecharam     = contatos_mes * (1 - taxa_fecho)
+somem_sem_retoma = nao_fecharam * taxa_vazamento
+parado_mes       = somem_sem_retoma * REC_MES  * ticket   ← o número grande
+parado_base      = base_parada     * REC_BASE  * ticket   ← o contexto
+```
+
+`REC_MES` (0,20) e `REC_BASE` (0,02) são **as duas premissas da página inteira**, e as
+únicas que não saem da boca do dono. São conservadoras de propósito e estão escritas na
+tela, no acordeão: o número precisa ser conferível na mão, não impressionar. São também
+o ponto de calibração se os testes mostrarem exagero.
+
+**O arredondamento é sempre para baixo.** R$ 7.350 vira "R$ 7 mil". Abaixo de mil mostra
+o valor cheio truncado: cortar na centena transformava R$ 54 em "R$ 0", que parece erro
+da página e não resposta.
+
+**Este caminho não é lead comercial.** Não dispara `generate_lead` nem o `Lead` da Meta.
+O posicionamento de venda segue sendo clínica — mudou a ferramenta, não o discurso.
+O evento próprio é `geral_capturado`, e ele carrega a **faixa** do número, que é o que
+permite calibrar as constantes sem olhar lead a lead.
 
 ### O guia
 
