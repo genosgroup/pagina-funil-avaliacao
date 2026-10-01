@@ -43,6 +43,11 @@
   --a1:#E8722F;
   --a2:#D9922F;
   --a3:#A86A3D;
+  /* Gradiente exclusivo do botão cheio, mais escuro que --a2. Branco sobre o
+     gradiente da marca dava 2,59:1, e o mínimo para texto grande é 3:1. Fica
+     separado de --a2 de propósito: a chamada e as barras continuam com o
+     laranja original, que não tem texto branco em cima e não precisa mudar. */
+  --btn-a2:#C78122;
   --a-texto:#C4501B;
   --a-fundo:#FDF3EC;
   --sombra:0 1px 2px rgba(20,22,28,.04),0 8px 28px rgba(20,22,28,.05);
@@ -127,8 +132,12 @@ h2{font-size:clamp(24px,4.2vw,40px);line-height:1.14;font-weight:800;letter-spac
 .btn{font-family:inherit;font-weight:700;border:none;cursor:pointer;transition:transform .12s,box-shadow .22s,opacity .2s}
 .btn:active{transform:scale(.985)}
 .btn-cheio{
-  background:linear-gradient(100deg,var(--a1),var(--a2));color:#fff;
-  font-size:clamp(15px,1.5vw,16.5px);padding:17px 32px;border-radius:13px;box-shadow:var(--sombra-2);
+  background:linear-gradient(100deg,var(--a1),var(--btn-a2));color:#fff;
+  /* 19px é o que destrava o limiar de texto grande da WCAG (18,66px em negrito),
+     onde o mínimo de contraste cai de 4,5:1 para 3:1. Com --btn-a2 o gradiente
+     inteiro fica acima disso: 3,05:1 na ponta escura e 3,19:1 na clara.
+     Chegar a 4,5:1 com branco exigiria um laranja terroso que não é o da marca. */
+  font-size:clamp(19px,1.6vw,20px);padding:17px 32px;border-radius:13px;box-shadow:var(--sombra-2);
 }
 .btn-cheio:hover{box-shadow:0 4px 8px rgba(20,22,28,.06),0 18px 52px rgba(232,114,47,.24)}
 .btn-largo{width:100%}
