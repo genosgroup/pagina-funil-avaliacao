@@ -261,15 +261,30 @@ function gravarOutro(d) {
     aba = ss.insertSheet(ABA_OUTROS);
     aba.appendRow(CABECALHO_OUTROS);
     aba.getRange(1, 1, 1, CABECALHO_OUTROS.length)
-       .setFontWeight('bold').setBackground('#F5F2ED').setVerticalAlignment('middle');
+       .setFontWeight('bold').setVerticalAlignment('middle');
     aba.setFrozenRows(1);
+    // Mesmas três primeiras colunas congeladas da aba de clínica: quem é o lead
+    // acompanha a rolagem horizontal, senão as colunas de origem ficam soltas.
+    aba.setFrozenColumns(3);
+    aba.setRowHeight(1, 38);
+
+    // Mesmos blocos de cor da aba de clínica, para as duas se lerem igual
+    pintar(aba, 1,  3, '#FDF3EC'); // quem é
+    pintar(aba, 4,  3, '#F5F2ED'); // a leitura
+    pintar(aba, 7,  5, '#FFFFFF'); // respostas
+    pintar(aba, 12, 6, '#F5F2ED'); // de onde veio
+
     aba.getRange(2, 1, 5000, 1).setNumberFormat('dd/mm/yyyy HH:mm');
     var larg = [140, 190, 140,
                 130, 140, 100,
                 120, 150, 170, 120, 150,
-                140, 110, 110, 170, 130, 320];
+                240, 110, 110, 170, 130, 320];
     for (var i = 0; i < larg.length; i++) aba.setColumnWidth(i + 1, larg[i]);
     aba.getRange(2, 4, 5000, 2).setNumberFormat('R$ #,##0');
+
+    // Filtro no cabeçalho, como na aba de clínica. Sem ele o comercial não
+    // consegue separar por origem nem por faixa, e tem que ler tudo na mão.
+    aba.getRange(1, 1, aba.getMaxRows(), CABECALHO_OUTROS.length).createFilter();
   }
 
   var u = d.utm || {};
