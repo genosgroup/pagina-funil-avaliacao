@@ -47,7 +47,12 @@ var CABECALHO_OUTROS = [
   'Data', 'Instagram', 'WhatsApp',
   'Parado/mês', 'Parado na base', 'Faixa',
   'Contatos/mês', 'Fecham', 'Somem sem retomar', 'Ticket', 'Base de contatos',
-  'Origem', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'URL'
+  'Origem', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'URL',
+
+  /* Mesma coluna do n8n da aba de clínica. O script não escreve nela: a célula
+     vazia é o estado "ainda não avisado". Está no array para a contagem bater
+     e a aba nunca ser arquivada por causa dela. */
+  'Avisado?'
 ];
 
 /**
@@ -280,16 +285,15 @@ function gravarOutro(d) {
     aba.setRowHeight(1, 38);
 
     // Mesmos blocos de cor da aba de clínica, para as duas se lerem igual
-    pintar(aba, 1,  3, '#FDF3EC'); // quem é
-    pintar(aba, 4,  3, '#F5F2ED'); // a leitura
+    pintar(aba, 1,  6, LARANJA);   // quem é + a leitura
     pintar(aba, 7,  5, '#FFFFFF'); // respostas
-    pintar(aba, 12, 6, '#F5F2ED'); // de onde veio
+    pintar(aba, 12, 7, '#F5F2ED'); // de onde veio, e o Avisado? do n8n
 
     aba.getRange(2, 1, 5000, 1).setNumberFormat('dd/mm/yyyy HH:mm');
     var larg = [140, 190, 140,
                 130, 140, 100,
                 120, 150, 170, 120, 150,
-                240, 110, 110, 170, 130, 320];
+                240, 110, 110, 170, 130, 320, 130];
     for (var i = 0; i < larg.length; i++) aba.setColumnWidth(i + 1, larg[i]);
     aba.getRange(2, 4, 5000, 2).setNumberFormat('R$ #,##0');
 
@@ -384,11 +388,9 @@ function pegarAba() {
     aba.setRowHeight(1, 38);
 
     // Cor por bloco, para bater o olho e saber onde está
-    pintar(aba, 1,  5,  '#FDF3EC'); // quem é
-    pintar(aba, 6,  2,  '#F5F2ED'); // a leitura
+    pintar(aba, 1,  7,  LARANJA);   // quem é + a leitura
     pintar(aba, 8,  12, '#FFFFFF'); // respostas
-    pintar(aba, 20, 6,  '#F5F2ED'); // de onde veio
-    pintar(aba, 26, 1,  '#FDF3EC'); // o n8n escreve aqui
+    pintar(aba, 20, 7,  '#F5F2ED'); // de onde veio, e o Avisado? do n8n
 
     aba.getRange(2, 1, 5000, 1).setNumberFormat('dd/mm/yyyy HH:mm');
 
@@ -412,6 +414,11 @@ function pegarAba() {
   }
   return aba;
 }
+
+/* O laranja do cabeçalho é #FF6D01, o ACCENT5 do tema desta planilha — a cor
+   da marca. Já veio pintado assim à mão; o script precisa repetir ao recriar
+   uma aba, senão a recriação devolve um bege que ninguém escolheu. */
+var LARANJA = '#FF6D01';
 
 function pintar(aba, col, qtd, cor) {
   aba.getRange(1, col, 1, qtd)
