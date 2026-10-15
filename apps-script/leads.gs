@@ -89,7 +89,18 @@ var CABECALHO = [
   'Agendam', 'Comparecem', 'Fecham', 'Base de contatos', 'Sistema',
 
   // BLOCO 4 · de onde veio
-  'Origem', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'URL'
+  'Origem', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'URL',
+
+  /* Coluna do n8n, não desta página: a automação marca aqui quem já foi
+     avisado. O script nunca escreve nela — appendRow manda 25 valores e a 26ª
+     fica vazia, que é o estado "ainda não avisado".
+
+     Ela PRECISA estar neste array mesmo sem ser preenchida aqui. prepararPlanilha
+     compara getLastColumn() com CABECALHO.length: faltando aqui, a aba tem uma
+     coluna a mais que o esperado, a função conclui que o formato está errado,
+     arquiva a aba como "Leads v1" e cria uma nova sem esta coluna. Foi o que
+     aconteceu em 15/10/2026, e derrubou a automação em silêncio. */
+  'Avisado?'
 ];
 
 /**
@@ -377,6 +388,7 @@ function pegarAba() {
     pintar(aba, 6,  2,  '#F5F2ED'); // a leitura
     pintar(aba, 8,  12, '#FFFFFF'); // respostas
     pintar(aba, 20, 6,  '#F5F2ED'); // de onde veio
+    pintar(aba, 26, 1,  '#FDF3EC'); // o n8n escreve aqui
 
     aba.getRange(2, 1, 5000, 1).setNumberFormat('dd/mm/yyyy HH:mm');
 
@@ -384,7 +396,7 @@ function pegarAba() {
     var larguras = [140,170,130,180,150,
                     200,210,
                     220,90,200,130,240,230,180,110,130,110,160,160,
-                    240,110,110,170,130,320];
+                    240,110,110,170,130,320,130];
     for (var i = 0; i < larguras.length; i++) aba.setColumnWidth(i + 1, larguras[i]);
 
     // Filtro no cabeçalho, para o comercial filtrar por SAÍDA
