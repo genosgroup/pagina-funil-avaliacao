@@ -133,40 +133,57 @@ var CABECALHO = [
  * é chamado a partir da planilha, e lança erro quando a função é
  * executada pelo botão do editor, que é justamente como ela é usada.
  */
+/* Confere se a aba bate com o CABECALHO. SÓ CONFERE: não renomeia, não cria,
+   não apaga nada.
+
+   Ela arquivava a aba e criava outra quando achava diferença. A intenção era
+   boa — gravar numa aba de largura errada desalinha tudo em silêncio — mas o
+   remédio era pior que a doença: em 15/10/2026 ela arquivou a aba de leads
+   duas vezes, levando junto o lead, a formatação da casa e a coluna que o n8n
+   lê. Nas duas as abas só estavam fora de sincronia por alguns minutos,
+   enquanto o script novo ainda não tinha sido colado.
+
+   Arquivar automaticamente uma aba que tem lead dentro nunca é a decisão
+   certa: quem está olhando sabe o que fazer, a função não. Então ela agora
+   relata e para. A correção é manual e leva um minuto.
+
+   A proteção real contra desalinhamento continua existindo, e é outra: o
+   doPost grava por appendRow com a quantidade de valores do CABECALHO. */
 function prepararPlanilha() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var antiga = ss.getSheetByName(ABA);
-  var msg = [];
+  var aba = ss.getSheetByName(ABA);
 
-  if (antiga) {
-    // Compara o cabeçalho INTEIRO, coluna por coluna.
-    // Conferir só duas células não basta: já aconteceu de o cabeçalho mudar
-    // de 35 para 39 colunas mantendo "Data" e "SAÍDA" no lugar, e a função
-    // concluir que estava tudo certo quando não estava.
-    var largura = Math.max(antiga.getLastColumn(), CABECALHO.length);
-    var cab = antiga.getRange(1, 1, 1, largura).getValues()[0];
-    var jaAtual = antiga.getLastColumn() === CABECALHO.length &&
-      CABECALHO.every(function (titulo, i) { return String(cab[i]) === titulo; });
-
-    if (jaAtual) {
-      Logger.log('A aba "Leads" já está no formato atual. Nada foi alterado.');
-      return 'A aba "Leads" já está no formato atual. Nada foi alterado.';
-    }
-
-    // Acha um nome livre, para não sobrescrever um arquivamento anterior
-    var nome = 'Leads v1', n = 1;
-    while (ss.getSheetByName(nome)) { n++; nome = 'Leads v' + n; }
-    antiga.setName(nome);
-    msg.push('OK: a aba antiga virou "' + nome + '", com os dados preservados.');
-  } else {
-    msg.push('Não havia aba "Leads" anterior.');
+  if (!aba) {
+    return 'Não existe aba "' + ABA + '". Ela será criada sozinha no primeiro lead.';
   }
 
-  pegarAba(); // cria a nova, já formatada
-  msg.push('OK: a aba "Leads" nova foi criada com ' + CABECALHO.length + ' colunas.');
-  msg.push('Pode apagar as abas antigas quando quiser.');
+  var largura = Math.max(aba.getLastColumn(), CABECALHO.length);
+  var cab = aba.getRange(1, 1, 1, largura).getValues()[0];
+  var difs = [];
 
-  var texto = msg.join('\n');
+  if (aba.getLastColumn() !== CABECALHO.length) {
+    difs.push('A aba tem ' + aba.getLastColumn() + ' colunas e o script espera ' +
+              CABECALHO.length + '.');
+  }
+  for (var i = 0; i < largura; i++) {
+    var naAba = String(cab[i] || ''), noScript = CABECALHO[i] || '';
+    if (naAba !== noScript) {
+      difs.push('Coluna ' + (i + 1) + ': a aba diz "' + naAba +
+                '" e o script espera "' + noScript + '".');
+    }
+  }
+
+  if (!difs.length) {
+    var ok = 'OK: a aba "' + ABA + '" bate com o script. ' + CABECALHO.length + ' colunas.';
+    Logger.log(ok);
+    return ok;
+  }
+
+  var texto = 'ATENÇÃO: a aba "' + ABA + '" NÃO bate com o script.\n\n' +
+    difs.join('\n') +
+    '\n\nNada foi alterado. Acerte o cabeçalho na planilha OU cole a versão ' +
+    'certa do script, até esta função dizer OK. Não grave lead antes disso: ' +
+    'a gravação é posicional e entraria desalinhada.';
   Logger.log(texto);
   return texto;
 }
@@ -226,14 +243,20 @@ function doPost(e) {
     return responder({ok: true});
 
   } catch (err) {
-    // Registra o erro numa aba separada, para não perder lead em silêncio
-    try {
-      var log = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Erros')
-             || SpreadsheetApp.getActiveSpreadsheet().insertSheet('Erros');
-      log.appendRow([new Date(), String(err), e && e.postData ? e.postData.contents : '']);
-    } catch (e2) {}
+    anotarErro(String(err), e && e.postData ? e.postData.contents : '');
     return responder({ok: false, erro: String(err)});
   }
+}
+
+/* Registra numa aba separada o que deu errado, para nada falhar em silêncio.
+   Envolvida em try porque o registro do erro nunca pode derrubar a gravação do
+   lead: se nem isto funcionar, perder o aviso é melhor que perder o lead. */
+function anotarErro(texto, contexto) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var log = ss.getSheetByName('Erros') || ss.insertSheet('Erros');
+    log.appendRow([new Date(), texto, contexto || '']);
+  } catch (e2) {}
 }
 
 function doGet() {
@@ -262,14 +285,18 @@ function gravarOutro(d) {
   garantirFuso(ss);
   var aba = ss.getSheetByName(ABA_OUTROS);
 
-  // A aba nasceu com 8 colunas e agora tem 17. Se a antiga ainda estiver lá, a
-  // gravação entraria desalinhada e em silêncio — então arquiva e recria, em
-  // vez de escrever errado. Mesma proteção do prepararPlanilha.
+  /* Antes, largura diferente da esperada fazia a função arquivar a aba e criar
+     outra. Isso saiu: arquivar sozinha uma aba com lead dentro causou estrago
+     real duas vezes em 15/10/2026, e no caminho da gravação é pior ainda,
+     porque dispara a cada lead que chega.
+
+     Agora ela só registra o desencontro em "Erros" e grava assim mesmo. Linha
+     com rótulo errado é visível e se conserta; lead perdido ou aba arquivada
+     no meio de uma campanha, não. */
   if (aba && aba.getLastColumn() !== CABECALHO_OUTROS.length) {
-    var n = 1, nome = 'Outros negócios v1';
-    while (ss.getSheetByName(nome)) { n++; nome = 'Outros negócios v' + n; }
-    aba.setName(nome);
-    aba = null;
+    anotarErro('Aba "' + ABA_OUTROS + '" com ' + aba.getLastColumn() +
+               ' colunas e o script espera ' + CABECALHO_OUTROS.length +
+               '. O lead foi gravado assim mesmo. Acerte o cabeçalho.');
   }
 
   if (!aba) {
