@@ -47,7 +47,7 @@ var CABECALHO_OUTROS = [
   'Data', 'Instagram', 'WhatsApp',
   'Parado/mês', 'Parado na base', 'Faixa',
   'Contatos/mês', 'Fecham', 'Somem sem retomar', 'Ticket', 'Base de contatos',
-  'Origem', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'URL',
+  'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'URL',
 
   /* Mesma coluna do n8n da aba de clínica. O script não escreve nela: a célula
      vazia é o estado "ainda não avisado". Está no array para a contagem bater
@@ -94,7 +94,7 @@ var CABECALHO = [
   'Agendam', 'Comparecem', 'Fecham', 'Base de contatos', 'Sistema',
 
   // BLOCO 4 · de onde veio
-  'Origem', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'URL',
+  'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'URL',
 
   /* Coluna do n8n, não desta página: a automação marca aqui quem já foi
      avisado. O script nunca escreve nela — appendRow manda 25 valores e a 26ª
@@ -216,7 +216,6 @@ function doPost(e) {
       r.base || '',
       d.sistema || '',
 
-      origemLegivel(u),
       u.utm_source || '',
       u.utm_medium || '',
       u.utm_campaign || '',
@@ -287,13 +286,13 @@ function gravarOutro(d) {
     // Mesmos blocos de cor da aba de clínica, para as duas se lerem igual
     pintar(aba, 1,  6, LARANJA);   // quem é + a leitura
     pintar(aba, 7,  5, '#FFFFFF'); // respostas
-    pintar(aba, 12, 7, '#F5F2ED'); // de onde veio, e o Avisado? do n8n
+    pintar(aba, 12, 6, '#F5F2ED'); // de onde veio, e o Avisado? do n8n
 
     aba.getRange(2, 1, 5000, 1).setNumberFormat('dd/mm/yyyy HH:mm');
     var larg = [140, 190, 140,
                 130, 140, 100,
                 120, 150, 170, 120, 150,
-                240, 110, 110, 170, 130, 320, 130];
+                110, 110, 170, 130, 320, 130];
     for (var i = 0; i < larg.length; i++) aba.setColumnWidth(i + 1, larg[i]);
     aba.getRange(2, 4, 5000, 2).setNumberFormat('R$ #,##0');
 
@@ -320,7 +319,6 @@ function gravarOutro(d) {
     r.g_ticket || '',
     r.g_base || '',
 
-    origemLegivel(u),
     u.utm_source || '',
     u.utm_medium || '',
     u.utm_campaign || '',
@@ -328,50 +326,6 @@ function gravarOutro(d) {
     d.url || ''
   ]);
   return responder({ok: true, msg: 'outro negócio registrado'});
-}
-
-/* Os nomes legíveis das origens conhecidas. Quem não estiver aqui é humanizado
-   na hora, em vez de cair fora: origem nova não pode sumir da coluna só por não
-   ter sido cadastrada. */
-var NOMES_ORIGEM = {
-  fb:                'Facebook Ads',
-  ig:                'Instagram Ads',
-  instagram_genos:   'Instagram Genos',
-  instagram_thalita: 'Instagram Thalita',
-  email:             'E-mail',
-  whatsapp:          'WhatsApp',
-  telefone:          'Telefone',
-  indicacao:         'Indicação'
-};
-
-function humanizar(v) {
-  v = String(v == null ? '' : v).trim();
-  if (!v) return '';
-  var conhecido = NOMES_ORIGEM[v.toLowerCase()];
-  if (conhecido) return conhecido;
-  v = v.replace(/[_\-]+/g, ' ');
-  return v.charAt(0).toUpperCase() + v.slice(1);
-}
-
-/* A coluna Origem: de onde o lead veio, numa linha que o comercial lê sem
-   precisar cruzar as quatro colunas utm_ na mão.
-
-   Sai de utm_source mais a variação, que é o utm_content ou, quando ele não
-   vier, o ?origem= dos links da bio. As colunas utm_ continuam ao lado com o
-   valor cru — esta é leitura, não substituição.
-
-   Sem UTM nenhuma a visita é direta, e "Direto" é informação: célula vazia
-   parece falha de gravação e manda alguém investigar à toa.
-
-   Em anúncio do Meta a variação é o nome do anúncio, que é longo. Fica longo
-   mesmo: o nome do criativo é justamente o que o comercial quer saber, e
-   coluna larga resolve. */
-function origemLegivel(u) {
-  u = u || {};
-  var fonte = humanizar(u.utm_source);
-  var variacao = String(u.utm_content || u.origem || '').trim();
-  if (!fonte) return variacao ? humanizar(variacao) : 'Direto';
-  return variacao ? fonte + ' · ' + variacao : fonte;
 }
 
 function pegarAba() {
@@ -390,7 +344,7 @@ function pegarAba() {
     // Cor por bloco, para bater o olho e saber onde está
     pintar(aba, 1,  7,  LARANJA);   // quem é + a leitura
     pintar(aba, 8,  12, '#FFFFFF'); // respostas
-    pintar(aba, 20, 7,  '#F5F2ED'); // de onde veio, e o Avisado? do n8n
+    pintar(aba, 20, 6,  '#F5F2ED'); // de onde veio, e o Avisado? do n8n
 
     aba.getRange(2, 1, 5000, 1).setNumberFormat('dd/mm/yyyy HH:mm');
 
@@ -398,7 +352,7 @@ function pegarAba() {
     var larguras = [140,170,130,180,150,
                     200,210,
                     220,90,200,130,240,230,180,110,130,110,160,160,
-                    240,110,110,170,130,320,130];
+                    110,110,170,130,320,130];
     for (var i = 0; i < larguras.length; i++) aba.setColumnWidth(i + 1, larguras[i]);
 
     // Filtro no cabeçalho, para o comercial filtrar por SAÍDA
