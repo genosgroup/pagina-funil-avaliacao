@@ -89,7 +89,7 @@ var CABECALHO = [
   'Agendam', 'Comparecem', 'Fecham', 'Base de contatos', 'Sistema',
 
   // BLOCO 4 · de onde veio
-  'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'URL'
+  'Origem', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'URL'
 ];
 
 /**
@@ -200,6 +200,7 @@ function doPost(e) {
       r.base || '',
       d.sistema || '',
 
+      origemLegivel(u),
       u.utm_source || '',
       u.utm_medium || '',
       u.utm_campaign || '',
@@ -289,9 +290,7 @@ function gravarOutro(d) {
     r.g_ticket || '',
     r.g_base || '',
 
-    // O ?origem=reel-DDMM dos links da bio. Vive na query como qualquer UTM,
-    // mas tem coluna própria porque é o parâmetro que a equipe de fato usa.
-    u.origem || '',
+    origemLegivel(u),
     u.utm_source || '',
     u.utm_medium || '',
     u.utm_campaign || '',
@@ -299,6 +298,50 @@ function gravarOutro(d) {
     d.url || ''
   ]);
   return responder({ok: true, msg: 'outro negócio registrado'});
+}
+
+/* Os nomes legíveis das origens conhecidas. Quem não estiver aqui é humanizado
+   na hora, em vez de cair fora: origem nova não pode sumir da coluna só por não
+   ter sido cadastrada. */
+var NOMES_ORIGEM = {
+  fb:                'Facebook Ads',
+  ig:                'Instagram Ads',
+  instagram_genos:   'Instagram Genos',
+  instagram_thalita: 'Instagram Thalita',
+  email:             'E-mail',
+  whatsapp:          'WhatsApp',
+  telefone:          'Telefone',
+  indicacao:         'Indicação'
+};
+
+function humanizar(v) {
+  v = String(v == null ? '' : v).trim();
+  if (!v) return '';
+  var conhecido = NOMES_ORIGEM[v.toLowerCase()];
+  if (conhecido) return conhecido;
+  v = v.replace(/[_\-]+/g, ' ');
+  return v.charAt(0).toUpperCase() + v.slice(1);
+}
+
+/* A coluna Origem: de onde o lead veio, numa linha que o comercial lê sem
+   precisar cruzar as quatro colunas utm_ na mão.
+
+   Sai de utm_source mais a variação, que é o utm_content ou, quando ele não
+   vier, o ?origem= dos links da bio. As colunas utm_ continuam ao lado com o
+   valor cru — esta é leitura, não substituição.
+
+   Sem UTM nenhuma a visita é direta, e "Direto" é informação: célula vazia
+   parece falha de gravação e manda alguém investigar à toa.
+
+   Em anúncio do Meta a variação é o nome do anúncio, que é longo. Fica longo
+   mesmo: o nome do criativo é justamente o que o comercial quer saber, e
+   coluna larga resolve. */
+function origemLegivel(u) {
+  u = u || {};
+  var fonte = humanizar(u.utm_source);
+  var variacao = String(u.utm_content || u.origem || '').trim();
+  if (!fonte) return variacao ? humanizar(variacao) : 'Direto';
+  return variacao ? fonte + ' · ' + variacao : fonte;
 }
 
 function pegarAba() {
@@ -318,7 +361,7 @@ function pegarAba() {
     pintar(aba, 1,  5,  '#FDF3EC'); // quem é
     pintar(aba, 6,  2,  '#F5F2ED'); // a leitura
     pintar(aba, 8,  12, '#FFFFFF'); // respostas
-    pintar(aba, 20, 5,  '#F5F2ED'); // de onde veio
+    pintar(aba, 20, 6,  '#F5F2ED'); // de onde veio
 
     aba.getRange(2, 1, 5000, 1).setNumberFormat('dd/mm/yyyy HH:mm');
 
@@ -326,7 +369,7 @@ function pegarAba() {
     var larguras = [140,170,130,180,150,
                     200,210,
                     220,90,200,130,240,230,180,110,130,110,160,160,
-                    110,110,170,130,320];
+                    240,110,110,170,130,320];
     for (var i = 0; i < larguras.length; i++) aba.setColumnWidth(i + 1, larguras[i]);
 
     // Filtro no cabeçalho, para o comercial filtrar por SAÍDA
