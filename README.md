@@ -122,6 +122,36 @@ Como `not_found_handling` está em `single-page-application`, qualquer caminho s
 por este Worker devolve a página. Isso é proposital: a URL vai para anúncio, bio e
 prospecção, e um caractere a mais no fim do link não pode virar 404.
 
+### O link curto da bio: `/dinheiroparado`
+
+`genosgroup.com.br/dinheiroparado` é o link da bio do Instagram da Thalita. Ele **não
+passa por este Worker**: é uma Redirect Rule no painel (**genosgroup.com.br › Regras ›
+Visão geral**, regra `dinheiroparado (bio Thalita)`), criada em 15/10/2026. Responde
+301 para:
+
+```
+https://genosgroup.com.br/avaliacao?utm_source=instagram_thalita&utm_medium=social&utm_campaign=avaliacao&utm_content=bio
+```
+
+A expressão da regra casa só esse caminho, com ou sem barra no fim, e só neste host:
+
+```
+(http.host eq "genosgroup.com.br" and http.request.uri.path in {"/dinheiroparado" "/dinheiroparado/"})
+```
+
+**Preservar string de consulta fica desmarcado.** O Instagram acrescenta coisas no fim
+do link (`?fbclid=...`); desmarcado, isso é descartado e as UTMs chegam exatamente como
+estão acima.
+
+**A regra guarda o link inteiro e não acompanha o deploy.** Se mudar o caminho
+`/avaliacao` ou qualquer UTM, o destino em *Então…* tem que mudar junto, à mão. E como
+é 301, o navegador de quem já clicou memoriza o destino antigo e pode continuar indo
+para ele por um tempo.
+
+`utm_medium` é `social` por decisão da tarefa (o GA4 não reconhece `bio` como meio).
+Isso difere do que o `ferramentas/gerador-de-links.html` sugere para a bio
+(`instagram` · `bio` · `perfil-thalita`).
+
 ---
 
 ## O Apps Script
